@@ -3,8 +3,8 @@
 This is a tool for visualising household budgets. A demo, with simulated data, is available at [tzhg.github.io/cash-flower](https://tzhg.github.io/cash-flower).
 
 The visualisation shows three charts for each month of data:
-- An assets chart with cash and savings,
-- A cashflow chart with income and expenses,
+- An assets chart with cash and savings.
+- A cashflow chart with income and expenses.
 - An expenses chart with six categories of expenditure.
 
 Features:
