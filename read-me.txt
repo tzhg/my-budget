@@ -1,0 +1,96 @@
+================================================================================
+Input files
+================================================================================
+
+data/expenses-input.txt:
+--------------------------------------------------------------------------------
+Example:
+
+    date,category,value
+    01/01/2013,Housing,1700.00
+    01/01/2013,Food,5.66
+    01/01/2013,Housing,128.51
+
+data/income-input.txt:
+--------------------------------------------------------------------------------
+Example:
+
+    date,value
+    01/01/2013,5000
+    01/02/2013,5000
+    01/03/2013,5000
+
+data/savings-input.txt:
+--------------------------------------------------------------------------------
+Example:
+
+    date,type,name,quantity,value
+    01/01/2013,I,a0,10,1.00
+    01/01/2013,I,a1,10,1.00
+    01/01/2013,I,a2,10,1.00
+
+Notes:
+- type: "I" for initial savings, "B" for buying, "S" for selling.
+
+assets/<asset_name>.txt:
+--------------------------------------------------------------------------------
+Example:
+
+    date,value
+    03/01/2022,104.93
+    04/01/2022,105.16
+    05/01/2022,104.93
+    06/01/2022,103.4
+
+data/cash-input.txt:
+--------------------------------------------------------------------------------
+Example:
+
+    date,cash
+    01/01/2013, 3162.07 (Cash) + 4743.10 (Bank account)
+    28/04/2013, 3834.96 (Cash) + 5752.44 (Bank account)
+    31/05/2013, 4124.55 (Cash) + 6186.82 (Bank account)
+
+================================================================================
+Savings
+================================================================================
+
+Savings is the purchasing of assets which will be sold in the future.
+This includes savings accounts, stocks, bonds, and foreign cash (but not housing).
+
+When assets are bought or sold, the quantity and price are recorded.
+The quantity multiplied by the price will equal the total value bought/sold.
+For fungible goods, the price may be a price index (e.g. share price),
+and quantity the number units bought or sold.
+For non-fungible goods, the quantity can be set to 1, and the price the total value.
+Assets are tracked over time using a unique name.
+
+Capital gains and losses are calculated FIFO. (Not currently implemented.)
+Interest must be manually recorded as regular income.
+Capital appreciation and depreciation are taken into account by the files assets/<name>.txt,
+where <name> is the name of the asset.
+They do not have to be updated daily, but must contain at least the value on the day of purchase.
+
+Obtaining savings as a gift is recorded as simultaneous gift income and savings purchasing.
+Selling savings for non-cash is recorded as simultaneous savings selling and expense.
+An asset can be revalued by selling it and repurchasing it at the updated value.
+
+================================================================================
+Cash snapshots
+================================================================================
+
+Cash snapshots are recorded in "data/cash-input.txt".
+They are records of cash at various points in time.
+It is necessary to take a snapshot on the first day, to determine initial cash.
+No further snapshot are necessary, as future cashflows should be accounted for.
+When snapshots are given, the program calculates any discrepancies and records them as errors/omissions.
+The snapshot must be performed at the beginning of the given day, before any income or expenses.
+The amount of cash can be provided as a single number,
+or broken into sources (e.g. different bank accounts) for convenience.
+
+================================================================================
+To do
+================================================================================
+
+- Savings capital gains/losses
+- Data validation
