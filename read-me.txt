@@ -87,10 +87,3 @@ When snapshots are given, the program calculates any discrepancies and records t
 The snapshot must be performed at the beginning of the given day, before any income or expenses.
 The amount of cash can be provided as a single number,
 or broken into sources (e.g. different bank accounts) for convenience.
-
-================================================================================
-To do
-================================================================================
-
-- Savings capital gains/losses
-- Data validation
