@@ -20,11 +20,24 @@ inc_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/income-input.txt"))
 csh_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/cash-input.txt"))
 svg_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/savings-input.txt"))
 
+asset_dir = os.path.join(dirname, f"./{data_dir}/assets")
+
+assets_list = [
+    os.path.splitext(os.fsdecode(file))[0]
+    for file in os.listdir(asset_dir)]
+
+ass_df = {
+    name: pd.read_csv(os.path.join(dirname, f"./{data_dir}/assets/{name}.txt"))
+    for name in assets_list}
+
 # Set datetime type
 exp_df["date"] = pd.to_datetime(exp_df["date"], format=input_date_format)
 inc_df["date"] = pd.to_datetime(inc_df["date"], format=input_date_format)
 csh_df["date"] = pd.to_datetime(csh_df["date"], format=input_date_format)
 svg_df["date"] = pd.to_datetime(svg_df["date"], format=input_date_format)
+
+for _, df in ass_df.items():
+    df["date"] = pd.to_datetime(df["date"], format=input_date_format)
 
 start_date = csh_df["date"].iat[0]
 
@@ -120,19 +133,18 @@ inc_df = pd.concat(
 
 # Gets last available price of an asset
 def asset_price(date, name, quantity):
-    asset_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/assets/{name}.txt"))
-    asset_df["date"] = pd.to_datetime(asset_df["date"], format=input_date_format)
-
-    asset_df = asset_df[asset_df["date"] <= date].iloc[-1]
-
-    return float(asset_df["value"] * quantity)
+    value = ass_df[name][ass_df[name]["date"] <= date].iloc[-1]["value"]
+    return float(value * quantity)
 
 
 monthIdx = 0
+pl = 0
 
 portfolio = []
 
 savings_list = []
+profit_list = []
+loss_list = []
 
 for i, row in svg_df.iterrows():
     # Finishes month
@@ -140,6 +152,14 @@ for i, row in svg_df.iterrows():
         while row["month"] > monthIdx:
             pf_value = sum([asset_price(*x) for x in portfolio])
             savings_list.append(pf_value)
+            if pl >= 0:
+                profit_list.append(pl)
+                loss_list.append(0)
+            elif pl > 0:
+                profit_list.append(0)
+                loss_list.append(pl)
+            pl = 0
+
             monthIdx += 1
 
     if row["type"] == "I" or row["type"] == "B":
@@ -154,7 +174,10 @@ for i, row in svg_df.iterrows():
                 portfolio[j][2] -= min_quant
                 q_to_sell -= min_quant
 
-                # Insert P/L calculation here
+                buy_value = asset_price(portfolio[j][0], portfolio[j][1], min_quant)
+                sell_value = asset_price(row["date"], row["name"], min_quant)
+
+                pl += sell_value - buy_value
 
             j += 1
 
@@ -162,6 +185,13 @@ for i, row in svg_df.iterrows():
 while no_months > monthIdx:
     pf_value = sum([asset_price(*x) for x in portfolio])
     savings_list.append(pf_value)
+    if pl > 0:
+        profit_list.append(pl)
+        loss_list.append(0)
+    elif pl > 0:
+        profit_list.append(0)
+        loss_list.append(pl)
+    pl = 0
     monthIdx += 1
 
 # ============================================================================ #
@@ -198,14 +228,14 @@ data = [
     exp_df["value", "Shopping"].to_list()[::-1],
     exp_df["value", "Utilities"].to_list()[::-1],
     exp_df["value", "Health"].to_list()[::-1],
-    exp_df["value", "Leisure"].to_list()[::-1]
-]
+    exp_df["value", "Leisure"].to_list()[::-1],
+    profit_list[::-1],
+    loss_list[::-1]]
 
 output = {
     "para": viz_para,
     "info": info,
-    "data": data
-}
+    "data": data}
 
 # Data as a JSON string
 data_json = json.dumps(output, indent=4)

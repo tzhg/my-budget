@@ -65,8 +65,10 @@ and quantity the number units bought or sold.
 For non-fungible goods, the quantity can be set to 1, and the price the total value.
 Assets are tracked over time using a unique name.
 
-Capital gains and losses are calculated FIFO. (Not currently implemented.)
-Interest must be manually recorded as regular income.
+The profit and losses from savings are shown in the chart as "Savings profit" and "Savings loss".
+This includes capital gains and losses, dividends, and interest paid and received.
+Capital gains and losses are calculated first in first out.
+Debt, interest and dividends are not currently implemented.
 Capital appreciation and depreciation are taken into account by the files assets/<name>.txt,
 where <name> is the name of the asset.
 They do not have to be updated daily, but must contain at least the value on the day of purchase.
@@ -87,3 +89,9 @@ When snapshots are given, the program calculates any discrepancies and records t
 The snapshot must be performed at the beginning of the given day, before any income or expenses.
 The amount of cash can be provided as a single number,
 or broken into sources (e.g. different bank accounts) for convenience.
+
+================================================================================
+Chart parameters (viz-parameters.json)
+================================================================================
+
+For each of the three charts, "gridlines" is an array of values (in euros) where gridlines should occur.

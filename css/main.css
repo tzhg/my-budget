@@ -89,29 +89,29 @@ textarea {
 
 body {
     background-color: #f4f3f2;
+    font-size: 14px;
+    font-family: "Inter", sans-serif;
+    color: #222325;
 }
 
 .main {
     width: 100%;
     height: 100%;
     padding-bottom: 100px;
-    font-family: "Inter", sans-serif;
-    font-size: 13px;
-    color: #222325;
 }
 
 .head-grid {
     display: grid;
     background-color: #e9e8e7;
-    grid-template-columns: 1fr 300px 300px 300px 1fr;
+    grid-template-columns: 1fr 200px 200px 200px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
         ". t0 t0 t0 ."
         ". h0 h1 h2 ."
         ". c0 c1 c2 .";
-    column-gap: 80px;
-    row-gap: 5px;
-    padding-top: 120px;
+    column-gap: 100px;
+    row-gap: 10px;
+    padding-top: 100px;
     padding-bottom: 20px;
     padding-left: 50px;
     padding-right: 50px;
@@ -127,13 +127,12 @@ body {
 
 .body-grid {
     display: grid;
-    grid-template-columns: 1fr 300px 300px 300px 1fr;
+    grid-template-columns: 1fr 200px 200px 200px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
         ". h0 h0 h0 ."
         ". l0 l1 l2 .";
-    column-gap: 80px;
-    row-gap: 30px;
+    column-gap: 100px;
     padding-left: 50px;
     padding-right: 50px;
 }
@@ -143,67 +142,90 @@ body {
 .c2 { grid-area: l2; }
 
 .title {
-    margin-bottom: 25px;
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 700;
     font-family: "Playfair Display", serif;
+}
+
+.head-chart-container {
+    margin-bottom: 10px;
 }
 
 .head-label {
     font-weight: 700;
 }
 
-.head-labels-0, .head-labels-1 {
-    position: relative;
-    display: flex;
-    flex-flow: row nowrap;
-    column-gap: 10px;
-    align-items: end;
+.head-labels-0 {
+    display: grid;
+    grid-template-columns: auto max-content;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+        ". ."
+        ". ."
+        ". ."
+        ". ."
+        "e20 f20"
+        "e21 f21"
 }
 
-.head-labels-0 > div {
-    display: flex;
-    flex-flow: column nowrap;
+.label-cash { grid-area: e20; }
+.label-savings { grid-area: e21; }
+.val-cash { grid-area: f20; }
+.val-savings { grid-area: f21; }
+
+.head-labels-1 {
+    display: grid;
+    grid-template-columns: auto max-content;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+        ". ."
+        ". ."
+        "e10 f10"
+        "e12 f12"
+        "e11 f11"
+        "e13 f13";
 }
 
-.head-labels-1 > div {
-    display: flex;
-    flex-flow: column nowrap;
-    width: 50%;
-}
+.label-income { grid-area: e10; }
+.label-profit { grid-area: e11; }
+.label-expenses { grid-area: e12; }
+.label-loss { grid-area: e13; }
+.val-income { grid-area: f10; }
+.val-profit { grid-area: f11; }
+.val-expenses { grid-area: f12; }
+.val-loss { grid-area: f13; }
 
 .head-labels-2 {
     display: grid;
-    grid-template-columns: max-content auto 1fr max-content auto;
-    grid-template-rows: auto;
+    grid-template-columns: auto max-content;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-areas:
-        "e0 f0 . e3 f3"
-        "e1 f1 . e4 f4"
-        "e2 f2 . e5 f5";
+        "e20 f20"
+        "e23 f23"
+        "e21 f21"
+        "e24 f24"
+        "e22 f22"
+        "e25 f25";
 }
 
-.label-housing { grid-area: e0; }
-.label-food { grid-area: e1; }
-.label-shopping { grid-area: e2; }
-.label-utilities { grid-area: e3; }
-.label-health { grid-area: e4; }
-.label-leisure { grid-area: e5; }
-.val-housing { grid-area: f0; }
-.val-food { grid-area: f1; }
-.val-shopping { grid-area: f2; }
-.val-utilities { grid-area: f3; }
-.val-health { grid-area: f4; }
-.val-leisure { grid-area: f5; }
+.label-housing { grid-area: e20; }
+.label-food { grid-area: e21; }
+.label-shopping { grid-area: e22; }
+.label-utilities { grid-area: e23; }
+.label-health { grid-area: e24; }
+.label-leisure { grid-area: e25; }
+.val-housing { grid-area: f20; }
+.val-food { grid-area: f21; }
+.val-shopping { grid-area: f22; }
+.val-utilities { grid-area: f23; }
+.val-health { grid-area: f24; }
+.val-leisure { grid-area: f25; }
 
-.head-labels-2 > .head-label {
-    margin-right: 3px;
+.head-label {
+    margin-right: 5px;
 }
 
-.val-housing, .val-food, .val-shopping, .val-utilities, .val-health, .val-leisure {
-    text-align: right;
-}
-
-.label-expenses {
+.head-val {
     text-align: right;
 }
 
@@ -221,17 +243,17 @@ body {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    row-gap: 10px;
+    row-gap: 12px;
 }
 
 .long-chart-container, .head-chart-container {
     position: relative;
-    color: #3c4858;
+    font-size: 12px;
 }
 
 .long-chart > div, .head-chart {
     position: relative;
-    height: 30px;
+    height: 24px;
 }
 
 .long-chart > div > div, .head-chart > div {
@@ -254,10 +276,10 @@ body {
 }
 
 .c1 .axis, .h1 .axis {
-    left: calc(50% - 1px);
+    //left: calc(50% - 1px);
 }
 
-.c2 .axis, .h2 .axis {
+.axis {
     left: -1px;
 }
 
@@ -276,7 +298,7 @@ body {
 
 .grid-label {
     position: absolute;
-    top: -22px;
+    bottom: -22px;
     pointer-events: none;
     font-size: 12px;
 }
@@ -300,6 +322,8 @@ body {
 .label-utilities .legend-icon { background-color: #76b7b2; }
 .label-health .legend-icon { background-color: #ff9da7; }
 .label-leisure .legend-icon { background-color: #f28e2b; }
+.label-profit .legend-icon { background-color: #3e7137; }
+.label-loss .legend-icon { background-color: #b92123; }
 
 .chart-rect {
     z-index: 1;

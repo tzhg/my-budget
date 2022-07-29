@@ -16,6 +16,8 @@ const data = dataImp.data;
 
 const m = data[0].length;
 
+const chartWidth = 200;
+
 const labels = [
     "Cash",
     "Savings",
@@ -26,7 +28,9 @@ const labels = [
     "Shopping",
     "Utilities",
     "Health",
-    "Leisure"
+    "Leisure",
+    "Savings profit",
+    "Savings loss"
 ];
 
 const pal = [
@@ -39,7 +43,9 @@ const pal = [
     "#9c755f",
     "#76b7b2",
     "#ff9da7",
-    "#f28e2b"
+    "#f28e2b",
+    "#3e7137",
+    "#b92123"
 ];
 
 const formatVal = (value, style="default") => {
@@ -50,28 +56,40 @@ const formatVal = (value, style="default") => {
         ).format(value);
     }
     if (style === "short") {
-        return new Intl.NumberFormat(
+        const value2 = new Intl.NumberFormat(
             "en-UK",
-            { style: "currency", currency: "EUR", maximumFractionDigits: 0 }
-        ).format(value);
+            { style: "currency", currency: "EUR", maximumSignificantDigits: 2 }
+        ).format(value / 1000);
+        if (value > 0) {
+            return value2 + "k";
+        }
+        return value2;
     }
 };
 
 const getWidth = (val, type) => {
-    const scaleEx = [
-        para.scale[0],
-        para.scale[0],
-        para.scale[1],
-        para.scale[1],
-        para.scale[2],
-        para.scale[2],
-        para.scale[2],
-        para.scale[2],
-        para.scale[2],
-        para.scale[2]
+    const max_val = [
+        para.gridlines[0][para.gridlines[0].length - 1],
+        para.gridlines[1][para.gridlines[1].length - 1],
+        para.gridlines[2][para.gridlines[2].length - 1]
     ];
 
-    const w = Math.round(val / 1000 * scaleEx[type]);
+    const scaleEx = [
+        max_val[0],
+        max_val[0],
+        max_val[1],
+        max_val[1],
+        max_val[2],
+        max_val[2],
+        max_val[2],
+        max_val[2],
+        max_val[2],
+        max_val[2],
+        max_val[1],
+        max_val[1]
+    ];
+
+    const w = Math.round(chartWidth * val / scaleEx[type]);
 
     if (w <= 2) {
         return 0;
@@ -102,16 +120,28 @@ const getDate = (month) => {
     return [monthNames[month2 % 12], info.startYear + Math.floor(month2 / 12)];
 };
 
-const drawChart0 = () => {
-    $(".label-cash > .val").text(formatVal(data[0][0]));
-    $(".label-savings > .val").text(formatVal(data[1][0]));
+const updateLegend = () => {
+    $(".val-cash").text(formatVal(data[0][0]));
+    $(".val-savings").text(formatVal(data[1][0]));
+    $(".val-expenses").text(formatVal(data[2][0]));
+    $(".val-income").text(formatVal(data[3][0]));
+    $(".val-housing").text(formatVal(data[4][0]));
+    $(".val-food").text(formatVal(data[5][0]));
+    $(".val-shopping").text(formatVal(data[6][0]));
+    $(".val-utilities").text(formatVal(data[7][0]));
+    $(".val-health").text(formatVal(data[8][0]));
+    $(".val-leisure").text(formatVal(data[9][0]));
+    $(".val-profit").text(formatVal(data[10][0]));
+    $(".val-loss").text(formatVal(data[11][0]));
+};
 
+const drawChart0 = () => {
     para.gridlines[0].forEach((val) => {
         const $gridLabel = $(document.createElement("div"))
 
         $gridLabel.addClass("grid-label");
         $gridLabel.text(formatVal(val, "short"));
-        $(".c0").append($gridLabel);
+        $(".h0").append($gridLabel);
 
         $gridLabel.css({
             "left": `calc(${getWidth(val, 0)}px - 1px - ${$gridLabel.width() / 2}px)`,
@@ -129,7 +159,7 @@ const drawChart0 = () => {
 
     $rect0.css({
         "background-color": pal[0],
-        "width": `calc(${dataPx[0][0]}px - ${dataPx[1][0] === 0 ? 0 : 2}px)`,
+        "width": `calc(${dataPx[0][0]}px - ${dataPx[1][0] === 0 ? 0 : 0}px)`,
         "height": "100%",
         "left": 0,
         "top": 0
@@ -145,18 +175,25 @@ const drawChart0 = () => {
     $(".h0 > .head-chart").append($rect0);
     $(".h0 > .head-chart").append($rect1);
 
-    for (let i = 1; i < m; ++i) {
-        para.gridlines[0].forEach((val) => {
-            const $grid = $(document.createElement("div"))
+    para.gridlines[0].forEach((val) => {
+        const $grid1 = $(document.createElement("div"))
+        const $grid2 = $(document.createElement("div"))
 
-            $grid.addClass("grid-line");
+        $grid1.addClass("grid-line");
+        $grid2.addClass("grid-line");
 
-            $grid.css({
-                "left": `calc(${getWidth(val, 0)}px - 1px)`,
-            });
-            $(".c0").append($grid);
+        $grid1.css({
+            "left": `calc(${getWidth(val, 0)}px - 1px)`,
+        });
+        $grid2.css({
+            "left": `calc(${getWidth(val, 0)}px - 1px)`,
         });
 
+        $(".h0").append($grid1);
+        $(".c0").append($grid2);
+    });
+
+    for (let i = 1; i < m; ++i) {
         const $row = $(document.createElement("div"))
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
@@ -169,7 +206,7 @@ const drawChart0 = () => {
 
         $rect0.css({
             "background-color": pal[0],
-            "width": `calc(${dataPx[0][i]}px - ${dataPx[1][i] === 0 ? 0 : 2}px)`,
+            "width": `calc(${dataPx[0][i]}px - ${dataPx[1][i] === 0 ? 0 : 0}px)`,
             "height": "100%",
             "left": 0,
             "top": 0
@@ -204,123 +241,153 @@ const drawChart0 = () => {
 };
 
 const drawChart1 = () => {
-    $(".label-expenses > .val").text(formatVal(data[2][0]));
-    $(".label-income > .val").text(formatVal(data[3][0]));
+    const barHeight = 12;
 
     para.gridlines[1].forEach((val) => {
-        const $gridLabel1 = $(document.createElement("div"))
-        const $gridLabel2 = $(document.createElement("div"))
+        const $gridLabel = $(document.createElement("div"))
 
-        $gridLabel1.addClass("grid-label");
-        $gridLabel2.addClass("grid-label");
+        $gridLabel.addClass("grid-label");
 
-        $gridLabel1.text(formatVal(val, "short"));
-        $gridLabel2.text(formatVal(-val, "short"));
+        $gridLabel.text(formatVal(val, "short"));
 
-        $(".c1").append($gridLabel1);
-        if (val !== 0) {
-            $(".c1").append($gridLabel2);
-        }
+        $(".h1").append($gridLabel);
 
-        $gridLabel1.css({
-            "left": `calc(50% + ${getWidth(val, 2)}px - 1px - ${$gridLabel1.width() / 2}px)`,
-        });
-        $gridLabel2.css({
-            "left": `calc(50% - ${getWidth(val, 2)}px - ${$gridLabel2.width() / 2}px)`,
+        $gridLabel.css({
+            "left": `${getWidth(val, 2) - 1 - $gridLabel.width() / 2}px`
         });
     });
 
     const $rect0 = $(document.createElement("div"))
     const $rect1 = $(document.createElement("div"))
+    const $rect2 = $(document.createElement("div"))
+    const $rect3 = $(document.createElement("div"))
 
     $rect0.addClass("chart-rect");
     $rect1.addClass("chart-rect");
+    $rect2.addClass("chart-rect");
+    $rect3.addClass("chart-rect");
 
     $rect0.attr("data-rect", "2-0");
     $rect1.attr("data-rect", "3-0");
+    $rect2.attr("data-rect", "10-0");
+    $rect3.attr("data-rect", "11-0");
 
 
     $rect0.css({
         "background-color": pal[2],
         "width": `${dataPx[2][0]}px`,
-        "height": "100%",
-        "left": `calc(50% - ${dataPx[2][0]}px)`,
-        "top": 0
+        "height": `${barHeight}px`,
+        "left": 0,
+        "top": `${barHeight}px`
     });
     $rect1.css({
         "background-color": pal[3],
         "width": `${dataPx[3][0]}px`,
-        "height": "100%",
-        "left": "50%",
+        "height": `${barHeight}px`,
+        "left": 0,
         "top": 0
+    });
+    $rect2.css({
+        "background-color": pal[10],
+        "width": `${dataPx[10][0]}px`,
+        "height": `${barHeight}px`,
+        "left": `${dataPx[3][0]}px`,
+        "top": 0
+    });
+    $rect3.css({
+        "background-color": pal[11],
+        "width": `${dataPx[11][0]}px`,
+        "height": `${barHeight}px`,
+        "left": `${dataPx[2][0]}px`,
+        "top": `${barHeight}px`
     });
 
     $(".h1 > .head-chart").append($rect0);
     $(".h1 > .head-chart").append($rect1);
+    $(".h1 > .head-chart").append($rect2);
+    $(".h1 > .head-chart").append($rect3);
 
-    for (let i = 1; i < m; ++i) {
-        para.gridlines[1].forEach((val) => {
-            const $grid1 = $(document.createElement("div"))
-            const $grid2 = $(document.createElement("div"))
+    para.gridlines[1].forEach((val) => {
+        const $grid1 = $(document.createElement("div"))
+        const $grid2 = $(document.createElement("div"))
 
-            $grid1.addClass("grid-line");
-            $grid2.addClass("grid-line");
+        $grid1.addClass("grid-line");
+        $grid2.addClass("grid-line");
 
-            $grid1.css({
-                "left": `calc(50% + ${getWidth(val, 2)}px - 1px)`,
-            });
-            $grid2.css({
-                "left": `calc(50% - ${getWidth(val, 2)}px)`,
-            });
-            $(".c1").append($grid1);
-            $(".c1").append($grid2);
+        $grid1.css({
+            "left": `${getWidth(val, 2)}px`,
+        });
+        $grid2.css({
+            "left": `${getWidth(val, 2)}px`,
         });
 
+        $(".h1").append($grid1);
+        $(".c1").append($grid2);
+    });
+
+    for (let i = 1; i < m; ++i) {
         const $row = $(document.createElement("div"))
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
+        const $rect2 = $(document.createElement("div"))
+        const $rect3 = $(document.createElement("div"))
 
         $rect0.addClass("chart-rect");
         $rect1.addClass("chart-rect");
+        $rect2.addClass("chart-rect");
+        $rect3.addClass("chart-rect");
 
         $rect0.attr("data-rect", `2-${i}`);
         $rect1.attr("data-rect", `3-${i}`);
+        $rect2.attr("data-rect", `10-${i}`);
+        $rect3.attr("data-rect", `11-${i}`);
 
         $rect0.css({
             "background-color": pal[2],
             "width": `${dataPx[2][i]}px`,
-            "height": "100%",
-            "left": `calc(50% - ${dataPx[2][i]}px)`,
-            "top": 0
+            "height": `${barHeight}px`,
+            "left": 0,
+            "top": `${barHeight}px`
         });
         $rect1.css({
             "background-color": pal[3],
             "width": `${dataPx[3][i]}px`,
-            "height": "100%",
-            "left": "50%",
+            "height": `${barHeight}px`,
+            "left": 0,
             "top": 0
+        });
+        $rect2.css({
+            "background-color": pal[10],
+            "width": `${dataPx[10][i]}px`,
+            "height": `${barHeight}px`,
+            "left": `${dataPx[3][i]}px`,
+            "top": 0
+        });
+        $rect3.css({
+            "background-color": pal[11],
+            "width": `${dataPx[11][i]}px`,
+            "height": `${barHeight}px`,
+            "left": `${dataPx[2][i]}px`,
+            "top": `${barHeight}px`
         });
 
         $row.append($rect0);
         $row.append($rect1);
+        $row.append($rect2);
+        $row.append($rect3);
         $(".c1 > .long-chart").append($row);
     }
 };
 
 const drawChart2 = () => {
-    $(".val-housing").text(formatVal(data[4][0]));
-    $(".val-food").text(formatVal(data[5][0]));
-    $(".val-shopping").text(formatVal(data[6][0]));
-    $(".val-utilities").text(formatVal(data[7][0]));
-    $(".val-health").text(formatVal(data[8][0]));
-    $(".val-leisure").text(formatVal(data[9][0]));
+    const barHeight = 8;
 
     para.gridlines[2].forEach((val) => {
         const $gridLabel = $(document.createElement("div"))
 
         $gridLabel.addClass("grid-label");
         $gridLabel.text(formatVal(val, "short"));
-        $(".c2").append($gridLabel);
+        $(".h2").append($gridLabel);
 
         $gridLabel.css({
             "left": `calc(${getWidth(val, 4)}px - 1px - ${$gridLabel.width() / 2}px)`,
@@ -350,45 +417,45 @@ const drawChart2 = () => {
 
     $rect0.css({
         "background-color": pal[4],
-        "width": `calc(${dataPx[4][0]}px - ${dataPx[7][0] == 0 ? 0 : 2}px)`,
-        "height": "9px",
+        "width": `calc(${dataPx[4][0]}px - ${dataPx[7][0] == 0 ? 0 : 0}px)`,
+        "height": `${barHeight}px`,
         "left": 0,
         "top": 0
     });
     $rect1.css({
         "background-color": pal[5],
-        "width": `calc(${dataPx[5][0]}px - ${dataPx[8][0] == 0 ? 0 : 2}px)`,
-        "height": "9px",
+        "width": `calc(${dataPx[5][0]}px - ${dataPx[8][0] == 0 ? 0 : 0}px)`,
+        "height": `${barHeight}px`,
         "left": 0,
-        "top": "11px"
+        "top": `${0 + barHeight}px`
     });
     $rect2.css({
         "background-color": pal[6],
-        "width": `calc(${dataPx[6][0]}px - ${dataPx[9][0] == 0 ? 0 : 2}px)`,
-        "height": "9px",
+        "width": `calc(${dataPx[6][0]}px - ${dataPx[9][0] == 0 ? 0 : 0}px)`,
+        "height": `${barHeight}px`,
         "left": 0,
-        "top": "22px"
+        "top": `${0 + 2 * barHeight}px`
     });
     $rect3.css({
         "background-color": pal[7],
         "width": `${dataPx[7][0]}px`,
-        "height": "9px",
+        "height": `${barHeight}px`,
         "left": `${dataPx[4][0]}px`,
         "top": 0
     });
     $rect4.css({
         "background-color": pal[8],
         "width": `${dataPx[8][0]}px`,
-        "height": "9px",
+        "height": `${barHeight}px`,
         "left": `${dataPx[5][0]}px`,
-        "top": "11px"
+        "top": `${0 + barHeight}px`
     });
     $rect5.css({
         "background-color": pal[9],
         "width": `${dataPx[9][0]}px`,
-        "height": "9px",
+        "height": `${barHeight}px`,
         "left": `${dataPx[6][0]}px`,
-        "top": "22px"
+        "top": `${0 + 2 * barHeight}px`
     });
 
     $(".h2 > .head-chart").append($rect0);
@@ -398,18 +465,25 @@ const drawChart2 = () => {
     $(".h2 > .head-chart").append($rect4);
     $(".h2 > .head-chart").append($rect5);
 
-    for (let i = 1; i < m; ++i) {
-        para.gridlines[2].forEach((val) => {
-            const $grid = $(document.createElement("div"))
+    para.gridlines[2].forEach((val) => {
+        const $grid1 = $(document.createElement("div"))
+        const $grid2 = $(document.createElement("div"))
 
-            $grid.addClass("grid-line");
+        $grid1.addClass("grid-line");
+        $grid2.addClass("grid-line");
 
-            $grid.css({
-                "left": `calc(${getWidth(val, 4)}px - 1px)`,
-            });
-            $(".c2").append($grid);
+        $grid1.css({
+            "left": `calc(${getWidth(val, 4)}px - 1px)`,
+        });
+        $grid2.css({
+            "left": `calc(${getWidth(val, 4)}px - 1px)`,
         });
 
+        $(".h2").append($grid1);
+        $(".c2").append($grid2);
+    });
+
+    for (let i = 1; i < m; ++i) {
         const $row = $(document.createElement("div"))
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
@@ -434,45 +508,45 @@ const drawChart2 = () => {
 
         $rect0.css({
             "background-color": pal[4],
-            "width": `calc(${dataPx[4][i]}px - ${dataPx[7][i] === 0 ? 0 : 2}px)`,
-            "height": "9px",
+            "width": `calc(${dataPx[4][i]}px - ${dataPx[7][i] === 0 ? 0 : 0}px)`,
+            "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
             "background-color": pal[5],
-            "width": `calc(${dataPx[5][i]}px - ${dataPx[8][i] === 0 ? 0 : 2}px)`,
-            "height": "9px",
+            "width": `calc(${dataPx[5][i]}px - ${dataPx[8][i] === 0 ? 0 : 0}px)`,
+            "height": `${barHeight}px`,
             "left": 0,
-            "top": "11px"
+            "top": `${0 + barHeight}px`
         });
         $rect2.css({
             "background-color": pal[6],
-            "width": `calc(${dataPx[6][i]}px - ${dataPx[9][i] === 0 ? 0 : 2}px)`,
-            "height": "9px",
+            "width": `calc(${dataPx[6][i]}px - ${dataPx[9][i] === 0 ? 0 : 0}px)`,
+            "height": `${barHeight}px`,
             "left": 0,
-            "top": "22px"
+            "top": `${0 + 2 * barHeight}px`
         });
         $rect3.css({
             "background-color": pal[7],
             "width": `${dataPx[7][i]}px`,
-            "height": "9px",
+            "height": `${barHeight}px`,
             "left": `${dataPx[4][i]}px`,
             "top": 0
         });
         $rect4.css({
             "background-color": pal[8],
             "width": `${dataPx[8][i]}px`,
-            "height": "9px",
+            "height": `${barHeight}px`,
             "left": `${dataPx[5][i]}px`,
-            "top": "11px"
+            "top": `${0 + barHeight}px`
         });
         $rect5.css({
             "background-color": pal[9],
             "width": `${dataPx[9][i]}px`,
-            "height": "9px",
+            "height": `${barHeight}px`,
             "left": `${dataPx[6][i]}px`,
-            "top": "22px"
+            "top": `${0 + 2 * barHeight}px`
         });
 
         $row.append($rect0);
@@ -626,6 +700,7 @@ const initTooltip = () => {
 
     $(".title > span").text(`${date[0]} ${date[1]}`);
 
+    updateLegend();
 	drawChart0();
 	drawChart1();
 	drawChart2();

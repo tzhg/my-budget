@@ -15,26 +15,33 @@ exp_cats = ["Housing", "Food", "Utilities", "Health", "Shopping", "Leisure", "Ot
 inc_cats = ["Salary", "Other"]
 
 # Parameters of normal distribution for irregular expenses/income values
-exp_mean = [300, 40, 100, 100, 200, 250, 100]
-exp_sd = [100, 20, 60, 120, 250, 400, 100]
+# exp_multi increases expenses based on available cash (per thousand)
+exp_mean = [100, 12, 50, 50, 50, 50, 100]
+exp_multi = [0, 3, 2, 5, 15, 40, 0]
+exp_sd = [50, 0, 25, 50, 500, 500, 100]
 inc_mean = [0, 200]
 inc_sd = [0, 200]
+# Expected days in year with an irregular expense, for each category
+exp_days = [2, 100, 10, 15, 10, 10, 15]
+inc_days = [0, 5]
 
-svg_mean = 0
-svg_sd = 500
+svgb_mean = 0
+svgb_multi = 20
+svgb_sd = 50
+svgb_days = 3
+
+svgs_mean = 0
+svgs_multi = 20
+svgs_sd = 50
+svgs_days = 1
 
 error_mean = 0
 error_sd = 5
-
-# Expected days in year with an irregular expense, for each category
-exp_days = [2, 120, 5, 15, 12, 5, 15]
-inc_days = [0, 5]
-svg_days = 2
-check_days = 10
 error_days = 20
+check_days = 10
 
 # Regular monthly expenses/income
-exp_monthly = [1700, 0, 500, 150, 0, 100, 0]
+exp_monthly = [1800, 0, 300, 0, 0, 0, 0]
 inc_monthly = [3500, 0]
 
 # Starting and (non-inclusive) end date
@@ -51,20 +58,21 @@ portfolio = [
     ["a1", 1, 0],
     ["a2", 1, 0]]
 
-asset_growth_mean = 0.001
-asset_growth_sd = 0.001
+asset_growth_mean = 0.0005
+asset_growth_sd = 0.01
 
-init_cash_mean = 8000
+init_cash_mean = 7000
 init_cash_sd = 1000
 
 init_cash_cat = ["Cash", "Bank account"]
 init_cash_cat_prop = [0.4, 0.6]
 
-init_svg_mean = 2000
-init_svg_sd = 100
+init_svg_mean = 0
+init_svg_sd = 1
 
 date = datetime.strptime(init_date, "%Y-%m-%d")
 cash = norm.rvs(init_cash_mean, init_cash_sd).round(2)
+
 
 def spend(cat, value):
     global cash, date
@@ -89,15 +97,11 @@ def earn(cat, value):
         file.write(f"{f_date},{value:.2f}\n")
 
 # total_value = value of asset gained
-def savings(index, total_value, init=False):
+def savings(index, type, total_value):
     global cash, date, portfolio
 
-    if total_value < 0:
-        type = "S"
-    elif init:
-        type = "I"
-    else:
-        type = "B"
+    if type == "S":
+        total_value *= -1
 
     total_value = min(total_value, cash)
 
@@ -154,7 +158,7 @@ with open(os.path.join(dirname, "cash-input.txt"), "a") as file:
 rv = norm.rvs(init_svg_mean, init_svg_sd, size=len(portfolio)).round(2)
 for i in range(len(portfolio)):
     total_value = max(0, rv[i])
-    savings(i, total_value, init=True)
+    savings(i, "I", total_value)
 
 # Iterates through each day
 while date < datetime.strptime(end_date, "%Y-%m-%d"):
@@ -192,17 +196,29 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
 
     # Irregular expenses
     rv_u = uniform.rvs(size=len(exp_cats))
-    rv_n = norm.rvs(exp_mean, exp_sd, size=len(exp_cats)).round(2)
+    mu = exp_mean + cash * exp_multi[i] / 1000
+    rv_n = norm.rvs(mu, exp_sd, size=len(exp_cats)).round(2)
     for i in range(len(exp_cats)):
         if rv_u[i] < exp_days[i] / 365:
             value = max(0, rv_n[i])
             spend(i, value)
 
-    # Buying and selling savings
+    # Buying savings
     rv_u = uniform.rvs(size=len(portfolio))
-    rv_n = norm.rvs(svg_mean, svg_sd, size=len(portfolio)).round(2)
+    mu = svgb_mean + cash * svgb_multi / 1000
+    rv_n = norm.rvs(mu, svgb_sd, size=len(portfolio)).round(2)
     for i in range(len(portfolio)):
-        if rv_u[i] < svg_days / 365:
-            savings(i, rv_n[i])
+        if rv_u[i] < svgb_days / 365:
+            value = max(0, rv_n[i])
+            savings(i, "B", value)
+
+    # Selling savings
+    rv_u = uniform.rvs(size=len(portfolio))
+    mu = svgs_mean + cash * svgs_multi / 1000
+    rv_n = norm.rvs(mu, svgs_sd, size=len(portfolio)).round(2)
+    for i in range(len(portfolio)):
+        if rv_u[i] < svgs_days / 365:
+            value = max(0, rv_n[i])
+            savings(i, "S", value)
 
     date = date + timedelta(days=1)
