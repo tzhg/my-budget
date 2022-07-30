@@ -89,8 +89,8 @@ textarea {
 
 body {
     background-color: #f4f3f2;
-    font-size: 14px;
-    font-family: "Inter", sans-serif;
+    font-size: 12px;
+    font-family: "Roboto Mono", monospace;
     color: #222325;
 }
 
@@ -103,18 +103,18 @@ body {
 .head-grid {
     display: grid;
     background-color: #e9e8e7;
-    grid-template-columns: 1fr 200px 200px 200px 1fr;
+    grid-template-columns: 1fr 260px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-        ". t0 t0 t0 ."
-        ". h0 h1 h2 ."
-        ". c0 c1 c2 .";
-    column-gap: 100px;
+        ". t0 ."
+        ". h0 ."
+        ". c0 ."
+        ". h1 ."
+        ". c1 ."
+        ". h2 ."
+        ". c2 .";
     row-gap: 10px;
-    padding-top: 100px;
-    padding-bottom: 20px;
-    padding-left: 50px;
-    padding-right: 50px;
+    padding-top: 80px;
 }
 
 .top-row { grid-area: t0; }
@@ -127,14 +127,15 @@ body {
 
 .body-grid {
     display: grid;
-    grid-template-columns: 1fr 200px 200px 200px 1fr;
+    grid-template-columns: 1fr 260px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-        ". h0 h0 h0 ."
-        ". l0 l1 l2 .";
-    column-gap: 100px;
-    padding-left: 50px;
-    padding-right: 50px;
+        ". h0 ."
+        ". l0 ."
+        ". h1 ."
+        ". l1 ."
+        ". h2 ."
+        ". l2 .";
 }
 
 .c0 { grid-area: l0; }
@@ -148,11 +149,7 @@ body {
 }
 
 .head-chart-container {
-    margin-bottom: 10px;
-}
-
-.head-label {
-    font-weight: 700;
+    margin-bottom: 40px;
 }
 
 .head-labels-0 {
@@ -234,7 +231,6 @@ body {
     width: 12px;
     height: 12px;
     border-radius: 6px;
-    margin-right: 3px;
     display: inline-block;
     top: 1px;
 }
@@ -243,7 +239,7 @@ body {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    row-gap: 12px;
+    row-gap: 14px;
 }
 
 .long-chart-container, .head-chart-container {
@@ -253,7 +249,7 @@ body {
 
 .long-chart > div, .head-chart {
     position: relative;
-    height: 24px;
+    height: 34px;
 }
 
 .long-chart > div > div, .head-chart > div {
@@ -273,14 +269,6 @@ body {
     width: 5px;
     pointer-events: none;
     z-index: 2;
-}
-
-.c1 .axis, .h1 .axis {
-    //left: calc(50% - 1px);
-}
-
-.axis {
-    left: -1px;
 }
 
 .c0, .c1, .c2 {
@@ -352,6 +340,32 @@ body {
 
 .tt-1 {
     font-weight: 700;
+}
+
+@media (min-width: 1250px) {
+    .head-grid {
+        display: grid;
+        background-color: #e9e8e7;
+        grid-template-columns: 1fr 260px 260px 260px 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            ". t0 t0 t0 ."
+            ". h0 h1 h2 ."
+            ". c0 c1 c2 .";
+        column-gap: 120px;
+        row-gap: 10px;
+        padding-top: 80px;
+    }
+
+    .body-grid {
+        display: grid;
+        grid-template-columns: 1fr 260px 260px 260px 1fr;
+        grid-template-rows: auto;
+        grid-template-areas:
+            ". h0 h0 h0 ."
+            ". l0 l1 l2 .";
+        column-gap: 120px;
+    }
 }
 
 /* ==========================================================================

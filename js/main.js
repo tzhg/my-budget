@@ -16,7 +16,10 @@ const data = dataImp.data;
 
 const m = data[0].length;
 
-const chartWidth = 200;
+const chartWidth = 260;
+const rowHeight = 34;
+
+const intraPad = 2;
 
 const labels = [
     "Cash",
@@ -24,13 +27,13 @@ const labels = [
     "Expenses",
     "Income",
     "Housing",
-    "Food",
-    "Shopping",
-    "Utilities",
-    "Health",
-    "Leisure",
-    "Savings profit",
-    "Savings loss"
+    "Food and supplies",
+    "Durable goods",
+    "Utilities and transport",
+    "Health and beauty",
+    "Leisure and hobbies",
+    "Investment profit",
+    "Investment loss"
 ];
 
 const pal = [
@@ -49,22 +52,21 @@ const pal = [
 ];
 
 const formatVal = (value, style="default") => {
+    /* https://stackoverflow.com/a/2901298 */
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    if (value === 0) {
+        return "0";
+    }
+
     if (style === "default") {
-        return new Intl.NumberFormat(
-            "en-UK",
-            { style: "currency", currency: "EUR" }
-        ).format(value);
+        value = value.toFixed(2);
+    } else if (style === "short") {
+        value = value.toFixed(0);
     }
-    if (style === "short") {
-        const value2 = new Intl.NumberFormat(
-            "en-UK",
-            { style: "currency", currency: "EUR", maximumSignificantDigits: 2 }
-        ).format(value / 1000);
-        if (value > 0) {
-            return value2 + "k";
-        }
-        return value2;
-    }
+    return numberWithCommas(value);
 };
 
 const getWidth = (val, type) => {
@@ -144,7 +146,7 @@ const drawChart0 = () => {
         $(".h0").append($gridLabel);
 
         $gridLabel.css({
-            "left": `calc(${getWidth(val, 0)}px - 1px - ${$gridLabel.width() / 2}px)`,
+            "left": `${getWidth(val, 0) - 1 - $gridLabel.width() / 2}px`,
         });
     });
 
@@ -172,8 +174,9 @@ const drawChart0 = () => {
         "top": 0
     });
 
-    $(".h0 > .head-chart").append($rect0);
-    $(".h0 > .head-chart").append($rect1);
+    $(".h0 > .head-chart")
+        .append($rect0)
+        .append($rect1);
 
     para.gridlines[0].forEach((val) => {
         const $grid1 = $(document.createElement("div"))
@@ -219,13 +222,14 @@ const drawChart0 = () => {
             "top": 0
         });
 
-        $row.append($rect0);
-        $row.append($rect1);
+        $row
+            .append($rect0)
+            .append($rect1);
         $(".c0 > .long-chart").append($row);
 
         const $text = $(document.createElement("div"))
 
-        $text.addClass("time-axis-label");
+        $text.addClass("time-axis-label time-axis-label-0");
 
         const date = getDate(m - 1 - i);
 
@@ -234,14 +238,14 @@ const drawChart0 = () => {
         $row.append($text);
 
         $text.css({
-            "left": `${-$text.width() - 10}px`,
+            "left": `${-$text.width() - 15}px`,
             "top": `calc(50% - ${$text.height() / 2}px)`
         });
     }
 };
 
 const drawChart1 = () => {
-    const barHeight = 12;
+    const barHeight = (rowHeight - intraPad) / 2;
 
     para.gridlines[1].forEach((val) => {
         const $gridLabel = $(document.createElement("div"))
@@ -272,13 +276,12 @@ const drawChart1 = () => {
     $rect2.attr("data-rect", "10-0");
     $rect3.attr("data-rect", "11-0");
 
-
     $rect0.css({
         "background-color": pal[2],
         "width": `${dataPx[2][0]}px`,
         "height": `${barHeight}px`,
         "left": 0,
-        "top": `${barHeight}px`
+        "top": `${barHeight + intraPad}px`
     });
     $rect1.css({
         "background-color": pal[3],
@@ -299,13 +302,14 @@ const drawChart1 = () => {
         "width": `${dataPx[11][0]}px`,
         "height": `${barHeight}px`,
         "left": `${dataPx[2][0]}px`,
-        "top": `${barHeight}px`
+        "top": `${barHeight + intraPad}px`
     });
 
-    $(".h1 > .head-chart").append($rect0);
-    $(".h1 > .head-chart").append($rect1);
-    $(".h1 > .head-chart").append($rect2);
-    $(".h1 > .head-chart").append($rect3);
+    $(".h1 > .head-chart")
+        .append($rect0)
+        .append($rect1)
+        .append($rect2)
+        .append($rect3);
 
     para.gridlines[1].forEach((val) => {
         const $grid1 = $(document.createElement("div"))
@@ -347,7 +351,7 @@ const drawChart1 = () => {
             "width": `${dataPx[2][i]}px`,
             "height": `${barHeight}px`,
             "left": 0,
-            "top": `${barHeight}px`
+            "top": `${barHeight + intraPad}px`
         });
         $rect1.css({
             "background-color": pal[3],
@@ -368,19 +372,35 @@ const drawChart1 = () => {
             "width": `${dataPx[11][i]}px`,
             "height": `${barHeight}px`,
             "left": `${dataPx[2][i]}px`,
-            "top": `${barHeight}px`
+            "top": `${barHeight + intraPad}px`
         });
 
-        $row.append($rect0);
-        $row.append($rect1);
-        $row.append($rect2);
-        $row.append($rect3);
+        $row
+            .append($rect0)
+            .append($rect1)
+            .append($rect2)
+            .append($rect3);
         $(".c1 > .long-chart").append($row);
+
+        const $text = $(document.createElement("div"))
+
+        $text.addClass("time-axis-label time-axis-label-1");
+
+        const date = getDate(m - 1 - i);
+
+        $text.text(`${date[0].slice(0, 3)} ${date[1]}`);
+
+        $row.append($text);
+
+        $text.css({
+            "left": `${-$text.width() - 15}px`,
+            "top": `calc(50% - ${$text.height() / 2}px)`
+        });
     }
 };
 
 const drawChart2 = () => {
-    const barHeight = 8;
+    const barHeight = (rowHeight - 2 * intraPad) / 3;
 
     para.gridlines[2].forEach((val) => {
         const $gridLabel = $(document.createElement("div"))
@@ -417,24 +437,24 @@ const drawChart2 = () => {
 
     $rect0.css({
         "background-color": pal[4],
-        "width": `calc(${dataPx[4][0]}px - ${dataPx[7][0] == 0 ? 0 : 0}px)`,
+        "width": `${dataPx[4][0]}px`,
         "height": `${barHeight}px`,
         "left": 0,
         "top": 0
     });
     $rect1.css({
         "background-color": pal[5],
-        "width": `calc(${dataPx[5][0]}px - ${dataPx[8][0] == 0 ? 0 : 0}px)`,
+        "width": `${dataPx[5][0]}px`,
         "height": `${barHeight}px`,
         "left": 0,
-        "top": `${0 + barHeight}px`
+        "top": `${barHeight + intraPad}px`
     });
     $rect2.css({
         "background-color": pal[6],
-        "width": `calc(${dataPx[6][0]}px - ${dataPx[9][0] == 0 ? 0 : 0}px)`,
+        "width": `${dataPx[6][0]}px`,
         "height": `${barHeight}px`,
         "left": 0,
-        "top": `${0 + 2 * barHeight}px`
+        "top": `${2 * (barHeight + intraPad)}px`
     });
     $rect3.css({
         "background-color": pal[7],
@@ -448,22 +468,23 @@ const drawChart2 = () => {
         "width": `${dataPx[8][0]}px`,
         "height": `${barHeight}px`,
         "left": `${dataPx[5][0]}px`,
-        "top": `${0 + barHeight}px`
+        "top": `${barHeight + intraPad}px`
     });
     $rect5.css({
         "background-color": pal[9],
         "width": `${dataPx[9][0]}px`,
         "height": `${barHeight}px`,
         "left": `${dataPx[6][0]}px`,
-        "top": `${0 + 2 * barHeight}px`
+        "top": `${2 * (barHeight + intraPad)}px`
     });
 
-    $(".h2 > .head-chart").append($rect0);
-    $(".h2 > .head-chart").append($rect1);
-    $(".h2 > .head-chart").append($rect2);
-    $(".h2 > .head-chart").append($rect3);
-    $(".h2 > .head-chart").append($rect4);
-    $(".h2 > .head-chart").append($rect5);
+    $(".h2 > .head-chart")
+        .append($rect0)
+        .append($rect1)
+        .append($rect2)
+        .append($rect3)
+        .append($rect4)
+        .append($rect5);
 
     para.gridlines[2].forEach((val) => {
         const $grid1 = $(document.createElement("div"))
@@ -508,24 +529,24 @@ const drawChart2 = () => {
 
         $rect0.css({
             "background-color": pal[4],
-            "width": `calc(${dataPx[4][i]}px - ${dataPx[7][i] === 0 ? 0 : 0}px)`,
+            "width": `${dataPx[4][i]}px`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
             "background-color": pal[5],
-            "width": `calc(${dataPx[5][i]}px - ${dataPx[8][i] === 0 ? 0 : 0}px)`,
+            "width": `${dataPx[5][i]}px`,
             "height": `${barHeight}px`,
             "left": 0,
-            "top": `${0 + barHeight}px`
+            "top": `${barHeight + intraPad}px`
         });
         $rect2.css({
             "background-color": pal[6],
-            "width": `calc(${dataPx[6][i]}px - ${dataPx[9][i] === 0 ? 0 : 0}px)`,
+            "width": `${dataPx[6][i]}px`,
             "height": `${barHeight}px`,
             "left": 0,
-            "top": `${0 + 2 * barHeight}px`
+            "top": `${2 * (barHeight + intraPad)}px`
         });
         $rect3.css({
             "background-color": pal[7],
@@ -539,23 +560,39 @@ const drawChart2 = () => {
             "width": `${dataPx[8][i]}px`,
             "height": `${barHeight}px`,
             "left": `${dataPx[5][i]}px`,
-            "top": `${0 + barHeight}px`
+            "top": `${barHeight + intraPad}px`
         });
         $rect5.css({
             "background-color": pal[9],
             "width": `${dataPx[9][i]}px`,
             "height": `${barHeight}px`,
             "left": `${dataPx[6][i]}px`,
-            "top": `${0 + 2 * barHeight}px`
+            "top": `${2 * (barHeight + intraPad)}px`
         });
 
-        $row.append($rect0);
-        $row.append($rect1);
-        $row.append($rect2);
-        $row.append($rect3);
-        $row.append($rect4);
-        $row.append($rect5);
+        $row
+            .append($rect0)
+            .append($rect1)
+            .append($rect2)
+            .append($rect3)
+            .append($rect4)
+            .append($rect5);
         $(".c2 > .long-chart").append($row);
+
+        const $text = $(document.createElement("div"))
+
+        $text.addClass("time-axis-label time-axis-label-2");
+
+        const date = getDate(m - 1 - i);
+
+        $text.text(`${date[0].slice(0, 3)} ${date[1]}`);
+
+        $row.append($text);
+
+        $text.css({
+            "left": `${-$text.width() - 15}px`,
+            "top": `calc(50% - ${$text.height() / 2}px)`
+        });
     }
 };
 
@@ -694,6 +731,15 @@ const initTooltip = () => {
     );
 };
 
+const showTimeAxis = () => {
+    $(".time-axis-label-1").show();
+    $(".time-axis-label-2").show();
+    if ($(window).width() >= 1250) {
+        $(".time-axis-label-1").hide();
+        $(".time-axis-label-2").hide();
+    }
+};
+
 
 (() => {
     const date = getDate(m - 1);
@@ -705,6 +751,11 @@ const initTooltip = () => {
 	drawChart1();
 	drawChart2();
     initTooltip();
+
+    $(window).on("resize", () => {
+        showTimeAxis();
+    });
+    showTimeAxis();
 })();
 
 });

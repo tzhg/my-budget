@@ -14,6 +14,7 @@ input_date_format = "%d/%m/%Y"
 dirname = os.path.dirname(os.path.abspath(__file__))
 
 data_dir = "data-simulated"
+#data_dir = "data"
 
 exp_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/expenses-input.txt"))
 inc_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/income-input.txt"))
@@ -91,15 +92,15 @@ monthIdx = 0
 for i, row in cfl_df.iterrows():
     if snapIdx < len(csh_df):
         # Finishes snapshot
-        if row["date"] >= csh_df.at[snapIdx, "date"] or i == len(cfl_df) - 1:
+        if row["date"] >= csh_df.at[snapIdx, "date"]:
             # Calculates errors/omissions
             eo = csh_df.at[snapIdx, "total_cash"] - cash_counter
 
             eo_list.append([csh_df.at[snapIdx, "date"], eo])
 
-            if abs(eo) >= 0.005 and snapIdx == len(csh_df) - 1:
+            if abs(eo) >= 0.005:
                 date_str = datetime.strftime(csh_df.at[snapIdx, "date"], input_date_format)
-                print(f"Last cash snapshot on {date_str} showed a difference of {eo:.2f}")
+                print(f"{date_str} cash snapshot: {eo:.2f}")
 
             # Prepares next snapshot
             cash_counter = csh_df.at[snapIdx, "total_cash"]
@@ -117,6 +118,16 @@ for i, row in cfl_df.iterrows():
 while no_months > monthIdx:
     cash_list.append(cash_counter)
     monthIdx += 1
+
+# Finishes snapshot on final day
+if snapIdx < len(csh_df):
+    eo = csh_df.at[snapIdx, "total_cash"] - cash_counter
+
+    eo_list.append([csh_df.at[snapIdx, "date"], eo])
+
+    if abs(eo) >= 0.005:
+        date_str = datetime.strftime(csh_df.at[snapIdx, "date"], input_date_format)
+        print(f"{date_str} cash snapshot: {eo:.2f}")
 
 exp_eo_list = [[x[0], "Other", -x[1]] for x in eo_list if x[1] < 0]
 exp_df = pd.concat(
