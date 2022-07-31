@@ -17,9 +17,9 @@ const data = dataImp.data;
 const m = data[0][2].length;
 
 const chartWidth = 260;
-const rowHeight = 20;
+const rowHeight = 19;
 
-const intraPad = 2
+const intraPad = 1;
 
 const labels = [
     "Cash",
@@ -119,7 +119,7 @@ const getTimeLabel = (chart, n, style) => {
         return `${date[0]}\xa0${date[1]}`;
     } else if (chart === 1) {
         if (style === "short") {
-            return "12-month\xa0avg";
+            return "12M\xa0average";
         }
         return "12-month\xa0average";
     } else if (chart === 2) {
@@ -132,7 +132,7 @@ const getTimeLabel = (chart, n, style) => {
 };
 
 const updateLegend = () => {
-    for (let i = 0; i < 11; ++i) {
+    for (let i = 0; i < 12; ++i) {
         $(`.val-${i}`).text(formatVal(data[i][0][0]));
     }
 };
@@ -498,7 +498,7 @@ const showTimeAxis = () => {
 (() => {
     const date = getDate(0);
 
-    $(".title > span").text(`${date[0]} ${date[1]}`);
+    $(".title > span").text(`${date[0]}\xa0${date[1]}`);
 
     updateLegend();
 	drawCharts();

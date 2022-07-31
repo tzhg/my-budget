@@ -209,6 +209,7 @@ body {
 
 .head-label {
     margin-right: 5px;
+    font-weight: 700;
 }
 
 .head-val {
@@ -232,14 +233,14 @@ body {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    row-gap: 13px;
+    row-gap: 11px;
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
 .chart > div {
     position: relative;
-    height: 20px;
+    height: 19px;
 }
 
 .chart > div > div {
