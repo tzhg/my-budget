@@ -269,7 +269,6 @@ body {
 .grid-label {
     position: absolute;
     bottom: -22px;
-    pointer-events: none;
 }
 
 .time-axis-label {

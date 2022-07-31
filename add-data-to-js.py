@@ -154,8 +154,7 @@ pl = 0
 portfolio = []
 
 savings_list = []
-profit_list = []
-loss_list = []
+pl_list = []
 
 for i, row in svg_df.iterrows():
     # Finishes month
@@ -163,12 +162,8 @@ for i, row in svg_df.iterrows():
         while row["month"] > monthIdx:
             pf_value = sum([asset_price(*x) for x in portfolio])
             savings_list.append(pf_value)
-            if pl >= 0:
-                profit_list.append(pl)
-                loss_list.append(0)
-            elif pl > 0:
-                profit_list.append(0)
-                loss_list.append(pl)
+            pl_list.append(pl)
+            print(pl, row["date"])
             pl = 0
 
             monthIdx += 1
@@ -196,12 +191,7 @@ for i, row in svg_df.iterrows():
 while no_months > monthIdx:
     pf_value = sum([asset_price(*x) for x in portfolio])
     savings_list.append(pf_value)
-    if pl > 0:
-        profit_list.append(pl)
-        loss_list.append(0)
-    elif pl > 0:
-        profit_list.append(0)
-        loss_list.append(pl)
+    pl_list.append(pl)
     pl = 0
     monthIdx += 1
 
@@ -240,13 +230,21 @@ monthlyData = [
     exp_df["value", "Utilities"].to_list(),
     exp_df["value", "Health"].to_list(),
     exp_df["value", "Leisure"].to_list(),
-    profit_list,
-    loss_list]
+    pl_list]
 
 # [Current month, yearly average, historical months] for each variable
 data = [
     [[lst[-1]], [np.mean(lst[-13:-1])], lst[-2::-1]]
     for lst in monthlyData]
+
+# Separates pl_list into profit list and loss list
+profit_list = [[max(0, val) for val in lst] for lst in data[10]]
+loss_list = [[abs(min(0, val)) for val in lst] for lst in data[10]]
+
+data = data[:10] + [profit_list, loss_list]
+
+print(profit_list)
+print(loss_list)
 
 output = {
     "para": viz_para,
