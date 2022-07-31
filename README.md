@@ -8,13 +8,69 @@ to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
 
 Shows:
-- Cash and savings.
-- Income, expenses, and investment profit/loss.
+- Assets (cash and savings).
+- Cash flow (income, expenses, and investment profit/loss).
 - Breakdown of expenses.
 
-Features:
-- Can record appreciation and depreciation of assets.
-- Can check for any discrepancy with current cash reserves.
-- Calculates capital gains and losses first in first out.
+## Details
 
-More information is given in the `read-me.txt` file.
+### Recording cash
+
+1. Cash refers to physical cash and demand deposit accounts denominated in the local currency.
+
+2. Each row in `data/cash-input.txt` represents a cash snapshot, which is a record of the amount cash held at a specific point in time.
+
+3. It is necessary to take a snapshot on the first day to record the initial amount of cash.
+   No further snapshot are required, as future cash is calculated automatically using cash flow data.
+
+4. For each snapshot the program calculates any discrepancies and records them as errors/omissions,
+   which are included in Income or Expenses.
+
+5. The snapshot must take place at the beginning of the given day, before any cash flow entries.
+
+6. The amount of cash can be provided as a single number,
+   or broken into sources (e.g. different bank accounts) for convenience.
+
+### Recording savings
+
+1. Savings refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
+
+2. There is no clear divide between real assets and consumable goods (which are recorded as an expense).
+   Expensive goods which retain their value can be considered real assets.
+
+3. In `data/savings-input.txt`, initial savings are denoted with `type="I"`,
+   assets to buy with `type="B"`, and assets to sell with `type="S"`.
+
+4. When assets are bought or sold, the quantity and value per unit are recorded.
+   For fungible goods, the quantity may be the number of units bought or sold,
+   and the value a price index (e.g. share price).
+   For non-fungible goods, the quantity can be set to 1, and the value the total value.
+
+5. Assets are tracked over time using a unique name.
+
+6. Capital gains and losses are calculated first in first out.
+
+7. Capital appreciation and depreciation can be taken into account using prices in the files `data/assets/<name>.txt`,
+   where <name> is the name of the asset.
+   The prices do not have to be updated daily, but must contain at least the value on the day of purchase.
+
+### Recording cash flows
+
+1. Cash flows are divided into non-investment income and expenses, and investment profit/loss.
+
+2. Investment profit/loss refers to cash flows relating to savings, e.g. capital gains/losses, dividends, interest.
+   (This includes mortgage payments.)
+   In the chart, the net profit/loss is shown in the Profit and Loss categories (at least one will be zero).
+
+3. Non-investment cash flows are recorded in `data/income-input.txt` and `data/expenses-input.txt`.
+
+4. Expenses are categorised into six categories plus "Other".
+   "Other" expenses are not shown on the breakdown of expenses chart.
+
+5. Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
+   can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
+   along with a regular cash flow.
+
+---
+
+To do: debt, interest, dividends
