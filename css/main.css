@@ -89,8 +89,7 @@ textarea {
 
 body {
     background-color: #f4f3f2;
-    font-size: 12px;
-    font-family: "Roboto Mono", monospace;
+    font-family: "Inter", sans-serif;
     color: #222325;
 }
 
@@ -103,120 +102,110 @@ body {
 .head-grid {
     display: grid;
     background-color: #e9e8e7;
-    grid-template-columns: 1fr 260px 1fr;
+    grid-template-columns: 1fr 270px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-        ". t0 ."
-        ". h0 ."
-        ". c0 ."
-        ". h1 ."
-        ". c1 ."
-        ". h2 ."
-        ". c2 .";
+        ". h00 ."
+        ". h01 ."
+        ". h02 ."
+        ". h11 ."
+        ". h12 ."
+        ". h21 ."
+        ". h22 .";
     row-gap: 10px;
-    padding-top: 80px;
+    padding-top: 100px;
+    padding-bottom: 20px;
 }
 
-.top-row { grid-area: t0; }
-.head-labels-0 { grid-area: h0; }
-.head-labels-1 { grid-area: h1; }
-.head-labels-2 { grid-area: h2; }
-.h0 { grid-area: c0; }
-.h1 { grid-area: c1; }
-.h2 { grid-area: c2; }
+.head-00 { grid-area: h00; }
+.head-01 { grid-area: h01; }
+.head-11 { grid-area: h11; }
+.head-21 { grid-area: h21; }
+.head-02 { grid-area: h02; }
+.head-12 { grid-area: h12; }
+.head-22 { grid-area: h22; }
 
 .body-grid {
     display: grid;
-    grid-template-columns: 1fr 260px 1fr;
+    grid-template-columns: 1fr 270px 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-        ". h0 ."
-        ". l0 ."
-        ". h1 ."
-        ". l1 ."
-        ". h2 ."
-        ". l2 .";
+        ". b0 ."
+        ". b1 ."
+        ". b2 .";
+    padding-top: 20px;
 }
 
-.c0 { grid-area: l0; }
-.c1 { grid-area: l1; }
-.c2 { grid-area: l2; }
+.body-0 { grid-area: b0; }
+.body-1 { grid-area: b1; }
+.body-2 { grid-area: b2; }
 
 .title {
-    font-size: 42px;
     font-weight: 700;
     font-family: "Playfair Display", serif;
 }
 
-.head-chart-container {
-    margin-bottom: 40px;
+.head-02, .head-12, .head-22, .head-03, .head-13, .head-23 {
+    position: relative;
+    margin-bottom: 25px;
 }
 
-.head-labels-0 {
+.head-01 {
     display: grid;
-    grid-template-columns: auto max-content;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto max-content 1fr auto max-content;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        ". ."
-        ". ."
-        ". ."
-        ". ."
-        "e20 f20"
-        "e21 f21"
+        ". . . . ."
+        ". . . . ."
+        "e20 f20 . e21 f21"
 }
 
-.label-cash { grid-area: e20; }
-.label-savings { grid-area: e21; }
-.val-cash { grid-area: f20; }
-.val-savings { grid-area: f21; }
+.label-0 { grid-area: e20; }
+.label-1 { grid-area: e21; }
+.val-0 { grid-area: f20; }
+.val-1 { grid-area: f21; }
 
-.head-labels-1 {
+.head-11 {
     display: grid;
-    grid-template-columns: auto max-content;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto max-content 1fr auto max-content;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        ". ."
-        ". ."
-        "e10 f10"
-        "e12 f12"
-        "e11 f11"
-        "e13 f13";
+        ". . . . ."
+        "e10 f10 . e12 f12"
+        "e11 f11 . e13 f13";
 }
 
-.label-income { grid-area: e10; }
-.label-profit { grid-area: e11; }
-.label-expenses { grid-area: e12; }
-.label-loss { grid-area: e13; }
-.val-income { grid-area: f10; }
-.val-profit { grid-area: f11; }
-.val-expenses { grid-area: f12; }
-.val-loss { grid-area: f13; }
+.label-3 { grid-area: e10; }
+.label-10 { grid-area: e11; }
+.label-2 { grid-area: e12; }
+.label-11 { grid-area: e13; }
+.val-3 { grid-area: f10; }
+.val-10 { grid-area: f11; }
+.val-2 { grid-area: f12; }
+.val-11 { grid-area: f13; }
 
-.head-labels-2 {
+.head-21 {
     display: grid;
-    grid-template-columns: auto max-content;
-    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: auto max-content 1fr auto max-content;
+    grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        "e20 f20"
-        "e23 f23"
-        "e21 f21"
-        "e24 f24"
-        "e22 f22"
-        "e25 f25";
+        "e20 f20 . e23 f23"
+        "e21 f21 . e24 f24"
+        "e22 f22 . e25 f25";
 }
 
-.label-housing { grid-area: e20; }
-.label-food { grid-area: e21; }
-.label-shopping { grid-area: e22; }
-.label-utilities { grid-area: e23; }
-.label-health { grid-area: e24; }
-.label-leisure { grid-area: e25; }
-.val-housing { grid-area: f20; }
-.val-food { grid-area: f21; }
-.val-shopping { grid-area: f22; }
-.val-utilities { grid-area: f23; }
-.val-health { grid-area: f24; }
-.val-leisure { grid-area: f25; }
+.label-4 { grid-area: e20; }
+.label-5 { grid-area: e21; }
+.label-6 { grid-area: e22; }
+.label-7 { grid-area: e23; }
+.label-8 { grid-area: e24; }
+.label-9 { grid-area: e25; }
+.val-4 { grid-area: f20; }
+.val-5 { grid-area: f21; }
+.val-6 { grid-area: f22; }
+.val-7 { grid-area: f23; }
+.val-8 { grid-area: f24; }
+.val-9 { grid-area: f25; }
 
 .head-label {
     margin-right: 5px;
@@ -235,30 +224,26 @@ body {
     top: 1px;
 }
 
-.long-chart {
+.chart-container {
+    position: relative;
+}
+
+.chart {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    row-gap: 14px;
-}
-
-.long-chart-container, .head-chart-container {
-    position: relative;
-    font-size: 12px;
-}
-
-.long-chart > div, .head-chart {
-    position: relative;
-    height: 34px;
-}
-
-.long-chart > div > div, .head-chart > div {
-    position: absolute;
-}
-
-.long-chart, .head-chart {
+    row-gap: 13px;
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+.chart > div {
+    position: relative;
+    height: 20px;
+}
+
+.chart > div > div {
+    position: absolute;
 }
 
 .axis {
@@ -269,10 +254,6 @@ body {
     width: 5px;
     pointer-events: none;
     z-index: 2;
-}
-
-.c0, .c1, .c2 {
-    margin-top: 20px;
 }
 
 .grid-line {
@@ -288,30 +269,26 @@ body {
     position: absolute;
     bottom: -22px;
     pointer-events: none;
-    font-size: 12px;
 }
 
 .time-axis-label {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: stretch;
-    row-gap: 10px;
-    font-size: 12px;
+    right: 100%;
+    margin-right: 10px;
+    white-space: nowrap
 }
 
-
-.label-cash .legend-icon { background-color: #edc948; }
-.label-savings .legend-icon { background-color: #bab0ac; }
-.label-expenses .legend-icon { background-color: #e15759; }
-.label-income .legend-icon { background-color: #59a14f; }
-.label-housing .legend-icon { background-color: #4e79a7; }
-.label-food .legend-icon { background-color: #b07aa1; }
-.label-shopping .legend-icon { background-color: #9c755f; }
-.label-utilities .legend-icon { background-color: #76b7b2; }
-.label-health .legend-icon { background-color: #ff9da7; }
-.label-leisure .legend-icon { background-color: #f28e2b; }
-.label-profit .legend-icon { background-color: #3e7137; }
-.label-loss .legend-icon { background-color: #b92123; }
+.label-0 .legend-icon { background-color: #edc948; }
+.label-1 .legend-icon { background-color: #bab0ac; }
+.label-2 .legend-icon { background-color: #e15759; }
+.label-3 .legend-icon { background-color: #59a14f; }
+.label-4 .legend-icon { background-color: #4e79a7; }
+.label-5 .legend-icon { background-color: #b07aa1; }
+.label-6 .legend-icon { background-color: #9c755f; }
+.label-7 .legend-icon { background-color: #76b7b2; }
+.label-8 .legend-icon { background-color: #ff9da7; }
+.label-9 .legend-icon { background-color: #f28e2b; }
+.label-10 .legend-icon { background-color: #3e7137; }
+.label-11 .legend-icon { background-color: #b92123; }
 
 .chart-rect {
     z-index: 1;
@@ -342,29 +319,94 @@ body {
     font-weight: 700;
 }
 
-@media (min-width: 1250px) {
+/* Fixed margins */
+@media (min-width: 0px) {
     .head-grid {
-        display: grid;
-        background-color: #e9e8e7;
-        grid-template-columns: 1fr 260px 260px 260px 1fr;
+        grid-template-columns: 85px 200px 30px;
         grid-template-rows: auto;
         grid-template-areas:
-            ". t0 t0 t0 ."
-            ". h0 h1 h2 ."
-            ". c0 c1 c2 .";
-        column-gap: 120px;
-        row-gap: 10px;
-        padding-top: 80px;
+            ". h00 ."
+            ". h01 ."
+            ". h02 ."
+            ". h11 ."
+            ". h12 ."
+            ". h21 ."
+            ". h22 .";
     }
 
     .body-grid {
-        display: grid;
-        grid-template-columns: 1fr 260px 260px 260px 1fr;
+        grid-template-columns: 85px 200px 30px;
         grid-template-rows: auto;
         grid-template-areas:
-            ". h0 h0 h0 ."
-            ". l0 l1 l2 .";
-        column-gap: 120px;
+            ". b0 ."
+            ". b1 ."
+            ". b2 .";
+    }
+
+    body {
+        font-size: 10px;
+    }
+
+    .title {
+        font-size: 24px;
+    }
+}
+
+@media (min-width: 350px) {
+    .head-grid {
+        grid-template-columns: 2fr calc(105px + 28%) 1fr;
+    }
+
+    .body-grid {
+        grid-template-columns: 2fr calc(105px + 28%) 1fr;
+    }
+}
+
+@media (min-width: 450px) {
+    body {
+        font-size: 12px;
+    }
+
+    .title {
+        font-size: 32px;
+    }
+}
+
+@media (min-width: 500px) {
+    .head-grid {
+        grid-template-columns: 1fr 240px 1fr;
+    }
+
+    .body-grid {
+        grid-template-columns: 1fr 240px 1fr;
+    }
+}
+
+@media (min-width: 750px) {
+    .head-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .body-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+@media (min-width: 1350px) {
+    .head-grid {
+        grid-template-columns: auto 240px 240px 240px auto;
+        grid-template-areas:
+            ". h00 h00 h00 ."
+            ". h01 h11 h21 ."
+            ". h02 h12 h22 .";
+        column-gap: 150px;
+    }
+
+    .body-grid {
+        grid-template-columns: auto 240px 240px 240px auto;
+        grid-template-areas:
+            ". b0 b1 b2 .";
+        column-gap: 150px;
     }
 }
 

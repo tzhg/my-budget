@@ -229,19 +229,24 @@ info = {
     "startYear": start_date.year
 }
 
+monthlyData = [
+    cash_list,
+    savings_list,
+    exp_df["total"].to_list(),
+    inc_df["value"].to_list(),
+    exp_df["value", "Housing"].to_list(),
+    exp_df["value", "Food"].to_list(),
+    exp_df["value", "Shopping"].to_list(),
+    exp_df["value", "Utilities"].to_list(),
+    exp_df["value", "Health"].to_list(),
+    exp_df["value", "Leisure"].to_list(),
+    profit_list,
+    loss_list]
+
+# [Current month, yearly average, historical months] for each variable
 data = [
-    cash_list[::-1],
-    savings_list[::-1],
-    exp_df["total"].to_list()[::-1],
-    inc_df["value"].to_list()[::-1],
-    exp_df["value", "Housing"].to_list()[::-1],
-    exp_df["value", "Food"].to_list()[::-1],
-    exp_df["value", "Shopping"].to_list()[::-1],
-    exp_df["value", "Utilities"].to_list()[::-1],
-    exp_df["value", "Health"].to_list()[::-1],
-    exp_df["value", "Leisure"].to_list()[::-1],
-    profit_list[::-1],
-    loss_list[::-1]]
+    [[lst[-1]], [np.mean(lst[-13:-1])], lst[-2::-1]]
+    for lst in monthlyData]
 
 output = {
     "para": viz_para,
