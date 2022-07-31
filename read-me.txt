@@ -65,7 +65,7 @@ and quantity the number units bought or sold.
 For non-fungible goods, the quantity can be set to 1, and the price the total value.
 Assets are tracked over time using a unique name.
 
-The profit and losses from savings are shown in the chart as "Investment profit" and "Investment loss".
+The profit and losses from savings are shown in the chart as "Profit" and "Loss".
 This includes capital gains and losses, dividends, and interest paid and received.
 Capital gains and losses are calculated first in first out.
 Debt, interest and dividends are not currently implemented.

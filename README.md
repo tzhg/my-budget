@@ -1,20 +1,20 @@
-# my-budget
+# Budget visualiser
 
-This is a tool for visualising household budgets. A demo, with simulated data, is available at [tzhg.github.io/cash-flower](https://tzhg.github.io/cash-flower).
+This is a simple tool for visualising household financial data.
+A demo, using simulated data, is available [here](https://tzhg.github.io/cash-flower).
 
-The visualisation shows three charts for each month of data:
-- An assets chart with cash and savings.
-- A cashflow chart with income and expenses.
-- An expenses chart with six categories of expenditure.
+I designed this tool for my own purposes,
+to help me record, evaluate, and plan my expenses and investment decisions.
+However, I hope that it may be helpful or inspiring to others.
+
+Shows:
+- Cash and savings.
+- Income, expenses, and investment profit/loss.
+- Breakdown of expenses.
 
 Features:
 - Can record appreciation and depreciation of assets.
 - Can check for any discrepancy with current cash reserves.
-- Calculates capital gains and losses automatically, first in first out.
+- Calculates capital gains and losses first in first out.
 
 More information is given in the `read-me.txt` file.
-
-Made with:
-- [HTML5 Boilerplate](https://html5boilerplate.com/).
-- [jQuery](https://jquery.com/).
-- [Tableau](https://www.tableau.com/) colour palette.
