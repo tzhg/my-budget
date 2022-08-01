@@ -142,12 +142,6 @@ inc_df = pd.concat(
 # ============================================================================ #
 # Savings
 
-# Gets last available price of an asset
-def asset_price(date, name, quantity):
-    value = ass_df[name][ass_df[name]["date"] <= date].iloc[-1]["value"]
-    return float(value * quantity)
-
-
 monthIdx = 0
 profit = 0
 loss = 0
@@ -155,6 +149,7 @@ loss = 0
 portfolio = []
 
 savings_list = []
+debt_list = []
 profit_list = []
 loss_list = []
 
@@ -162,8 +157,13 @@ for i, row in svg_df.iterrows():
     # Finishes month
     if row["month"] > monthIdx:
         while row["month"] > monthIdx:
-            pf_value = sum([asset_price(*x) for x in portfolio])
-            savings_list.append(pf_value)
+            pf_value = [
+                float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
+                if ass[1] in ass_df
+                else float(ass[3] * ass[2])
+                for ass in portfolio]
+            savings_list.append(sum([max(val, 0) for val in pf_value]))
+            debt_list.append(sum([-min(val, 0) for val in pf_value]))
             profit_list.append(profit)
             loss_list.append(loss)
             profit = 0
@@ -172,7 +172,7 @@ for i, row in svg_df.iterrows():
             monthIdx += 1
 
     if row["type"] == "I" or row["type"] == "B":
-        portfolio.append([row["date"], row["name"], row["quantity"]])
+        portfolio.append([row["date"], row["name"], row["quantity"], row["value"]])
     elif row["type"] == "S":
         q_to_sell = row["quantity"]
         j = 0
@@ -183,8 +183,8 @@ for i, row in svg_df.iterrows():
                 portfolio[j][2] -= min_quant
                 q_to_sell -= min_quant
 
-                buy_value = asset_price(portfolio[j][0], portfolio[j][1], min_quant)
-                sell_value = asset_price(row["date"], row["name"], min_quant)
+                buy_value = portfolio[j][3] * min_quant
+                sell_value = row["value"] * min_quant
 
                 if sell_value > buy_value:
                     profit += sell_value - buy_value
@@ -195,16 +195,18 @@ for i, row in svg_df.iterrows():
 
 # Adds final month
 while no_months > monthIdx:
-    pf_value = sum([asset_price(*x) for x in portfolio])
-    savings_list.append(pf_value)
+    pf_value = [
+        float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
+        if ass[1] in ass_df
+        else float(ass[3] * ass[2])
+        for ass in portfolio]
+    savings_list.append(sum([max(val, 0) for val in pf_value]))
+    debt_list.append(sum([-min(val, 0) for val in pf_value]))
     profit_list.append(profit)
     loss_list.append(loss)
     profit = 0
     loss = 0
     monthIdx += 1
-
-print(profit_list)
-print(loss_list)
 
 # ============================================================================ #
 # Income and expenses
@@ -233,16 +235,17 @@ info = {
 monthlyData = [
     cash_list,
     savings_list,
-    exp_df["total"].to_list(),
+    debt_list,
     inc_df["value"].to_list(),
+    exp_df["total"].to_list(),
+    profit_list,
+    loss_list,
     exp_df["value", "Housing"].to_list(),
     exp_df["value", "Food"].to_list(),
     exp_df["value", "Shopping"].to_list(),
     exp_df["value", "Utilities"].to_list(),
     exp_df["value", "Health"].to_list(),
-    exp_df["value", "Leisure"].to_list(),
-    profit_list,
-    loss_list]
+    exp_df["value", "Leisure"].to_list()]
 
 # [Current month, yearly average, historical months] for each variable
 data = [

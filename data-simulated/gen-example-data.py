@@ -22,7 +22,7 @@ exp_sd = [50, 0, 25, 50, 500, 500, 100]
 inc_mean = [0, 200]
 inc_sd = [0, 200]
 # Expected days in year with an irregular expense, for each category
-exp_days = [2, 100, 10, 15, 10, 10, 15]
+exp_days = [2, 100, 10, 15, 15, 15, 15]
 inc_days = [0, 5]
 
 svgb_mean = 0
@@ -41,7 +41,7 @@ error_days = 20
 check_days = 10
 
 # Regular monthly expenses/income
-exp_monthly = [1800, 0, 300, 0, 0, 0, 0]
+exp_monthly = [1700, 0, 300, 0, 0, 0, 0]
 inc_monthly = [3500, 0]
 
 # Starting and (non-inclusive) end date
@@ -51,15 +51,20 @@ end_date = "2023-01-01"
 # Number of days of data
 no_days = 365
 
+# Proportion of principal of debt paid off each month
+debt_p = 0.01
+init_debt = 20000
+
 # Portfolio of savings assets in simulation
 # Columns: name, unit value, quantity held
 portfolio = [
-    ["a0", 1, 0],
-    ["a1", 1, 0],
-    ["a2", 1, 0]]
+    ["a0", 1, 0, "share"],
+    ["a1", 1, 0, "share"],
+    ["a2", 1, 0, "share"],
+    ["d0", -init_debt, 1, "debt"]]
 
-asset_growth_mean = 0.0005
-asset_growth_sd = 0.01
+asset_growth_mean = 0.001
+asset_growth_sd = 0.05
 
 init_cash_mean = 7000
 init_cash_sd = 1000
@@ -113,8 +118,7 @@ def savings(index, type, total_value):
 
     total_value = quantity * unit_value
 
-    if type != "I":
-        cash -= total_value
+    cash -= total_value
 
     f_date = datetime.strftime(date, input_date_format)
 
@@ -147,27 +151,30 @@ with open(os.path.join(dirname, "cash-input.txt"), "w") as file:
     file.write("date,cash\n")
 
 for i in range(len(portfolio)):
-    with open(os.path.join(dirname, f"assets/{portfolio[i][0]}.txt"), "w") as file:
-        file.write("date,value\n")
+    if portfolio[i][3] == "share":
+        with open(os.path.join(dirname, f"assets/{portfolio[i][0]}.txt"), "w") as file:
+            file.write("date,value\n")
 
 # Initial cash
 with open(os.path.join(dirname, "cash-input.txt"), "a") as file:
     cash_snapshot()
 
 # Initial savings
-rv = norm.rvs(init_svg_mean, init_svg_sd, size=len(portfolio)).round(2)
 for i in range(len(portfolio)):
-    total_value = max(0, rv[i])
-    savings(i, "I", total_value)
+    f_date = datetime.strftime(date, input_date_format)
+
+    with open(os.path.join(dirname, "savings-input.txt"), "a") as file:
+        file.write(f"{f_date},I,{portfolio[i][0]},{portfolio[i][2]},{portfolio[i][1]}\n")
 
 # Iterates through each day
 while date < datetime.strptime(end_date, "%Y-%m-%d"):
     # Updates asset prices
     for asset in portfolio:
-        asset[1] += norm.rvs(asset_growth_mean, asset_growth_sd)
-        with open(os.path.join(dirname, f"assets/{asset[0]}.txt"), "a") as file:
-            f_date = datetime.strftime(date, input_date_format)
-            file.write(f"{f_date},{asset[1]}\n")
+        if asset[3] == "share":
+            asset[1] += norm.rvs(asset_growth_mean, asset_growth_sd)
+            with open(os.path.join(dirname, f"assets/{asset[0]}.txt"), "a") as file:
+                f_date = datetime.strftime(date, input_date_format)
+                file.write(f"{f_date},{asset[1]}\n")
 
     # Introduces errors
     rv = uniform.rvs()
@@ -207,18 +214,33 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
     rv_u = uniform.rvs(size=len(portfolio))
     mu = svgb_mean + cash * svgb_multi / 1000
     rv_n = norm.rvs(mu, svgb_sd, size=len(portfolio)).round(2)
+    debt = -1
     for i in range(len(portfolio)):
-        if rv_u[i] < svgb_days / 365:
-            value = max(0, rv_n[i])
-            savings(i, "B", value)
+        if portfolio[i][3] == "debt" and portfolio[i][1] * portfolio[i][2] < 0:
+            debt = i
+    for i in range(len(portfolio)):
+        if portfolio[i][3] == "share":
+            if rv_u[i] < svgb_days / 365:
+                value = max(0, rv_n[i])
+                if debt == -1:
+                    savings(i, "B", value)
+                else:
+                    savings(debt, "S", -value)
 
     # Selling savings
     rv_u = uniform.rvs(size=len(portfolio))
     mu = svgs_mean + cash * svgs_multi / 1000
     rv_n = norm.rvs(mu, svgs_sd, size=len(portfolio)).round(2)
     for i in range(len(portfolio)):
-        if rv_u[i] < svgs_days / 365:
-            value = max(0, rv_n[i])
-            savings(i, "S", value)
+        if portfolio[i][3] == "share":
+            if rv_u[i] < svgs_days / 365:
+                value = max(0, rv_n[i])
+                savings(i, "S", value)
+
+    # Pays of debt
+    if date.day == 1:
+        for i in range(len(portfolio)):
+            if portfolio[i][3] == "debt":
+                savings(i, "S", -init_debt * debt_p)
 
     date = date + timedelta(days=1)

@@ -24,34 +24,36 @@ const intraPad = 1;
 const labels = [
     "Cash",
     "Savings",
-    "Expenses",
+    "Debt",
     "Income",
+    "Expenses",
+    "Profit",
+    "Loss",
     "Housing",
     "Food",
     "Durable",
     "Utilities",
     "Health",
-    "Leisure",
-    "Investment profit",
-    "Investment loss"
+    "Leisure"
 ];
 
 const pal = [
     "#edc948",
     "#bab0ac",
-    "#e15759",
+    "#222325",
     "#59a14f",
+    "#e15759",
+    "#3e7137",
+    "#b92123",
     "#4e79a7",
     "#b07aa1",
     "#9c755f",
     "#76b7b2",
     "#ff9da7",
-    "#f28e2b",
-    "#3e7137",
-    "#b92123"
+    "#f28e2b"
 ];
 
-const scale = [0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1];
+const scale = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2];
 
 const formatVal = (value, style="default") => {
     /* https://stackoverflow.com/a/2901298 */
@@ -132,43 +134,54 @@ const getTimeLabel = (chart, n, style) => {
 };
 
 const updateLegend = () => {
-    for (let i = 0; i < 12; ++i) {
+    for (let i = 0; i < 13; ++i) {
         $(`.val-${i}`).text(formatVal(data[i][0][0]));
     }
 };
 
 const drawChartBar = (chart, a, b, $dest) => {
+    const barHeight = (rowHeight - intraPad) / 2;
+
     if (chart === 0) {
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
+        const $rect2 = $(document.createElement("div"))
 
         $rect0.addClass("chart-rect");
         $rect1.addClass("chart-rect");
+        $rect2.addClass("chart-rect");
 
         $rect0.attr("data-rect", `0-${a}-${b}`);
         $rect1.attr("data-rect", `1-${a}-${b}`);
+        $rect2.attr("data-rect", `2-${a}-${b}`);
 
         $rect0.css({
             "background-color": pal[0],
             "width": `${dataPx[a][0][b]}%`,
-            "height": "100%",
+            "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
             "background-color": pal[1],
             "width": `${dataPx[a][1][b]}%`,
-            "height": "100%",
+            "height": `${barHeight}px`,
             "left": `${dataPx[a][0][b]}%`,
             "top": 0
+        });
+        $rect2.css({
+            "background-color": pal[2],
+            "width": `${dataPx[a][2][b]}%`,
+            "height": `${barHeight}px`,
+            "left": 0,
+            "top": `${barHeight + intraPad}px`
         });
 
         $dest
             .append($rect0)
-            .append($rect1);
+            .append($rect1)
+            .append($rect2);
     } else if (chart === 1) {
-        const barHeight = (rowHeight - intraPad) / 2;
-
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
         const $rect2 = $(document.createElement("div"))
@@ -179,14 +192,14 @@ const drawChartBar = (chart, a, b, $dest) => {
         $rect2.addClass("chart-rect");
         $rect3.addClass("chart-rect");
 
-        $rect0.attr("data-rect", `2-${a}-${b}`);
+        $rect0.attr("data-rect", `4-${a}-${b}`);
         $rect1.attr("data-rect", `3-${a}-${b}`);
-        $rect2.attr("data-rect", `11-${a}-${b}`);
-        $rect3.attr("data-rect", `10-${a}-${b}`);
+        $rect2.attr("data-rect", `6-${a}-${b}`);
+        $rect3.attr("data-rect", `5-${a}-${b}`);
 
         $rect0.css({
-            "background-color": pal[2],
-            "width": `${dataPx[a][2][b]}%`,
+            "background-color": pal[4],
+            "width": `${dataPx[a][4][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
@@ -199,15 +212,15 @@ const drawChartBar = (chart, a, b, $dest) => {
             "top": 0
         });
         $rect2.css({
-            "background-color": pal[11],
-            "width": `${dataPx[a][11][b]}%`,
+            "background-color": pal[6],
+            "width": `${dataPx[a][6][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][2][b]}%`,
+            "left": `${dataPx[a][4][b]}%`,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
-            "background-color": pal[10],
-            "width": `${dataPx[a][10][b]}%`,
+            "background-color": pal[5],
+            "width": `${dataPx[a][5][b]}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx[a][3][b]}%`,
             "top": 0
@@ -219,8 +232,6 @@ const drawChartBar = (chart, a, b, $dest) => {
             .append($rect2)
             .append($rect3);
     } else if (chart === 2) {
-        const barHeight = (rowHeight - intraPad) / 2;
-
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
         const $rect2 = $(document.createElement("div"))
@@ -235,53 +246,53 @@ const drawChartBar = (chart, a, b, $dest) => {
         $rect4.addClass("chart-rect");
         $rect5.addClass("chart-rect");
 
-        $rect0.attr("data-rect", `4-${a}-${b}`);
-        $rect1.attr("data-rect", `5-${a}-${b}`);
-        $rect2.attr("data-rect", `6-${a}-${b}`);
-        $rect3.attr("data-rect", `7-${a}-${b}`);
-        $rect4.attr("data-rect", `8-${a}-${b}`);
-        $rect5.attr("data-rect", `9-${a}-${b}`);
+        $rect0.attr("data-rect", `7-${a}-${b}`);
+        $rect1.attr("data-rect", `8-${a}-${b}`);
+        $rect2.attr("data-rect", `9-${a}-${b}`);
+        $rect3.attr("data-rect", `10-${a}-${b}`);
+        $rect4.attr("data-rect", `11-${a}-${b}`);
+        $rect5.attr("data-rect", `12-${a}-${b}`);
 
         $rect0.css({
-            "background-color": pal[4],
-            "width": `${dataPx[a][4][b]}%`,
+            "background-color": pal[7],
+            "width": `${dataPx[a][7][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
-            "background-color": pal[5],
-            "width": `${dataPx[a][5][b]}%`,
+            "background-color": pal[8],
+            "width": `${dataPx[a][8][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][4][b] + dataPx[a][7][b]}%`,
+            "left": `${dataPx[a][7][b] + dataPx[a][10][b]}%`,
             "top": 0
         });
         $rect2.css({
-            "background-color": pal[6],
-            "width": `${dataPx[a][6][b]}%`,
+            "background-color": pal[9],
+            "width": `${dataPx[a][9][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
-            "background-color": pal[7],
-            "width": `${dataPx[a][7][b]}%`,
+            "background-color": pal[10],
+            "width": `${dataPx[a][10][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][4][b]}%`,
+            "left": `${dataPx[a][7][b]}%`,
             "top": 0
         });
         $rect4.css({
-            "background-color": pal[8],
-            "width": `${dataPx[a][8][b]}%`,
+            "background-color": pal[11],
+            "width": `${dataPx[a][11][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][4][b] + dataPx[a][7][b] + dataPx[a][5][b]}%`,
+            "left": `${dataPx[a][7][b] + dataPx[a][10][b] + dataPx[a][8][b]}%`,
             "top": 0
         });
         $rect5.css({
-            "background-color": pal[9],
-            "width": `${dataPx[a][9][b]}%`,
+            "background-color": pal[12],
+            "width": `${dataPx[a][12][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][6][b]}%`,
+            "left": `${dataPx[a][9][b]}%`,
             "top": `${barHeight + intraPad}px`
         });
 

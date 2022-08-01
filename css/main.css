@@ -150,20 +150,45 @@ body {
     margin-bottom: 25px;
 }
 
+.label-0 { grid-area: e0; }
+.label-1 { grid-area: e1; }
+.label-2 { grid-area: e2; }
+.label-3 { grid-area: e3; }
+.label-4 { grid-area: e4; }
+.label-5 { grid-area: e5; }
+.label-6 { grid-area: e6; }
+.label-7 { grid-area: e7; }
+.label-8 { grid-area: e8; }
+.label-9 { grid-area: e9; }
+.label-10 { grid-area: e10; }
+.label-11 { grid-area: e11; }
+.label-12 { grid-area: e12; }
+
+.val-0 { grid-area: f0; }
+.val-1 { grid-area: f1; }
+.val-2 { grid-area: f2; }
+.val-3 { grid-area: f3; }
+.val-4 { grid-area: f4; }
+.val-5 { grid-area: f5; }
+.val-6 { grid-area: f6; }
+.val-7 { grid-area: f7; }
+.val-8 { grid-area: f8; }
+.val-9 { grid-area: f9; }
+.val-10 { grid-area: f10; }
+.val-11 { grid-area: f11; }
+.val-12 { grid-area: f12; }
+
+
 .head-01 {
     display: grid;
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
         ". . . . ."
-        ". . . . ."
-        "e20 f20 . e21 f21"
+        "e0 f0 . e1 f1"
+        "e2 f2 . . .";
+    row-gap: 2px;
 }
-
-.label-0 { grid-area: e20; }
-.label-1 { grid-area: e21; }
-.val-0 { grid-area: f20; }
-.val-1 { grid-area: f21; }
 
 .head-11 {
     display: grid;
@@ -171,41 +196,21 @@ body {
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
         ". . . . ."
-        "e10 f10 . e12 f12"
-        "e11 f11 . e13 f13";
+        "e3 f3 . e5 f5"
+        "e4 f4 . e6 f6";
+    row-gap: 2px;
 }
-
-.label-3 { grid-area: e10; }
-.label-10 { grid-area: e11; }
-.label-2 { grid-area: e12; }
-.label-11 { grid-area: e13; }
-.val-3 { grid-area: f10; }
-.val-10 { grid-area: f11; }
-.val-2 { grid-area: f12; }
-.val-11 { grid-area: f13; }
 
 .head-21 {
     display: grid;
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        "e20 f20 . e23 f23"
-        "e21 f21 . e24 f24"
-        "e22 f22 . e25 f25";
+        "e7 f7 . e10 f10"
+        "e8 f8 . e11 f11"
+        "e9 f9 . e12 f12";
+    row-gap: 2px;
 }
-
-.label-4 { grid-area: e20; }
-.label-5 { grid-area: e21; }
-.label-6 { grid-area: e22; }
-.label-7 { grid-area: e23; }
-.label-8 { grid-area: e24; }
-.label-9 { grid-area: e25; }
-.val-4 { grid-area: f20; }
-.val-5 { grid-area: f21; }
-.val-6 { grid-area: f22; }
-.val-7 { grid-area: f23; }
-.val-8 { grid-area: f24; }
-.val-9 { grid-area: f25; }
 
 .head-label {
     margin-right: 5px;
@@ -223,6 +228,7 @@ body {
     border-radius: 6px;
     display: inline-block;
     top: 1px;
+    margin-right: 1px;
 }
 
 .chart-container {
@@ -279,16 +285,17 @@ body {
 
 .label-0 .legend-icon { background-color: #edc948; }
 .label-1 .legend-icon { background-color: #bab0ac; }
-.label-2 .legend-icon { background-color: #e15759; }
+.label-2 .legend-icon { background-color: #222325; }
 .label-3 .legend-icon { background-color: #59a14f; }
-.label-4 .legend-icon { background-color: #4e79a7; }
-.label-5 .legend-icon { background-color: #b07aa1; }
-.label-6 .legend-icon { background-color: #9c755f; }
-.label-7 .legend-icon { background-color: #76b7b2; }
-.label-8 .legend-icon { background-color: #ff9da7; }
-.label-9 .legend-icon { background-color: #f28e2b; }
-.label-10 .legend-icon { background-color: #3e7137; }
-.label-11 .legend-icon { background-color: #b92123; }
+.label-4 .legend-icon { background-color: #e15759; }
+.label-5 .legend-icon { background-color: #3e7137; }
+.label-6 .legend-icon { background-color: #b92123; }
+.label-7 .legend-icon { background-color: #4e79a7; }
+.label-8 .legend-icon { background-color: #b07aa1; }
+.label-9 .legend-icon { background-color: #9c755f; }
+.label-10 .legend-icon { background-color: #76b7b2; }
+.label-11 .legend-icon { background-color: #ff9da7; }
+.label-12 .legend-icon { background-color: #f28e2b; }
 
 .chart-rect {
     z-index: 1;
@@ -374,11 +381,11 @@ body {
 
 @media (min-width: 500px) {
     .head-grid {
-        grid-template-columns: 1fr 240px 1fr;
+        grid-template-columns: 1fr 230px 1fr;
     }
 
     .body-grid {
-        grid-template-columns: 1fr 240px 1fr;
+        grid-template-columns: 1fr 230px 1fr;
     }
 }
 
@@ -392,9 +399,9 @@ body {
     }
 }
 
-@media (min-width: 1350px) {
+@media (min-width: 1250px) {
     .head-grid {
-        grid-template-columns: auto 240px 240px 240px auto;
+        grid-template-columns: auto 230px 230px 230px auto;
         grid-template-areas:
             ". h00 h00 h00 ."
             ". h01 h11 h21 ."
@@ -403,7 +410,7 @@ body {
     }
 
     .body-grid {
-        grid-template-columns: auto 240px 240px 240px auto;
+        grid-template-columns: auto 230px 230px 230px auto;
         grid-template-areas:
             ". b0 b1 b2 .";
         column-gap: 150px;

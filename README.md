@@ -8,7 +8,7 @@ to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
 
 Shows:
-- Assets (cash and savings).
+- Assets (cash and savings) and liabilities.
 - Cash flow (income, expenses, and investment profit/loss).
 - Breakdown of expenses.
 
@@ -54,6 +54,8 @@ Shows:
    where <name> is the name of the asset.
    The prices do not have to be updated daily, but must contain at least the value on the day of purchase.
 
+8. Debt is treated as an asset with negative value. Paying off the principal is recorded as selling the asset.
+
 ### Recording cash flows
 
 1. Cash flows are divided into non-investment income and expenses, and investment profit and loss.
@@ -73,4 +75,4 @@ Shows:
 
 ---
 
-To do: debt, interest, dividends
+To do: interest, dividends
