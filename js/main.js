@@ -320,6 +320,7 @@ const drawChartBar = (chart, a, b, $dest) => {
 
 const drawCharts = () => {
     for (let i = 0; i < 3; ++i) {
+        /* Head */
         const $row0 = $(document.createElement("div"));
         const $row1 = $(document.createElement("div"));
 
@@ -330,35 +331,62 @@ const drawCharts = () => {
         drawChartBar(i, 0, 0, $row0);
         drawChartBar(i, 1, 0, $row1);
 
+        /* Body */
+
+        const $chart = $(document.createElement("div"));
+        const $chartContainer = $(document.createElement("div"));
+        const $yearRow = $(document.createElement("div"));
+
+        $yearRow.text("Previous months");
+
+        $chart.addClass("chart");
+        $chartContainer.addClass("chart-container");
+        $yearRow.addClass("year-row");
+
+        $(`.body-${i}`)
+            .append($yearRow)
+            .append($chartContainer);
+        $chartContainer.append($chart);
+
         for (let j = 0; j < m; ++j) {
             const $row2 = $(document.createElement("div"));
-            $(`.body-${i} > .chart`).append($row2);
+            $chart.append($row2);
             drawChartBar(i, 2, j, $row2);
         }
 
-        para.gridlines[i].forEach((val) => {
-            const dest = [`.head-${i}2`, `.body-${i}`];
-
+        const dest = [`.head-${i}2`, `.body-${i} > .chart-container`];
+        para.gridlines[i].forEach((val, k) => {
             for (let j = 0; j < 3; ++j) {
                 /* Lines */
                 const $grid = $(document.createElement("div"))
-                $grid.addClass("grid-line");
-                $grid.css({
-                    "left": `calc(${getWidth(val, i)}% - 1px)`,
-                });
+                if (k === 0) {
+                    $grid.addClass("grid-line-first");
+                } else {
+                    $grid.addClass("grid-line");
+                    $grid.css({
+                        "left": `calc(${getWidth(val, i)}% - 1px)`
+                    });
+                }
                 $(dest[j]).append($grid);
 
                 /* Labels */
 
                 const $gridLabel = $(document.createElement("div"))
 
-                $gridLabel.addClass("grid-label");
                 $gridLabel.text(formatVal(val, "short"));
                 $(dest[j]).append($gridLabel);
 
-                $gridLabel.css({
-                    "left": `calc(${getWidth(val, i)}% + ${1 - $gridLabel.width() / 2}px)`,
-                });
+                $gridLabel.addClass("grid-label");
+
+                if (k === 0) {
+                    $gridLabel.css({
+                        "left": `${-2 - $gridLabel.width() / 2}px`
+                    });
+                } else {
+                    $gridLabel.css({
+                        "left": `calc(${getWidth(val, i)}% + ${-1 - $gridLabel.width() / 2}px)`
+                    });
+                }
             }
         });
     }

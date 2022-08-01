@@ -215,8 +215,10 @@ loss_df = pd.concat(
 
 loss_df["value"] *= -1
 
-prof_df["month"] = (prof_df["date"].dt.year - start_date.year) * 12 + prof_df["date"].dt.month - start_date.month
-loss_df["month"] = (loss_df["date"].dt.year - start_date.year) * 12 + loss_df["date"].dt.month - start_date.month
+if not prof_df.empty:
+    prof_df["month"] = (prof_df["date"].dt.year - start_date.year) * 12 + prof_df["date"].dt.month - start_date.month
+if not loss_df.empty:
+    loss_df["month"] = (loss_df["date"].dt.year - start_date.year) * 12 + loss_df["date"].dt.month - start_date.month
 
 # ============================================================================ #
 # Income and expenses

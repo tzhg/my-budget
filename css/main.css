@@ -88,7 +88,6 @@ textarea {
    ========================================================================== */
 
 body {
-    background-color: #f4f3f2;
     font-family: "Inter", sans-serif;
     color: #222325;
 }
@@ -96,25 +95,12 @@ body {
 .main {
     width: 100%;
     height: 100%;
+    padding-top: 100px;
     padding-bottom: 100px;
 }
 
 .head-grid {
     display: grid;
-    background-color: #e9e8e7;
-    grid-template-columns: 1fr 270px 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-        ". h00 ."
-        ". h01 ."
-        ". h02 ."
-        ". h11 ."
-        ". h12 ."
-        ". h21 ."
-        ". h22 .";
-    row-gap: 10px;
-    padding-top: 100px;
-    padding-bottom: 20px;
 }
 
 .head-00 { grid-area: h00; }
@@ -127,27 +113,27 @@ body {
 
 .body-grid {
     display: grid;
-    grid-template-columns: 1fr 270px 1fr;
-    grid-template-rows: auto;
-    grid-template-areas:
-        ". b0 ."
-        ". b1 ."
-        ". b2 .";
-    padding-top: 20px;
 }
+
+.divider { grid-area: d0; }
 
 .body-0 { grid-area: b0; }
 .body-1 { grid-area: b1; }
 .body-2 { grid-area: b2; }
 
+.divider {
+    border-top: 2px solid #222325;
+    padding-bottom: 35px;
+}
+
 .title {
     font-weight: 700;
     font-family: "Playfair Display", serif;
+    margin-bottom: 10px;
 }
 
-.head-02, .head-12, .head-22, .head-03, .head-13, .head-23 {
-    position: relative;
-    margin-bottom: 25px;
+.head-01, .head-11, .head-21 {
+    margin-bottom: 5px;
 }
 
 .label-0 { grid-area: e0; }
@@ -177,7 +163,6 @@ body {
 .val-10 { grid-area: f10; }
 .val-11 { grid-area: f11; }
 .val-12 { grid-area: f12; }
-
 
 .head-01 {
     display: grid;
@@ -233,6 +218,8 @@ body {
 
 .chart-container {
     position: relative;
+    margin-left: 2px;
+    margin-bottom: 50px;
 }
 
 .chart {
@@ -253,23 +240,42 @@ body {
     position: absolute;
 }
 
-.axis {
-    position: absolute;
-    top: 0;
-    border-left: 2px solid #222325;
-    height: 100%;
-    width: 5px;
-    pointer-events: none;
-    z-index: 2;
+.chart-rect {
+    z-index: 1;
+}
+
+.chart-rect:hover {
+    opacity: 0.8;
+}
+
+.year-row {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+ .body-column {
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 .grid-line {
     position: absolute;
     top: 0;
-    border-left: 1px solid #c2c9cb;
+    border-left: 1px solid #e5e8ed;
     height: 100%;
     width: 5px;
     pointer-events: none;
+}
+
+.grid-line-first {
+    position: absolute;
+    top: 0;
+    left: -2px;
+    border-left: 2px solid #222325;
+    height: 100%;
+    width: 5px;
+    pointer-events: none;
+    z-index: 2;
 }
 
 .grid-label {
@@ -297,14 +303,6 @@ body {
 .label-11 .legend-icon { background-color: #ff9da7; }
 .label-12 .legend-icon { background-color: #f28e2b; }
 
-.chart-rect {
-    z-index: 1;
-}
-
-.chart-rect:hover {
-    opacity: 0.8;
-}
-
 .tooltip {
     background-color: white;
 	font-size: 12px;
@@ -329,7 +327,7 @@ body {
 /* Fixed margins */
 @media (min-width: 0px) {
     .head-grid {
-        grid-template-columns: 85px 200px 30px;
+        grid-template-columns: 85px 202px 30px;
         grid-template-rows: auto;
         grid-template-areas:
             ". h00 ."
@@ -342,9 +340,10 @@ body {
     }
 
     .body-grid {
-        grid-template-columns: 85px 200px 30px;
+        grid-template-columns: 85px 202px 30px;
         grid-template-rows: auto;
         grid-template-areas:
+            ". d0 ."
             ". b0 ."
             ". b1 ."
             ". b2 .";
@@ -381,11 +380,11 @@ body {
 
 @media (min-width: 500px) {
     .head-grid {
-        grid-template-columns: 1fr 230px 1fr;
+        grid-template-columns: 1fr 232px 1fr;
     }
 
     .body-grid {
-        grid-template-columns: 1fr 230px 1fr;
+        grid-template-columns: 1fr 232px 1fr;
     }
 }
 
@@ -401,7 +400,7 @@ body {
 
 @media (min-width: 1250px) {
     .head-grid {
-        grid-template-columns: auto 230px 230px 230px auto;
+        grid-template-columns: auto 232px 232px 232px auto;
         grid-template-areas:
             ". h00 h00 h00 ."
             ". h01 h11 h21 ."
@@ -410,8 +409,9 @@ body {
     }
 
     .body-grid {
-        grid-template-columns: auto 230px 230px 230px auto;
+        grid-template-columns: auto 232px 232px 232px auto;
         grid-template-areas:
+            ". d0 d0 d0 ."
             ". b0 b1 b2 .";
         column-gap: 150px;
     }
@@ -419,11 +419,11 @@ body {
 
 @media (min-width: 1600px) {
     .head-grid {
-        column-gap: 230px;
+        column-gap: 232px;
     }
 
     .body-grid {
-        column-gap: 230px;
+        column-gap: 232px;
     }
 }
 
