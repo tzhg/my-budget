@@ -121,7 +121,7 @@ const getTimeLabel = (chart, n, style) => {
         return `${date[0]}\xa0${date[1]}`;
     } else if (chart === 1) {
         if (style === "short") {
-            return "12M\xa0average";
+            return "12m\xa0average";
         }
         return "12-month\xa0average";
     } else if (chart === 2) {
