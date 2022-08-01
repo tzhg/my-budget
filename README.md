@@ -56,11 +56,11 @@ Shows:
 
 ### Recording cash flows
 
-1. Cash flows are divided into non-investment income and expenses, and investment profit/loss.
+1. Cash flows are divided into non-investment income and expenses, and investment profit and loss.
+   These are shown on the chart as "Income", "Expenses", "Profit", and "Loss" respectively.
 
-2. Investment profit/loss refers to cash flows relating to savings, e.g. capital gains/losses, dividends, interest.
+2. Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
    (This includes mortgage payments.)
-   In the chart, the net profit/loss is shown in the Profit and Loss categories (at least one will be zero).
 
 3. Non-investment cash flows are recorded in `data/income-input.txt` and `data/expenses-input.txt`.
 

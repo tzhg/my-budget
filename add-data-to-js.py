@@ -149,12 +149,14 @@ def asset_price(date, name, quantity):
 
 
 monthIdx = 0
-pl = 0
+profit = 0
+loss = 0
 
 portfolio = []
 
 savings_list = []
-pl_list = []
+profit_list = []
+loss_list = []
 
 for i, row in svg_df.iterrows():
     # Finishes month
@@ -162,9 +164,10 @@ for i, row in svg_df.iterrows():
         while row["month"] > monthIdx:
             pf_value = sum([asset_price(*x) for x in portfolio])
             savings_list.append(pf_value)
-            pl_list.append(pl)
-            print(pl, row["date"])
-            pl = 0
+            profit_list.append(profit)
+            loss_list.append(loss)
+            profit = 0
+            loss = 0
 
             monthIdx += 1
 
@@ -183,7 +186,10 @@ for i, row in svg_df.iterrows():
                 buy_value = asset_price(portfolio[j][0], portfolio[j][1], min_quant)
                 sell_value = asset_price(row["date"], row["name"], min_quant)
 
-                pl += sell_value - buy_value
+                if sell_value > buy_value:
+                    profit += sell_value - buy_value
+                else:
+                    loss +=  buy_value - sell_value
 
             j += 1
 
@@ -191,9 +197,14 @@ for i, row in svg_df.iterrows():
 while no_months > monthIdx:
     pf_value = sum([asset_price(*x) for x in portfolio])
     savings_list.append(pf_value)
-    pl_list.append(pl)
-    pl = 0
+    profit_list.append(profit)
+    loss_list.append(loss)
+    profit = 0
+    loss = 0
     monthIdx += 1
+
+print(profit_list)
+print(loss_list)
 
 # ============================================================================ #
 # Income and expenses
@@ -230,7 +241,8 @@ monthlyData = [
     exp_df["value", "Utilities"].to_list(),
     exp_df["value", "Health"].to_list(),
     exp_df["value", "Leisure"].to_list(),
-    pl_list]
+    profit_list,
+    loss_list]
 
 # [Current month, yearly average, historical months] for each variable
 data = [
@@ -238,13 +250,10 @@ data = [
     for lst in monthlyData]
 
 # Separates pl_list into profit list and loss list
-profit_list = [[max(0, val) for val in lst] for lst in data[10]]
-loss_list = [[abs(min(0, val)) for val in lst] for lst in data[10]]
+#profit_list = [[max(0, val) for val in lst] for lst in data[10]]
+#loss_list = [[abs(min(0, val)) for val in lst] for lst in data[10]]
 
-data = data[:10] + [profit_list, loss_list]
-
-print(profit_list)
-print(loss_list)
+#data = data[:10] + [profit_list, loss_list]
 
 output = {
     "para": viz_para,
