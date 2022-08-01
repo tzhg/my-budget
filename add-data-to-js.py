@@ -42,13 +42,14 @@ prl_df["date"] = pd.to_datetime(prl_df["date"], format=input_date_format)
 for _, df in ass_df.items():
     df["date"] = pd.to_datetime(df["date"], format=input_date_format)
 
-start_date = csh_df["date"].iat[0]
+start_date_dt = csh_df["date"].iat[0]
+start_date = [start_date_dt.day, start_date_dt.month, start_date_dt.year]
 
 # Adds month column
-exp_df["month"] = (exp_df["date"].dt.year - start_date.year) * 12 + exp_df["date"].dt.month - start_date.month
-inc_df["month"] = (inc_df["date"].dt.year - start_date.year) * 12 + inc_df["date"].dt.month - start_date.month
-svg_df["month"] = (svg_df["date"].dt.year - start_date.year) * 12 + svg_df["date"].dt.month - start_date.month
-prl_df["month"] = (prl_df["date"].dt.year - start_date.year) * 12 + prl_df["date"].dt.month - start_date.month
+exp_df["month"] = (exp_df["date"].dt.year - start_date[2]) * 12 + exp_df["date"].dt.month - start_date[1]
+inc_df["month"] = (inc_df["date"].dt.year - start_date[2]) * 12 + inc_df["date"].dt.month - start_date[1]
+svg_df["month"] = (svg_df["date"].dt.year - start_date[2]) * 12 + svg_df["date"].dt.month - start_date[1]
+prl_df["month"] = (prl_df["date"].dt.year - start_date[2]) * 12 + prl_df["date"].dt.month - start_date[1]
 
 # ============================================================================ #
 # Cash
@@ -79,13 +80,19 @@ exp2_df["value"] *= -1
 svg2B_df["value"] *= -1
 
 cfl_df = pd.concat([exp2_df, inc_df, svg2B_df, svg2S_df, prl2_df])
-cfl_df["month"] = (cfl_df["date"].dt.year - start_date.year) * 12 + cfl_df["date"].dt.month - start_date.month
+cfl_df["month"] = (cfl_df["date"].dt.year - start_date[2]) * 12 + cfl_df["date"].dt.month - start_date[1]
 
 # Sorts by date
 cfl_df = cfl_df.sort_values(by=["date"])
 cfl_df = cfl_df.reset_index()
 
-no_months = cfl_df["month"].iat[-1] + 1
+csh_df = csh_df.sort_values(by=["date"])
+csh_df = csh_df.reset_index()
+
+end_date_dt = max(cfl_df["date"].iat[-1], csh_df["date"].iat[-1])
+end_date = [end_date_dt.day, end_date_dt.month, end_date_dt.year]
+
+no_months = (end_date[2] - start_date[2]) * 12 + end_date[1] - start_date[1] + 1
 
 eo_list = []
 cash_list = []
@@ -144,8 +151,8 @@ exp_df = pd.concat(
     [exp_df, pd.DataFrame(exp_eo_list, columns=["date", "category", "value"])],
     ignore_index=True)
 
-exp_df["month"] = (exp_df["date"].dt.year - start_date.year) * 12 + exp_df["date"].dt.month - start_date.month
-inc_df["month"] = (inc_df["date"].dt.year - start_date.year) * 12 + inc_df["date"].dt.month - start_date.month
+exp_df["month"] = (exp_df["date"].dt.year - start_date[2]) * 12 + exp_df["date"].dt.month - start_date[1]
+inc_df["month"] = (inc_df["date"].dt.year - start_date[2]) * 12 + inc_df["date"].dt.month - start_date[1]
 
 # ============================================================================ #
 # Savings
@@ -216,9 +223,9 @@ loss_df = pd.concat(
 loss_df["value"] *= -1
 
 if not prof_df.empty:
-    prof_df["month"] = (prof_df["date"].dt.year - start_date.year) * 12 + prof_df["date"].dt.month - start_date.month
+    prof_df["month"] = (prof_df["date"].dt.year - start_date[2]) * 12 + prof_df["date"].dt.month - start_date[1]
 if not loss_df.empty:
-    loss_df["month"] = (loss_df["date"].dt.year - start_date.year) * 12 + loss_df["date"].dt.month - start_date.month
+    loss_df["month"] = (loss_df["date"].dt.year - start_date[2]) * 12 + loss_df["date"].dt.month - start_date[1]
 
 # ============================================================================ #
 # Income and expenses
@@ -244,8 +251,8 @@ with open(os.path.join(dirname, f"./{data_dir}/viz-parameters.json"), "r") as fi
     viz_para = json.load(file)
 
 info = {
-    "startMonth": start_date.month - 1,
-    "startYear": start_date.year
+    "startDate": start_date,
+    "endDate": end_date
 }
 
 monthlyData = [

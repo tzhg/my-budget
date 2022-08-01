@@ -2,15 +2,22 @@
 
 This is a simple tool for visualising household financial data.
 A demo, using simulated data, is available [here](https://tzhg.github.io/cash-flower).
+After providing it with the necessary data,
+the program illustrates various variables over various time periods using bar charts.
+
+Data variables:
+- Assets (cash and savings) and liabilities.
+- Cash flow (income, expenses, and investment profit/loss).
+- Breakdown of expenses.
+
+Time periods:
+- Current month ("MTD"),
+- Average of last 12 months ("12M avg"),
+- All previous months.
 
 I designed this tool for my own purposes,
 to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
-
-Shows:
-- Assets (cash and savings) and liabilities.
-- Cash flow (income, expenses, and investment profit/loss).
-- Breakdown of expenses.
 
 ## Details
 

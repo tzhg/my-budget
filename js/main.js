@@ -92,31 +92,31 @@ const dataPx = [
 
 /* Returns month and year n months before current month */
 const getDate = (n) => {
-    const monthNames = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
+    const month = info.startDate[1] - 1 + m - n;
 
-    const month = info.startMonth + m - n;
-
-    return [monthNames[month % 12], info.startYear + Math.floor(month / 12)];
+    return [month % 12, info.startDate[2] + Math.floor(month / 12)];
 };
+
+const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
 
 const getTimeLabel = (chart, n, style) => {
     if (chart === 0) {
         let date = getDate(0);
         if (style === "short") {
-            date[0] = date[0].slice(0, 3);
+            date[0] = monthNames[date[0]].slice(0, 3);
         }
         return `${date[0]}\xa0${date[1]}`;
     } else if (chart === 1) {
@@ -127,7 +127,7 @@ const getTimeLabel = (chart, n, style) => {
     } else if (chart === 2) {
         let date = getDate(n + 1);
         if (style === "short") {
-            date[0] = date[0].slice(0, 3);
+            date[0] = monthNames[date[0]].slice(0, 3);
         }
         return `${date[0]}\xa0${date[1]}`;
     }
@@ -309,7 +309,16 @@ const drawChartBar = (chart, a, b, $dest) => {
 
     $text.addClass("time-axis-label");
 
-    $text.text(getTimeLabel(a, b, "short"));
+    let dateText;
+    if (a === 0) {
+        dateText = "MTD";
+    } else if (a === 1) {
+        dateText = "12M\xa0avg";
+    } else if (a === 2) {
+        dateText = `${monthNames[getDate(b + 1)[0]].slice(0, 3)}`;
+    }
+
+    $text.text(dateText);
 
     $dest.append($text);
 
@@ -318,7 +327,45 @@ const drawChartBar = (chart, a, b, $dest) => {
     });
 };
 
+const gridLines = (i, $dest) => {
+    para.gridlines[i].forEach((val, k) => {
+        const $gridLine = $(document.createElement("div"))
+        const $gridLabel = $(document.createElement("div"))
+
+        $gridLabel.addClass("grid-label");
+        $gridLabel.text(formatVal(val, "short"));
+
+        $dest
+            .append($gridLine)
+            .append($gridLabel);
+
+        if (k === 0) {
+            $gridLine.addClass("grid-line-first");
+            $gridLabel.css({
+                "left": `${-2 - $gridLabel.width() / 2}px`
+            });
+        } else {
+            $gridLine.addClass("grid-line");
+            $gridLine.css({
+                "left": `calc(${getWidth(val, i)}% - 1px)`
+            });
+            $gridLabel.css({
+                "left": `calc(${getWidth(val, i)}% + ${-1 - $gridLabel.width() / 2}px)`
+            });
+        }
+    });
+}
+
 const drawCharts = () => {
+    const dateIndices = [];
+
+    for (let i = 0; i < m; ++i) {
+        if (i === 0 || getDate(i + 1)[0] === 11) {
+            dateIndices.push([]);
+        }
+        dateIndices[dateIndices.length - 1].push(i);
+    }
+
     for (let i = 0; i < 3; ++i) {
         /* Head */
         const $row0 = $(document.createElement("div"));
@@ -331,63 +378,34 @@ const drawCharts = () => {
         drawChartBar(i, 0, 0, $row0);
         drawChartBar(i, 1, 0, $row1);
 
+        const $chartContainer = $(`.head-${i}2`);
+        gridLines(i, $chartContainer);
+
         /* Body */
 
-        const $chart = $(document.createElement("div"));
-        const $chartContainer = $(document.createElement("div"));
-        const $yearRow = $(document.createElement("div"));
+        dateIndices.forEach(arr => {
+            const $chart = $(document.createElement("div"));
+            const $chartContainer = $(document.createElement("div"));
+            const $yearRow = $(document.createElement("div"));
 
-        $yearRow.text("Previous months");
+            $yearRow.text(getDate(arr[0] + 1)[1]);
 
-        $chart.addClass("chart");
-        $chartContainer.addClass("chart-container");
-        $yearRow.addClass("year-row");
+            $chart.addClass("chart");
+            $chartContainer.addClass("chart-container");
+            $yearRow.addClass("year-row");
 
-        $(`.body-${i}`)
-            .append($yearRow)
-            .append($chartContainer);
-        $chartContainer.append($chart);
+            gridLines(i, $chartContainer);
 
-        for (let j = 0; j < m; ++j) {
-            const $row2 = $(document.createElement("div"));
-            $chart.append($row2);
-            drawChartBar(i, 2, j, $row2);
-        }
+            $(`.body-${i}`)
+                .append($yearRow)
+                .append($chartContainer);
+            $chartContainer.append($chart);
 
-        const dest = [`.head-${i}2`, `.body-${i} > .chart-container`];
-        para.gridlines[i].forEach((val, k) => {
-            for (let j = 0; j < 3; ++j) {
-                /* Lines */
-                const $grid = $(document.createElement("div"))
-                if (k === 0) {
-                    $grid.addClass("grid-line-first");
-                } else {
-                    $grid.addClass("grid-line");
-                    $grid.css({
-                        "left": `calc(${getWidth(val, i)}% - 1px)`
-                    });
-                }
-                $(dest[j]).append($grid);
-
-                /* Labels */
-
-                const $gridLabel = $(document.createElement("div"))
-
-                $gridLabel.text(formatVal(val, "short"));
-                $(dest[j]).append($gridLabel);
-
-                $gridLabel.addClass("grid-label");
-
-                if (k === 0) {
-                    $gridLabel.css({
-                        "left": `${-2 - $gridLabel.width() / 2}px`
-                    });
-                } else {
-                    $gridLabel.css({
-                        "left": `calc(${getWidth(val, i)}% + ${-1 - $gridLabel.width() / 2}px)`
-                    });
-                }
-            }
+            arr.forEach(j => {
+                const $row2 = $(document.createElement("div"));
+                $chart.append($row2);
+                drawChartBar(i, 2, j, $row2);
+            });
         });
     }
 };
@@ -493,9 +511,20 @@ const initTooltip = () => {
         ".chart-rect",
         "rect",
         (elem) => {
-            const rect = elem.dataset.rect.split("-");
+            let rect = elem.dataset.rect.split("-");
+            rect = rect.map(x => Number(x));
 
-            let label1 = getTimeLabel(Number(rect[1]), Number(rect[2]));
+            let label1;
+            if (rect[1] === 0) {
+                let date = getDate(0);
+                label1 = `${monthNames[date[0]]}\xa0${date[1]}`;
+            } else if (rect[1] === 1) {
+                label1 = "12-month\xa0average";
+            } else if (rect[1] === 2) {
+                let date = getDate(rect[2] + 1);
+                label1 = `${monthNames[date[0]]}\xa0${date[1]}`;
+            }
+
             const value = formatVal(data[rect[0]][rect[1]][rect[2]]);
             const label2 = `${labels[rect[0]]}: ${value}`;
 
@@ -535,9 +564,7 @@ const showTimeAxis = () => {
 
 
 (() => {
-    const date = getDate(0);
-
-    $(".title > span").text(`${date[0]}\xa0${date[1]}`);
+    $(".title-date > span").text(`${info.endDate[0]}\xa0${monthNames[info.endDate[1] - 1]}\xa0${info.endDate[2]}`);
 
     updateLegend();
 	drawCharts();

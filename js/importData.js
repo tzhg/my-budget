@@ -24,8 +24,16 @@ export function importData() {
         ]
     },
     "info": {
-        "startMonth": 0,
-        "startYear": 2013
+        "startDate": [
+            1,
+            1,
+            2013
+        ],
+        "endDate": [
+            25,
+            12,
+            2022
+        ]
     },
     "data": [
         [
