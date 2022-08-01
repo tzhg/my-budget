@@ -134,21 +134,23 @@ if snap_idx < len(csh_df):
         date_str = datetime.strftime(csh_df.at[snap_idx, "date"], input_date_format)
         print(f"{date_str} cash snapshot: {eo:.2f}")
 
+inc_eo_list = [x for x in eo_list if x[1] > 0]
+inc_df = pd.concat(
+    [inc_df, pd.DataFrame(inc_eo_list, columns=["date", "value"])],
+    ignore_index=True)
+
 exp_eo_list = [[x[0], "Other", -x[1]] for x in eo_list if x[1] < 0]
 exp_df = pd.concat(
     [exp_df, pd.DataFrame(exp_eo_list, columns=["date", "category", "value"])],
     ignore_index=True)
 
-inc_eo_list = [x for x in eo_list if x[1] < 0]
-inc_df = pd.concat(
-    [inc_df, pd.DataFrame(inc_eo_list, columns=["date", "value"])],
-    ignore_index=True)
+exp_df["month"] = (exp_df["date"].dt.year - start_date.year) * 12 + exp_df["date"].dt.month - start_date.month
+inc_df["month"] = (inc_df["date"].dt.year - start_date.year) * 12 + inc_df["date"].dt.month - start_date.month
 
 # ============================================================================ #
 # Savings
 
 month_idx = 0
-net_profit = 0
 
 portfolio = []
 
@@ -168,9 +170,6 @@ for i, row in svg_df.iterrows():
             savings_list.append(sum([max(val, 0) for val in pf_value]))
             debt_list.append(sum([-min(val, 0) for val in pf_value]))
 
-            prl_list.append(net_profit)
-            net_profit = 0
-
             month_idx += 1
 
     if row["type"] == "I" or row["type"] == "B":
@@ -188,7 +187,7 @@ for i, row in svg_df.iterrows():
                 buy_value = portfolio[j][3] * min_quant
                 sell_value = row["value"] * min_quant
 
-                net_profit += sell_value - buy_value
+                prl_list.append([row["date"], row["name"], sell_value - buy_value])
 
             j += 1
 
@@ -202,23 +201,25 @@ while no_months > month_idx:
     savings_list.append(sum([max(val, 0) for val in pf_value]))
     debt_list.append(sum([-min(val, 0) for val in pf_value]))
 
-    prl_list.append(net_profit)
-    net_profit = 0
-
     month_idx += 1
 
-prl_list = [[x[0], "Other", -x[1]] for x in eo_list if x[1] < 0]
-prl_df = pd.concat(
-    [prl_df, pd.DataFrame(prl_list, columns=["date", "name", "value"])],
+prof_list = [x for x in prl_list if x[2] > 0]
+prof_df = pd.concat(
+    [prl_df[prl_df["value"] > 0], pd.DataFrame(prof_list, columns=["date", "name", "value"])],
     ignore_index=True)
+
+loss_list = [x for x in prl_list if x[2] < 0]
+loss_df = pd.concat(
+    [prl_df[prl_df["value"] < 0], pd.DataFrame(loss_list, columns=["date", "name", "value"])],
+    ignore_index=True)
+
+loss_df["value"] *= -1
+
+prof_df["month"] = (prof_df["date"].dt.year - start_date.year) * 12 + prof_df["date"].dt.month - start_date.month
+loss_df["month"] = (loss_df["date"].dt.year - start_date.year) * 12 + loss_df["date"].dt.month - start_date.month
 
 # ============================================================================ #
 # Income and expenses
-
-prof_df = prl_df[prl_df["value"] > 0]
-loss_df = prl_df[prl_df["value"] < 0]
-
-loss_df["value"] *= -1
 
 # Aggregates entries by month and category
 exp_df = exp_df.groupby(["month", "category"]).sum()
