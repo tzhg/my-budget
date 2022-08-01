@@ -394,12 +394,12 @@ const drawCharts = () => {
             $chartContainer.addClass("chart-container");
             $yearRow.addClass("year-row");
 
-            gridLines(i, $chartContainer);
-
             $(`.body-${i}`)
                 .append($yearRow)
                 .append($chartContainer);
             $chartContainer.append($chart);
+
+            gridLines(i, $chartContainer);
 
             arr.forEach(j => {
                 const $row2 = $(document.createElement("div"));
@@ -516,8 +516,7 @@ const initTooltip = () => {
 
             let label1;
             if (rect[1] === 0) {
-                let date = getDate(0);
-                label1 = `${monthNames[date[0]]}\xa0${date[1]}`;
+                label1 = "Month to date";
             } else if (rect[1] === 1) {
                 label1 = "12-month\xa0average";
             } else if (rect[1] === 2) {
