@@ -58,21 +58,21 @@ Shows:
 
 ### Recording cash flows
 
-1. Cash flows are divided into non-investment income and expenses, and investment profit and loss.
+1. Cash flow refers to any movement of cash. It is divided into non-investment income and expenses, and investment profit and loss.
    These are shown on the chart as "Income", "Expenses", "Profit", and "Loss" respectively.
 
-2. Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
-   (This includes mortgage payments.)
+2. Expenses for buying savings are not recorded immediately as cash flow, but are subtracted from income when they are sold.
+   This is to prevent investments from dominating regular expenses.
 
-3. Non-investment cash flows are recorded in `data/income-input.txt` and `data/expenses-input.txt`.
+3. Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
 
-4. Expenses are categorised into six categories plus "Other".
+4. Dividends and interest payments, both inbound and outbound, have to be manually recorded in `data/profit-loss-input.txt`.
+
+5. Non-investment cash flows are recorded in `data/income-input.txt` and `data/expenses-input.txt`.
+
+6. Expenses are categorised into six categories plus "Other".
    "Other" expenses are not shown on the breakdown of expenses chart.
 
-5. Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
+7. Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
    can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
    along with a regular cash flow.
-
----
-
-To do: interest, dividends

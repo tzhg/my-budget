@@ -20,6 +20,7 @@ exp_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/expenses-input.txt"))
 inc_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/income-input.txt"))
 csh_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/cash-input.txt"))
 svg_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/savings-input.txt"))
+prl_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/profit-loss-input.txt"))
 
 asset_dir = os.path.join(dirname, f"./{data_dir}/assets")
 
@@ -36,6 +37,7 @@ exp_df["date"] = pd.to_datetime(exp_df["date"], format=input_date_format)
 inc_df["date"] = pd.to_datetime(inc_df["date"], format=input_date_format)
 csh_df["date"] = pd.to_datetime(csh_df["date"], format=input_date_format)
 svg_df["date"] = pd.to_datetime(svg_df["date"], format=input_date_format)
+prl_df["date"] = pd.to_datetime(prl_df["date"], format=input_date_format)
 
 for _, df in ass_df.items():
     df["date"] = pd.to_datetime(df["date"], format=input_date_format)
@@ -46,6 +48,7 @@ start_date = csh_df["date"].iat[0]
 exp_df["month"] = (exp_df["date"].dt.year - start_date.year) * 12 + exp_df["date"].dt.month - start_date.month
 inc_df["month"] = (inc_df["date"].dt.year - start_date.year) * 12 + inc_df["date"].dt.month - start_date.month
 svg_df["month"] = (svg_df["date"].dt.year - start_date.year) * 12 + svg_df["date"].dt.month - start_date.month
+prl_df["month"] = (prl_df["date"].dt.year - start_date.year) * 12 + prl_df["date"].dt.month - start_date.month
 
 # ============================================================================ #
 # Cash
@@ -61,9 +64,11 @@ svg_df["total_value"] = svg_df["quantity"] * svg_df["value"]
 
 exp2_df = exp_df.copy()
 svg2_df = svg_df.copy()
+prl2_df = prl_df.copy()
 
 exp2_df = exp2_df.drop("category", axis=1)
 svg2_df = svg2_df.drop(["type", "name", "quantity", "value"], axis=1)
+prl2_df = prl2_df.drop("name", axis=1)
 
 svg2_df = svg2_df.rename(columns={"total_value": "value"})
 
@@ -73,7 +78,7 @@ svg2S_df = svg2_df[svg_df["type"] == "S"]
 exp2_df["value"] *= -1
 svg2B_df["value"] *= -1
 
-cfl_df = pd.concat([exp2_df, inc_df, svg2B_df, svg2S_df])
+cfl_df = pd.concat([exp2_df, inc_df, svg2B_df, svg2S_df, prl2_df])
 cfl_df["month"] = (cfl_df["date"].dt.year - start_date.year) * 12 + cfl_df["date"].dt.month - start_date.month
 
 # Sorts by date
@@ -86,47 +91,47 @@ eo_list = []
 cash_list = []
 
 cash_counter = csh_df.at[0, "total_cash"]
-snapIdx = 1
-monthIdx = 0
+snap_idx = 1
+month_idx = 0
 
 for i, row in cfl_df.iterrows():
-    if snapIdx < len(csh_df):
+    if snap_idx < len(csh_df):
         # Finishes snapshot
-        if row["date"] >= csh_df.at[snapIdx, "date"]:
+        if row["date"] >= csh_df.at[snap_idx, "date"]:
             # Calculates errors/omissions
-            eo = csh_df.at[snapIdx, "total_cash"] - cash_counter
+            eo = csh_df.at[snap_idx, "total_cash"] - cash_counter
 
-            eo_list.append([csh_df.at[snapIdx, "date"], eo])
+            eo_list.append([csh_df.at[snap_idx, "date"], eo])
 
             if abs(eo) >= 0.005:
-                date_str = datetime.strftime(csh_df.at[snapIdx, "date"], input_date_format)
+                date_str = datetime.strftime(csh_df.at[snap_idx, "date"], input_date_format)
                 print(f"{date_str} cash snapshot: {eo:.2f}")
 
             # Prepares next snapshot
-            cash_counter = csh_df.at[snapIdx, "total_cash"]
-            snapIdx += 1
+            cash_counter = csh_df.at[snap_idx, "total_cash"]
+            snap_idx += 1
 
     # Finishes month
-    if row["month"] > monthIdx:
-        while row["month"] > monthIdx:
+    if row["month"] > month_idx:
+        while row["month"] > month_idx:
             cash_list.append(cash_counter)
-            monthIdx += 1
+            month_idx += 1
 
     cash_counter += row["value"]
 
 # Adds final month
-while no_months > monthIdx:
+while no_months > month_idx:
     cash_list.append(cash_counter)
-    monthIdx += 1
+    month_idx += 1
 
 # Finishes snapshot on final day
-if snapIdx < len(csh_df):
-    eo = csh_df.at[snapIdx, "total_cash"] - cash_counter
+if snap_idx < len(csh_df):
+    eo = csh_df.at[snap_idx, "total_cash"] - cash_counter
 
-    eo_list.append([csh_df.at[snapIdx, "date"], eo])
+    eo_list.append([csh_df.at[snap_idx, "date"], eo])
 
     if abs(eo) >= 0.005:
-        date_str = datetime.strftime(csh_df.at[snapIdx, "date"], input_date_format)
+        date_str = datetime.strftime(csh_df.at[snap_idx, "date"], input_date_format)
         print(f"{date_str} cash snapshot: {eo:.2f}")
 
 exp_eo_list = [[x[0], "Other", -x[1]] for x in eo_list if x[1] < 0]
@@ -142,21 +147,19 @@ inc_df = pd.concat(
 # ============================================================================ #
 # Savings
 
-monthIdx = 0
-profit = 0
-loss = 0
+month_idx = 0
+net_profit = 0
 
 portfolio = []
 
 savings_list = []
 debt_list = []
-profit_list = []
-loss_list = []
+prl_list = []
 
 for i, row in svg_df.iterrows():
     # Finishes month
-    if row["month"] > monthIdx:
-        while row["month"] > monthIdx:
+    if row["month"] > month_idx:
+        while row["month"] > month_idx:
             pf_value = [
                 float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
                 if ass[1] in ass_df
@@ -164,12 +167,11 @@ for i, row in svg_df.iterrows():
                 for ass in portfolio]
             savings_list.append(sum([max(val, 0) for val in pf_value]))
             debt_list.append(sum([-min(val, 0) for val in pf_value]))
-            profit_list.append(profit)
-            loss_list.append(loss)
-            profit = 0
-            loss = 0
 
-            monthIdx += 1
+            prl_list.append(net_profit)
+            net_profit = 0
+
+            month_idx += 1
 
     if row["type"] == "I" or row["type"] == "B":
         portfolio.append([row["date"], row["name"], row["quantity"], row["value"]])
@@ -186,15 +188,12 @@ for i, row in svg_df.iterrows():
                 buy_value = portfolio[j][3] * min_quant
                 sell_value = row["value"] * min_quant
 
-                if sell_value > buy_value:
-                    profit += sell_value - buy_value
-                else:
-                    loss +=  buy_value - sell_value
+                net_profit += sell_value - buy_value
 
             j += 1
 
 # Adds final month
-while no_months > monthIdx:
+while no_months > month_idx:
     pf_value = [
         float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
         if ass[1] in ass_df
@@ -202,18 +201,30 @@ while no_months > monthIdx:
         for ass in portfolio]
     savings_list.append(sum([max(val, 0) for val in pf_value]))
     debt_list.append(sum([-min(val, 0) for val in pf_value]))
-    profit_list.append(profit)
-    loss_list.append(loss)
-    profit = 0
-    loss = 0
-    monthIdx += 1
+
+    prl_list.append(net_profit)
+    net_profit = 0
+
+    month_idx += 1
+
+prl_list = [[x[0], "Other", -x[1]] for x in eo_list if x[1] < 0]
+prl_df = pd.concat(
+    [prl_df, pd.DataFrame(prl_list, columns=["date", "name", "value"])],
+    ignore_index=True)
 
 # ============================================================================ #
 # Income and expenses
 
+prof_df = prl_df[prl_df["value"] > 0]
+loss_df = prl_df[prl_df["value"] < 0]
+
+loss_df["value"] *= -1
+
 # Aggregates entries by month and category
 exp_df = exp_df.groupby(["month", "category"]).sum()
 inc_df = inc_df.groupby("month").sum()
+prof_df = prof_df.groupby("month").sum()
+loss_df = loss_df.groupby("month").sum()
 
 # Reshapes df to show categories as columns
 exp_df = exp_df.unstack("category", fill_value=0)
@@ -221,6 +232,8 @@ exp_df = exp_df.unstack("category", fill_value=0)
 # Ensures every month is present
 exp_df = exp_df.reindex(range(no_months), fill_value=0)
 inc_df = inc_df.reindex(range(no_months), fill_value=0)
+prof_df = prof_df.reindex(range(no_months), fill_value=0)
+loss_df = loss_df.reindex(range(no_months), fill_value=0)
 
 exp_df["total"] = exp_df.sum(axis=1)
 
@@ -238,8 +251,8 @@ monthlyData = [
     debt_list,
     inc_df["value"].to_list(),
     exp_df["total"].to_list(),
-    profit_list,
-    loss_list,
+    prof_df["value"].to_list(),
+    loss_df["value"].to_list(),
     exp_df["value", "Housing"].to_list(),
     exp_df["value", "Food"].to_list(),
     exp_df["value", "Shopping"].to_list(),

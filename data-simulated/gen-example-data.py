@@ -51,9 +51,11 @@ end_date = "2023-01-01"
 # Number of days of data
 no_days = 365
 
+init_debt = 20000
 # Proportion of principal of debt paid off each month
 debt_p = 0.01
-init_debt = 20000
+# Interest rate
+debt_r = 0.01
 
 # Portfolio of savings assets in simulation
 # Columns: name, unit value, quantity held
@@ -66,17 +68,13 @@ portfolio = [
 asset_growth_mean = 0.001
 asset_growth_sd = 0.05
 
-init_cash_mean = 7000
-init_cash_sd = 1000
+init_cash = 7000
 
-init_cash_cat = ["Cash", "Bank account"]
-init_cash_cat_prop = [0.4, 0.6]
-
-init_svg_mean = 0
-init_svg_sd = 1
+cash_cat = ["Cash", "Bank account"]
+cash_cat_prop = [0.4, 0.6]
 
 date = datetime.strptime(init_date, "%Y-%m-%d")
-cash = norm.rvs(init_cash_mean, init_cash_sd).round(2)
+cash = init_cash
 
 
 def spend(cat, value):
@@ -123,18 +121,25 @@ def savings(index, type, total_value):
     f_date = datetime.strftime(date, input_date_format)
 
     with open(os.path.join(dirname, "savings-input.txt"), "a") as file:
-        file.write(f"{f_date},{type},{portfolio[index][0]},{abs(quantity)},{unit_value:.2f}\n")
+        file.write(f"{f_date},{type},{portfolio[index][0]},{abs(quantity)},{unit_value}\n")
+
+
+def profit_loss(index, value):
+    f_date = datetime.strftime(date, input_date_format)
+
+    with open(os.path.join(dirname, "profit-loss-input.txt"), "a") as file:
+        file.write(f"{f_date},{portfolio[index][0]},{value}\n")
 
 
 def cash_snapshot():
     global cash, date
 
     with open(os.path.join(dirname, "cash-input.txt"), "a") as file:
-        cash_comp = [init_cash_cat_prop[i] * cash for i, x in enumerate(init_cash_cat)]
+        cash_comp = [cash_cat_prop[i] * cash for i, x in enumerate(cash_cat)]
 
         cash_comp[-1] = cash - sum(cash_comp[:-1])
 
-        st = " + ".join([f"{x:.2f} ({init_cash_cat[i]})" for i, x in enumerate(cash_comp)])
+        st = " + ".join([f"{x:.2f} ({cash_cat[i]})" for i, x in enumerate(cash_comp)])
 
         f_date = datetime.strftime(date, input_date_format)
 
@@ -147,6 +152,8 @@ with open(os.path.join(dirname, "income-input.txt"), "w") as file:
     file.write("date,value\n")
 with open(os.path.join(dirname, "savings-input.txt"), "w") as file:
     file.write("date,type,name,quantity,value\n")
+with open(os.path.join(dirname, "profit-loss-input.txt"), "w") as file:
+    file.write("date,name,value\n")
 with open(os.path.join(dirname, "cash-input.txt"), "w") as file:
     file.write("date,cash\n")
 
@@ -171,7 +178,7 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
     # Updates asset prices
     for asset in portfolio:
         if asset[3] == "share":
-            asset[1] += norm.rvs(asset_growth_mean, asset_growth_sd)
+            asset[1] += round(np.exp(norm.rvs(asset_growth_mean, asset_growth_sd)), 2)
             with open(os.path.join(dirname, f"assets/{asset[0]}.txt"), "a") as file:
                 f_date = datetime.strftime(date, input_date_format)
                 file.write(f"{f_date},{asset[1]}\n")
@@ -203,7 +210,7 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
 
     # Irregular expenses
     rv_u = uniform.rvs(size=len(exp_cats))
-    mu = exp_mean + cash * exp_multi[i] / 1000
+    mu = np.array(exp_mean) + cash * exp_multi[i] / 1000
     rv_n = norm.rvs(mu, exp_sd, size=len(exp_cats)).round(2)
     for i in range(len(exp_cats)):
         if rv_u[i] < exp_days[i] / 365:
@@ -240,7 +247,8 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
     # Pays of debt
     if date.day == 1:
         for i in range(len(portfolio)):
-            if portfolio[i][3] == "debt":
+            if portfolio[i][3] == "debt" and portfolio[i][1] * portfolio[i][2] < 0:
                 savings(i, "S", -init_debt * debt_p)
+                profit_loss(i, portfolio[i][1] * portfolio[i][2] * debt_r)
 
     date = date + timedelta(days=1)
