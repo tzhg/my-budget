@@ -19,17 +19,17 @@ I designed this tool for my own purposes,
 to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
 
-# How to use
+## How to use
 
 1. Create directory and add your data (see `src/data-simulated` for an example).
 2. Change `data-dir` variable in `src/build-data.py` to point to your data directory.
 2. Run `src/build-data.py` to build `src/data.json`.
 3. Run `npm run build` to build static website in `dist` directory.
 
-# Dependencies
+### Dependencies
 
 * **Python libraries**: Pandas, NumPy.
-* **npm modules**: webpack, webpack-cli, webpack-dev-server, css-loader, style-loader
+* **npm modules**: webpack, webpack-cli, webpack-dev-server, css-loader, style-loader.
 
 ## Input data
 
