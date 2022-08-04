@@ -11,8 +11,8 @@ Data variables:
 - Breakdown of expenses.
 
 Time periods:
-- Current month ("MTD"),
-- Average of last 12 months ("12M avg"),
+- Current month ("MTD").
+- Average of last 12 months ("12M avg").
 - All previous months.
 
 I designed this tool for my own purposes,
@@ -35,63 +35,63 @@ However, I hope that it may be helpful or inspiring to others.
 
 ### Recording cash
 
-1. Cash refers to physical cash and demand deposit accounts denominated in the local currency.
+* Cash refers to physical cash and demand deposit accounts denominated in the local currency.
 
-2. Each row in `cash-input.csv` represents a cash snapshot, which is a record of the amount cash held at a specific point in time.
+* Each row in `cash-input.csv` represents a cash snapshot, which is a record of the amount cash held at a specific point in time.
 
-3. It is necessary to take a snapshot on the first day to record the initial amount of cash.
+* It is necessary to take a snapshot on the first day to record the initial amount of cash.
    No further snapshot are required, as future cash is calculated automatically using cash flow data.
 
-4. For each snapshot the program calculates any discrepancies and records them as errors/omissions,
+* For each snapshot the program calculates any discrepancies and records them as errors/omissions,
    which are included in Income or Expenses.
 
-5. The snapshot must take place at the beginning of the given day, before any cash flow entries.
+* The snapshot must take place at the beginning of the given day, before any cash flow entries.
 
-6. The amount of cash can be provided as a single number,
+* The amount of cash can be provided as a single number,
    or broken into sources (e.g. different bank accounts) for convenience.
 
 ### Recording savings
 
-1. Savings refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
+* Savings refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
 
-2. There is no clear divide between real assets and consumable goods (which are recorded as an expense).
+* There is no clear divide between real assets and consumable goods (which are recorded as an expense).
    Expensive goods which retain their value can be considered real assets.
 
-3. In `savings-input.csv`, initial savings are denoted with `type="I"`,
+* In `savings-input.csv`, initial savings are denoted with `type="I"`,
    assets to buy with `type="B"`, and assets to sell with `type="S"`.
 
-4. When assets are bought or sold, the quantity and value per unit are recorded.
+* When assets are bought or sold, the quantity and value per unit are recorded.
    For fungible goods, the quantity may be the number of units bought or sold,
    and the value a price index (e.g. share price).
    For non-fungible goods, the quantity can be set to 1, and the value the total value.
 
-5. Assets are tracked over time using a unique name.
+* Assets are tracked over time using a unique name.
 
-6. Capital gains and losses are calculated first in first out.
+* Capital gains and losses are calculated first in first out.
 
-7. Capital appreciation and depreciation can be taken into account using prices in the files `assets/<name>.csv`,
+* Capital appreciation and depreciation can be taken into account using prices in the files `assets/<name>.csv`,
    where <name> is the name of the asset.
    The prices do not have to be updated daily, but must contain at least the value on the day of purchase.
 
-8. Debt is treated as an asset with negative value. Paying off the principal is recorded as selling the asset.
+* Debt is treated as an asset with negative value. Paying off the principal is recorded as selling the asset.
 
 ### Recording cash flows
 
-1. Cash flow refers to any movement of cash. It is divided into non-investment income and expenses, and investment profit and loss.
+* Cash flow refers to any movement of cash. It is divided into non-investment income and expenses, and investment profit and loss.
    These are shown on the chart as "Income", "Expenses", "Profit", and "Loss" respectively.
 
-2. Expenses for buying savings are not recorded immediately as cash flow, but are subtracted from income when they are sold.
+* Expenses for buying savings are not recorded immediately as cash flow, but are subtracted from income when they are sold.
    This is to prevent investments from dominating regular expenses.
 
-3. Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
+* Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
 
-4. Dividends and interest payments, both inbound and outbound, have to be manually recorded in `profit-loss-input.csv`.
+* Dividends and interest payments, both inbound and outbound, have to be manually recorded in `profit-loss-input.csv`.
 
-5. Non-investment cash flows are recorded in `income-input.csv` and `expenses-input.csv`.
+* Non-investment cash flows are recorded in `income-input.csv` and `expenses-input.csv`.
 
-6. Expenses are categorised into six categories plus "Other".
+* Expenses are categorised into six categories plus "Other".
    "Other" expenses are not shown on the breakdown of expenses chart.
 
-7. Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
+* Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
    can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
    along with a regular cash flow.
