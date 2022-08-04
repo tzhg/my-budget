@@ -1,7 +1,7 @@
-# Budget visualiser
+# my-budget
 
 This is a simple tool for visualising household financial data.
-A demo, using simulated data, is available [here](https://tzhg.github.io/cash-flower).
+A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/).
 After providing it with the necessary data,
 the program illustrates various variables over various time periods using bar charts.
 
@@ -19,13 +19,25 @@ I designed this tool for my own purposes,
 to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
 
-## Details
+# How to use
+
+1. Create directory and add your data (see `src/data-simulated` for an example).
+2. Change `data-dir` variable in `src/build-data.py` to point to your data directory.
+2. Run `src/build-data.py` to build `src/data.json`.
+3. Run `npm run build` to build static website in `dist` directory.
+
+# Dependencies
+
+* **Python libraries**: Pandas, NumPy.
+* **npm modules**: webpack, webpack-cli, webpack-dev-server, css-loader, style-loader
+
+## Input data
 
 ### Recording cash
 
 1. Cash refers to physical cash and demand deposit accounts denominated in the local currency.
 
-2. Each row in `data/cash-input.txt` represents a cash snapshot, which is a record of the amount cash held at a specific point in time.
+2. Each row in `cash-input.csv` represents a cash snapshot, which is a record of the amount cash held at a specific point in time.
 
 3. It is necessary to take a snapshot on the first day to record the initial amount of cash.
    No further snapshot are required, as future cash is calculated automatically using cash flow data.
@@ -45,7 +57,7 @@ However, I hope that it may be helpful or inspiring to others.
 2. There is no clear divide between real assets and consumable goods (which are recorded as an expense).
    Expensive goods which retain their value can be considered real assets.
 
-3. In `data/savings-input.txt`, initial savings are denoted with `type="I"`,
+3. In `savings-input.csv`, initial savings are denoted with `type="I"`,
    assets to buy with `type="B"`, and assets to sell with `type="S"`.
 
 4. When assets are bought or sold, the quantity and value per unit are recorded.
@@ -57,7 +69,7 @@ However, I hope that it may be helpful or inspiring to others.
 
 6. Capital gains and losses are calculated first in first out.
 
-7. Capital appreciation and depreciation can be taken into account using prices in the files `data/assets/<name>.txt`,
+7. Capital appreciation and depreciation can be taken into account using prices in the files `assets/<name>.csv`,
    where <name> is the name of the asset.
    The prices do not have to be updated daily, but must contain at least the value on the day of purchase.
 
@@ -73,9 +85,9 @@ However, I hope that it may be helpful or inspiring to others.
 
 3. Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, interest.
 
-4. Dividends and interest payments, both inbound and outbound, have to be manually recorded in `data/profit-loss-input.txt`.
+4. Dividends and interest payments, both inbound and outbound, have to be manually recorded in `profit-loss-input.csv`.
 
-5. Non-investment cash flows are recorded in `data/income-input.txt` and `data/expenses-input.txt`.
+5. Non-investment cash flows are recorded in `income-input.csv` and `expenses-input.csv`.
 
 6. Expenses are categorised into six categories plus "Other".
    "Other" expenses are not shown on the breakdown of expenses chart.
