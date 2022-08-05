@@ -1,64 +1,16 @@
-/*! HTML5 Boilerplate v8.0.0 | MIT License | https://html5boilerplate.com/ */
-
-/* main.css 2.1.0 | MIT License | https://github.com/h5bp/main.css#readme */
-/*
- * What follows is the result of much research on cross-browser styling.
- * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
- * Kroc Camen, and the H5BP dev community and team.
- */
-
-/* ==========================================================================
-   Base styles: opinionated defaults
-   ========================================================================== */
-
-html {
-  color: #222;
-  font-size: 1em;
-  line-height: 1.4;
+:root {
+   --light-grey: #d1cbc7;
+   --black: #222325;
 }
-
-/*
- * Remove text-shadow in selection highlight:
- * https://twitter.com/miketaylr/status/12228805301
- *
- * Vendor-prefixed and regular ::selection selectors cannot be combined:
- * https://stackoverflow.com/a/16982510/7133471
- *
- * Customize the background color to match your design.
- */
-
-::-moz-selection {
-  background: #b3d4fc;
-  text-shadow: none;
-}
-
-::selection {
-  background: #b3d4fc;
-  text-shadow: none;
-}
-
-/*
- * Remove the gap between audio, canvas, iframes,
- * images, videos and the bottom of their containers:
- * https://github.com/h5bp/html5-boilerplate/issues/440
- */
-
-audio,
-canvas,
-iframe,
-img,
-svg,
-video {
-  vertical-align: middle;
-}
-
-/* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
 
 body {
-    font-family: "Inter", sans-serif;
-    color: #222325;
+    margin: 0px;
+}
+
+html {
+    font-family: "Open Sans", sans-serif;
+    color: var(--black);
+    line-height: 1.5;
 }
 
 .main {
@@ -68,6 +20,9 @@ body {
 
 .head-grid {
     display: grid;
+    background-color: #f1edeb;
+    margin-bottom: 25px;
+    padding-top: 30px;
 }
 
 .head-00 { grid-area: h00; }
@@ -88,11 +43,6 @@ body {
 .body-1 { grid-area: b1; }
 .body-2 { grid-area: b2; }
 
-.divider {
-    border-top: 2px solid #222325;
-    padding-bottom: 35px;
-}
-
 .title {
     width: 100%;
     font-weight: 700;
@@ -105,49 +55,50 @@ body {
     width: 100%;
     font-weight: 700;
     font-family: "Playfair Display", serif;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-.head-01, .head-11, .head-21 {
-    margin-bottom: 5px;
-}
+.label-cash { grid-area: label-cash; }
+.label-financial { grid-area: label-financial; }
+.label-real { grid-area: label-real; }
+.label-debt { grid-area: label-debt; }
+.label-income { grid-area: label-income; }
+.label-expenses { grid-area: label-expenses; }
+.label-profit { grid-area: label-profit; }
+.label-loss { grid-area: label-loss; }
+.label-housing { grid-area: label-housing; }
+.label-food { grid-area: label-food; }
+.label-shopping { grid-area: label-shopping; }
+.label-utilities { grid-area: label-utilities; }
+.label-health { grid-area: label-health; }
+.label-leisure { grid-area: label-leisure; }
 
-.label-0 { grid-area: e0; }
-.label-1 { grid-area: e1; }
-.label-2 { grid-area: e2; }
-.label-3 { grid-area: e3; }
-.label-4 { grid-area: e4; }
-.label-5 { grid-area: e5; }
-.label-6 { grid-area: e6; }
-.label-7 { grid-area: e7; }
-.label-8 { grid-area: e8; }
-.label-9 { grid-area: e9; }
-.label-10 { grid-area: e10; }
-.label-11 { grid-area: e11; }
-.label-12 { grid-area: e12; }
+.val-cash { grid-area: val-cash; }
+.val-financial { grid-area: val-financial; }
+.val-real { grid-area: val-real; }
+.val-debt { grid-area: val-debt; }
+.val-income { grid-area: val-income; }
+.val-expenses { grid-area: val-expenses; }
+.val-profit { grid-area: val-profit; }
+.val-loss { grid-area: val-loss; }
+.val-housing { grid-area: val-housing; }
+.val-food { grid-area: val-food; }
+.val-shopping { grid-area: val-shopping; }
+.val-utilities { grid-area: val-utilities; }
+.val-health { grid-area: val-health; }
+.val-leisure { grid-area: val-leisure; }
 
-.val-0 { grid-area: f0; }
-.val-1 { grid-area: f1; }
-.val-2 { grid-area: f2; }
-.val-3 { grid-area: f3; }
-.val-4 { grid-area: f4; }
-.val-5 { grid-area: f5; }
-.val-6 { grid-area: f6; }
-.val-7 { grid-area: f7; }
-.val-8 { grid-area: f8; }
-.val-9 { grid-area: f9; }
-.val-10 { grid-area: f10; }
-.val-11 { grid-area: f11; }
-.val-12 { grid-area: f12; }
+.head-net-assets { grid-area: net-assets; }
+.head-net-income { grid-area: net-income; }
 
 .head-01 {
     display: grid;
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        ". . . . ."
-        "e0 f0 . e1 f1"
-        "e2 f2 . . .";
+        "label-cash val-cash . label-financial val-financial"
+        "label-debt val-debt . label-real      val-real"
+        "net-assets net-assets net-assets net-assets net-assets";
     row-gap: 2px;
 }
 
@@ -156,9 +107,9 @@ body {
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        ". . . . ."
-        "e3 f3 . e5 f5"
-        "e4 f4 . e6 f6";
+        "label-income   val-income   . label-profit val-profit"
+        "label-expenses val-expenses . label-loss   val-loss"
+        "net-income net-income net-income net-income net-income";
     row-gap: 2px;
 }
 
@@ -167,15 +118,32 @@ body {
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        "e7 f7 . e10 f10"
-        "e8 f8 . e11 f11"
-        "e9 f9 . e12 f12";
+        "label-housing  val-housing  . label-utilities val-utilities"
+        "label-food     val-food     . label-health    val-health"
+        "label-shopping val-shopping . label-leisure   val-leisure";
     row-gap: 2px;
 }
 
-.head-label {
+.head-net-assets, .head-net-income {
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.head-net-assets > .label, .head-net-income .label {
     margin-right: 5px;
+}
+
+.head-net-assets, .head-net-income {
     font-weight: 700;
+}
+
+.head-01, .head-11, .head-21 {
+    margin-bottom: 10px;
+}
+
+.head-label {
+    display: flex;
+    flex-flow: row nowrap;
 }
 
 .head-val {
@@ -183,18 +151,15 @@ body {
 }
 
 .legend-icon {
-    position: relative;
     width: 12px;
     height: 12px;
-    border-radius: 6px;
+    border-radius: 30px;
     display: inline-block;
-    top: 1px;
-    margin-right: 1px;
+    position: relative;
 }
 
 .chart-container {
     position: relative;
-    margin-left: 2px;
     margin-bottom: 50px;
 }
 
@@ -202,14 +167,15 @@ body {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    row-gap: 11px;
+    row-gap: 12px;
     margin-top: 5px;
     margin-bottom: 5px;
+    margin-left: 2px;
 }
 
 .chart > div {
     position: relative;
-    height: 19px;
+    height: 21px;
 }
 
 .chart > div > div {
@@ -226,10 +192,10 @@ body {
 
 .year-row {
     font-weight: 700;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
 }
 
- .body-column {
+.body-column {
     display: flex;
     flex-flow: column nowrap;
 }
@@ -237,7 +203,7 @@ body {
 .grid-line {
     position: absolute;
     top: 0;
-    border-left: 1px solid #e5e8ed;
+    border-left: 1px solid var(--light-grey);
     height: 100%;
     width: 5px;
     pointer-events: none;
@@ -246,8 +212,7 @@ body {
 .grid-line-first {
     position: absolute;
     top: 0;
-    left: -2px;
-    border-left: 2px solid #222325;
+    border-left: 2px solid var(--black);
     height: 100%;
     width: 5px;
     pointer-events: none;
@@ -256,7 +221,7 @@ body {
 
 .grid-label {
     position: absolute;
-    bottom: -22px;
+    bottom: -20px;
 }
 
 .time-axis-label {
@@ -266,19 +231,20 @@ body {
     text-align: right;
 }
 
-.label-0 .legend-icon { background-color: #edc948; }
-.label-1 .legend-icon { background-color: #bab0ac; }
-.label-2 .legend-icon { background-color: #5a5f68; }
-.label-3 .legend-icon { background-color: #59a14f; }
-.label-4 .legend-icon { background-color: #e15759; }
-.label-5 .legend-icon { background-color: #3e7137; }
-.label-6 .legend-icon { background-color: #b92123; }
-.label-7 .legend-icon { background-color: #4e79a7; }
-.label-8 .legend-icon { background-color: #b07aa1; }
-.label-9 .legend-icon { background-color: #9c755f; }
-.label-10 .legend-icon { background-color: #76b7b2; }
-.label-11 .legend-icon { background-color: #ff9da7; }
-.label-12 .legend-icon { background-color: #f28e2b; }
+.label-cash .legend-icon { background-color: #dbd569; }
+.label-financial .legend-icon { background-color: #bfab58; }
+.label-real .legend-icon { background-color: #95724b; }
+.label-debt .legend-icon { background-color: #564337; }
+.label-income .legend-icon { background-color: #83b371; }
+.label-expenses .legend-icon { background-color: #c57368; }
+.label-profit .legend-icon { background-color: #597a4e; }
+.label-loss .legend-icon { background-color: #9b564c; }
+.label-housing .legend-icon { background-color: #99e7d7; }
+.label-food .legend-icon { background-color: #5f88c1; }
+.label-shopping .legend-icon { background-color: #d998c9; }
+.label-utilities .legend-icon { background-color: #75c5d5; }
+.label-health .legend-icon { background-color: #344674; }
+.label-leisure .legend-icon { background-color: #916fa9; }
 
 .tooltip {
     background-color: white;
@@ -301,11 +267,9 @@ body {
     font-weight: 700;
 }
 
-/* Fixed margins */
 @media (min-width: 0px) {
-    .main {
-        padding-top: 80px;
-        padding-bottom: 80px;
+    .head-grid {
+        padding-top: 30px;
     }
 
     .head-grid {
@@ -331,45 +295,41 @@ body {
             ". b2 .";
     }
 
-    body {
+    html {
         font-size: 10px;
     }
 
     .title-date {
-        font-size: 24px;
+        font-size: 25px;
     }
 
     .head-00 {
         text-align: center;
     }
-}
 
-@media (min-width: 330px) {
-    .head-grid {
-        grid-template-columns: 2fr calc(125px + 28%) 1fr;
+    .legend-icon {
+        width: 10px;
+        height: 10px;
+        margin-right: 2px;
+        top: 2px;
     }
 
-    .body-grid {
-        grid-template-columns: 2fr calc(125px + 28%) 1fr;
-    }
-
-    body {
-        font-size: 12px;
-    }
-
-    .title-date {
-        font-size: 32px;
+    .head-label {
+        margin-right: 4px;
     }
 }
 
-@media (min-width: 400px) {
+@media (min-width: 450px) {
     .main {
-        padding-top: 100px;
-        padding-bottom: 100px;
+        padding-bottom: 30px;
     }
 
     .head-grid {
-        grid-template-columns: 1fr 232px 1fr;
+        padding-top: 60px;
+    }
+
+    .head-grid {
+        grid-template-columns: 1fr 302px 1fr;
         grid-template-areas:
             ". h00 ."
             ". h01 ."
@@ -381,39 +341,77 @@ body {
     }
 
     .body-grid {
-        grid-template-columns: 1fr 232px 1fr;
+        grid-template-columns: 1fr 302px 1fr;
     }
 
     .head-00 {
         text-align: left;
     }
+
+    .title-date {
+        font-size: 30px;
+    }
+
+    html {
+        font-size: 12px;
+    }
+
+    .legend-icon {
+        width: 12px;
+        height: 12px;
+        margin-right: 4px;
+        top: 2px;
+    }
+
+    .head-label {
+        margin-right: 6px;
+    }
 }
 
-@media (min-width: 750px) {
+@media (min-width: 700px) {
     .head-grid {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 2fr 1fr;
     }
 
     .body-grid {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    .title-date {
+        font-size: 42px;
+    }
+
+    html {
+        font-size: 14px;
+    }
+
+    .legend-icon {
+        width: 13px;
+        height: 13px;
+        margin-right: 5px;
+        top: 4px;
+    }
+
+    .head-label {
+        margin-right: 8px;
     }
 }
 
-@media (min-width: 1250px) {
+@media (min-width: 1500px) {
     .head-grid {
-        grid-template-columns: auto 232px 232px 232px auto;
+        grid-template-columns: auto 302px 302px 302px auto;
         grid-template-areas:
             ". h00 h00 h00 ."
             ". h01 h11 h21 ."
             ". h02 h12 h22 .";
-        column-gap: 116px;
+        column-gap: 151px;
     }
 
     .body-grid {
-        grid-template-columns: auto 232px 232px 232px auto;
+        grid-template-columns: auto 302px 302px 302px auto;
         grid-template-areas:
             ". d0 d0 d0 ."
             ". b0 b1 b2 .";
-        column-gap: 116px;
+        column-gap: 151px;
     }
 }

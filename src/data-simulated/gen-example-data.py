@@ -58,12 +58,13 @@ debt_p = 0.01
 debt_r = 0.01
 
 # Portfolio of savings assets in simulation
-# Columns: name, unit value, quantity held
+# Columns: name, unit value, quantity held, category, description
 portfolio = [
-    ["a0", 1, 0, "share"],
-    ["a1", 1, 0, "share"],
-    ["a2", 1, 0, "share"],
-    ["d0", -init_debt, 1, "debt"]]
+    ["a0", 1, 0, "financial", "Savings account"],
+    ["a1", 1, 0, "financial", "Apple stock"],
+    ["a2", 1, 0, "financial", "Pension"],
+    ["d0", -init_debt, 1, "debt", "Loan"],
+    ["r0", 5000, 1, "real", "Jewellery"]]
 
 asset_growth_mean = 0.001
 asset_growth_sd = 0.05
@@ -152,13 +153,18 @@ with open(os.path.join(dirname, "income-input.csv"), "w") as file:
     file.write("date,value\n")
 with open(os.path.join(dirname, "savings-input.csv"), "w") as file:
     file.write("date,type,name,quantity,value\n")
+with open(os.path.join(dirname, "savings-info.csv"), "w") as file:
+    file.write("name,category,description\n")
 with open(os.path.join(dirname, "profit-loss-input.csv"), "w") as file:
     file.write("date,name,value\n")
 with open(os.path.join(dirname, "cash-input.csv"), "w") as file:
     file.write("date,cash\n")
 
 for i in range(len(portfolio)):
-    if portfolio[i][3] == "share":
+    with open(os.path.join(dirname, "savings-info.csv"), "a") as file:
+        file.write(f"{portfolio[i][0]},{portfolio[i][3]},{portfolio[i][4]}\n")
+
+    if portfolio[i][3] == "financial":
         with open(os.path.join(dirname, f"assets/{portfolio[i][0]}.csv"), "w") as file:
             file.write("date,value\n")
 
@@ -177,7 +183,7 @@ for i in range(len(portfolio)):
 while date < datetime.strptime(end_date, "%Y-%m-%d"):
     # Updates asset prices
     for asset in portfolio:
-        if asset[3] == "share":
+        if asset[3] == "financial":
             asset[1] += round(np.exp(norm.rvs(asset_growth_mean, asset_growth_sd)), 2)
             with open(os.path.join(dirname, f"assets/{asset[0]}.csv"), "a") as file:
                 f_date = datetime.strftime(date, input_date_format)
@@ -226,7 +232,7 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
         if portfolio[i][3] == "debt" and portfolio[i][1] * portfolio[i][2] < 0:
             debt = i
     for i in range(len(portfolio)):
-        if portfolio[i][3] == "share":
+        if portfolio[i][3] == "financial":
             if rv_u[i] < svgb_days / 365:
                 value = max(0, rv_n[i])
                 if debt == -1:
@@ -239,7 +245,7 @@ while date < datetime.strptime(end_date, "%Y-%m-%d"):
     mu = svgs_mean + cash * svgs_multi / 1000
     rv_n = norm.rvs(mu, svgs_sd, size=len(portfolio)).round(2)
     for i in range(len(portfolio)):
-        if portfolio[i][3] == "share":
+        if portfolio[i][3] == "financial":
             if rv_u[i] < svgs_days / 365:
                 value = max(0, rv_n[i])
                 savings(i, "S", value)

@@ -11,7 +11,7 @@ input_date_format = "%d/%m/%Y"
 
 # Directory of input data
 #data_dir = "data-simulated"
-data_dir = "data"
+data_dir = "data-simulated"
 
 # Current directory
 dirname = os.path.dirname(os.path.abspath(__file__))
@@ -21,6 +21,7 @@ inc_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/income-input.csv"))
 csh_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/cash-input.csv"))
 svg_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/savings-input.csv"))
 prl_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/profit-loss-input.csv"))
+sin_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/savings-info.csv"))
 
 asset_dir = os.path.join(dirname, f"./{data_dir}/assets")
 
@@ -161,26 +162,36 @@ month_idx = 0
 
 portfolio = []
 
-savings_list = []
+# Types of savings
+financial_list = []
+real_list = []
 debt_list = []
+
+# Profits and losses
 prl_list = []
+
+svg_df = pd.merge(svg_df, sin_df, how="left", on="name")
 
 for i, row in svg_df.iterrows():
     # Finishes month
     if row["month"] > month_idx:
         while row["month"] > month_idx:
             pf_value = [
-                float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
-                if ass[1] in ass_df
-                else float(ass[3] * ass[2])
-                for ass in portfolio]
-            savings_list.append(sum([max(val, 0) for val in pf_value]))
-            debt_list.append(sum([-min(val, 0) for val in pf_value]))
+                [
+                    float(ass_df[n][ass_df[n]["date"] <= d].iloc[-1]["value"] * q),
+                    c]
+                if n in ass_df
+                else [float(v * q), c]
+                for d, n, q, v, c in portfolio]
+
+            financial_list.append(sum([val for val, cat in pf_value if cat == "financial"]))
+            real_list.append(sum([val for val, cat in pf_value if cat == "real"]))
+            debt_list.append(sum([-val for val, cat in pf_value if cat == "debt"]))
 
             month_idx += 1
 
     if row["type"] == "I" or row["type"] == "B":
-        portfolio.append([row["date"], row["name"], row["quantity"], row["value"]])
+        portfolio.append([row["date"], row["name"], row["quantity"], row["value"], row["category"]])
     elif row["type"] == "S":
         q_to_sell = row["quantity"]
         j = 0
@@ -201,12 +212,15 @@ for i, row in svg_df.iterrows():
 # Adds final month
 while no_months > month_idx:
     pf_value = [
-        float(ass_df[ass[1]][ass_df[ass[1]]["date"] <= ass[0]].iloc[-1]["value"] * ass[2])
-        if ass[1] in ass_df
-        else float(ass[3] * ass[2])
-        for ass in portfolio]
-    savings_list.append(sum([max(val, 0) for val in pf_value]))
-    debt_list.append(sum([-min(val, 0) for val in pf_value]))
+        [float(ass_df[n][ass_df[n]["date"] <= d].iloc[-1]["value"] * q),
+            c]
+        if n in ass_df
+        else [float(v * q), c]
+        for d, n, q, v, c in portfolio]
+
+    financial_list.append(sum([val for val, cat in pf_value if cat == "financial"]))
+    real_list.append(sum([val for val, cat in pf_value if cat == "real"]))
+    debt_list.append(sum([-val for val, cat in pf_value if cat == "debt"]))
 
     month_idx += 1
 
@@ -248,35 +262,51 @@ loss_df = loss_df.reindex(range(no_months), fill_value=0)
 exp_df["total"] = exp_df.sum(axis=1)
 
 with open(os.path.join(dirname, f"./{data_dir}/viz-config.json"), "r") as file:
-    viz_para = json.load(file)
+    viz_config = json.load(file)
 
 info = {
     "startDate": start_date,
     "endDate": end_date
 }
 
-monthlyData = [
-    cash_list,
-    savings_list,
-    debt_list,
-    inc_df["value"].to_list(),
-    exp_df["total"].to_list(),
-    prof_df["value"].to_list(),
-    loss_df["value"].to_list(),
-    exp_df["value", "Housing"].to_list(),
-    exp_df["value", "Food"].to_list(),
-    exp_df["value", "Shopping"].to_list(),
-    exp_df["value", "Utilities"].to_list(),
-    exp_df["value", "Health"].to_list(),
-    exp_df["value", "Leisure"].to_list()]
+income_list = inc_df["value"].to_list()
+expenses_list = exp_df["total"].to_list()
+profit_list = prof_df["value"].to_list()
+loss_list = loss_df["value"].to_list()
+
+net_assets = [
+    cash_list[i] + financial_list[i] + real_list[i] - debt_list[i]
+    for i in range(no_months)];
+
+net_income = [
+    income_list[i] + profit_list[i] - expenses_list[i] - loss_list[i]
+    for i in range(no_months)];
+
+monthlyData = {
+    "cash": cash_list,
+    "financial": financial_list,
+    "real": real_list,
+    "debt": debt_list,
+    "netAssets": net_assets,
+    "income": income_list,
+    "expenses": expenses_list,
+    "profit": profit_list,
+    "loss": loss_list,
+    "netIncome": net_income,
+    "housing": exp_df["value", "Housing"].to_list(),
+    "food": exp_df["value", "Food"].to_list(),
+    "shopping": exp_df["value", "Shopping"].to_list(),
+    "utilities": exp_df["value", "Utilities"].to_list(),
+    "health": exp_df["value", "Health"].to_list(),
+    "leisure": exp_df["value", "Leisure"].to_list()}
 
 # [Current month, yearly average, historical months] for each variable
-data = [
-    [[lst[-1]], [np.mean(lst[-13:-1])], lst[-2::-1]]
-    for lst in monthlyData]
+data = {
+    key: [[val[-1]], [np.mean(val[-13:-1])], val[-2::-1]]
+    for (key, val) in monthlyData.items()}
 
 output = {
-    "para": viz_para,
+    "config": viz_config,
     "info": info,
     "data": data}
 

@@ -2,60 +2,96 @@
 
 "use strict";
 
-//import { importData } from "./importData.js";
-import dataImp from "./data.json";
-import "./style.css"
+import Data from "./data.json";
+import "./style.css";
 
 $(() => {
 
 const NS = "http://www.w3.org/2000/svg";
 
-//const dataImp = importData();
+const config = Data.config;
+const info = Data.info;
+const data = Data.data;
 
-const para = dataImp.para;
-const info = dataImp.info;
-const data = dataImp.data;
-
-const m = data[0][2].length;
+const m = data.cash[2].length;
 
 const chartWidth = 260;
-const rowHeight = 19;
+const rowHeight = 21;
 
 const intraPad = 1;
 
-const labels = [
-    "Cash",
-    "Savings",
-    "Debt",
-    "Income",
-    "Expenses",
-    "Profit",
-    "Loss",
-    "Housing",
-    "Food",
-    "Durable",
-    "Utilities",
-    "Health",
-    "Leisure"
-];
-
-const pal = [
-    "#edc948",
-    "#bab0ac",
-    "#5a5f68",
-    "#59a14f",
-    "#e15759",
-    "#3e7137",
-    "#b92123",
-    "#4e79a7",
-    "#b07aa1",
-    "#9c755f",
-    "#76b7b2",
-    "#ff9da7",
-    "#f28e2b"
-];
-
-const scale = [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2];
+const dataInfo = {
+    "cash": {
+        "label": "Cash",
+        "colour": "#dbd569",
+        "chart": 0
+    },
+    "financial": {
+        "label": "Financial assets",
+        "colour": "#bfab58",
+        "chart": 0
+    },
+    "real": {
+        "label": "Real assets",
+        "colour": "#95724b",
+        "chart": 0
+    },
+    "debt": {
+        "label": "Debt",
+        "colour": "#564337",
+        "chart": 0
+    },
+    "income": {
+        "label": "Income",
+        "colour": "#83b371",
+        "chart": 1
+    },
+    "expenses": {
+        "label": "Expenses",
+        "colour": "#c57368",
+        "chart": 1
+    },
+    "profit": {
+        "label": "Savings profit",
+        "colour": "#597a4e",
+        "chart": 1
+    },
+    "loss": {
+        "label": "Savings loss",
+        "colour": "#9b564c",
+        "chart": 1
+    },
+    "housing": {
+        "label": "Housing",
+        "colour": "#99e7d7",
+        "chart": 2
+    },
+    "food": {
+        "label": "Food",
+        "colour": "#5f88c1",
+        "chart": 2
+    },
+    "shopping": {
+        "label": "Shopping",
+        "colour": "#d998c9",
+        "chart": 2
+    },
+    "utilities": {
+        "label": "Utilities",
+        "colour": "#75c5d5",
+        "chart": 2
+    },
+    "health": {
+        "label": "Health",
+        "colour": "#344674",
+        "chart": 2
+    },
+    "leisure": {
+        "label": "Leisure",
+        "colour": "#916fa9",
+        "chart": 2
+    }
+}
 
 const formatVal = (value, style="default") => {
     /* https://stackoverflow.com/a/2901298 */
@@ -77,20 +113,19 @@ const formatVal = (value, style="default") => {
 
 const getWidth = (val, chart) => {
     const max_val = [
-        para.gridlines[0][para.gridlines[0].length - 1],
-        para.gridlines[1][para.gridlines[1].length - 1],
-        para.gridlines[2][para.gridlines[2].length - 1]
+        config.gridlines[0][config.gridlines[0].length - 1],
+        config.gridlines[1][config.gridlines[1].length - 1],
+        config.gridlines[2][config.gridlines[2].length - 1]
     ];
 
     return 100 * val / max_val[chart];
 };
 
-/* Bar widths in each chart */
-const dataPx = [
-    data.map((arr, i) => arr[0].map(val => getWidth(val, scale[i]))),
-    data.map((arr, i) => arr[1].map(val => getWidth(val, scale[i]))),
-    data.map((arr, i) => arr[2].map(val => getWidth(val, scale[i])))
-];
+const dataPx = Object.fromEntries(
+    Object.entries(dataInfo).map(
+        ([key, info], j) => [key, data[key].map(arr2 => arr2.map(val => getWidth(val, info.chart)))]
+    )
+);
 
 /* Returns month and year n months before current month */
 const getDate = (n) => {
@@ -136,8 +171,17 @@ const getTimeLabel = (chart, n, style) => {
 };
 
 const updateLegend = () => {
-    for (let i = 0; i < 13; ++i) {
-        $(`.val-${i}`).text(formatVal(data[i][0][0]));
+    /* Sets title */
+    $(".title-date > span").text(`${monthNames[info.endDate[1] - 1]}\xa0${info.endDate[2]}`);
+
+    for (let [key, value] of Object.entries(data)) {
+        if (key === "netAssets") {
+            $(`.head-net-assets > .val`).text(formatVal(value[0][0]));
+        } else if (key === "netIncome") {
+            $(`.head-net-income > .val`).text(formatVal(value[0][0]));
+        } else {
+            $(`.val-${key}`).text(formatVal(value[0][0]));
+        }
     }
 };
 
@@ -148,32 +192,42 @@ const drawChartBar = (chart, a, b, $dest) => {
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
         const $rect2 = $(document.createElement("div"))
+        const $rect3 = $(document.createElement("div"))
 
         $rect0.addClass("chart-rect");
         $rect1.addClass("chart-rect");
         $rect2.addClass("chart-rect");
+        $rect3.addClass("chart-rect");
 
-        $rect0.attr("data-rect", `0-${a}-${b}`);
-        $rect1.attr("data-rect", `1-${a}-${b}`);
-        $rect2.attr("data-rect", `2-${a}-${b}`);
+        $rect0.attr("data-rect", `cash-${a}-${b}`);
+        $rect1.attr("data-rect", `financial-${a}-${b}`);
+        $rect2.attr("data-rect", `real-${a}-${b}`);
+        $rect3.attr("data-rect", `debt-${a}-${b}`);
 
         $rect0.css({
-            "background-color": pal[0],
-            "width": `${dataPx[a][0][b]}%`,
+            "background-color": dataInfo.cash.colour,
+            "width": `${dataPx.cash[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
-            "background-color": pal[1],
-            "width": `${dataPx[a][1][b]}%`,
+            "background-color": dataInfo.financial.colour,
+            "width": `${dataPx.financial[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][0][b]}%`,
+            "left": `${dataPx.cash[a][b]}%`,
             "top": 0
         });
         $rect2.css({
-            "background-color": pal[2],
-            "width": `${dataPx[a][2][b]}%`,
+            "background-color": dataInfo.real.colour,
+            "width": `${dataPx.real[a][b]}%`,
+            "height": `${barHeight}px`,
+            "left": `${dataPx.cash[a][b] + dataPx.financial[a][b]}%`,
+            "top": 0
+        });
+        $rect3.css({
+            "background-color": dataInfo.debt.colour,
+            "width": `${dataPx.debt[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
@@ -182,7 +236,8 @@ const drawChartBar = (chart, a, b, $dest) => {
         $dest
             .append($rect0)
             .append($rect1)
-            .append($rect2);
+            .append($rect2)
+            .append($rect3);
     } else if (chart === 1) {
         const $rect0 = $(document.createElement("div"))
         const $rect1 = $(document.createElement("div"))
@@ -194,37 +249,37 @@ const drawChartBar = (chart, a, b, $dest) => {
         $rect2.addClass("chart-rect");
         $rect3.addClass("chart-rect");
 
-        $rect0.attr("data-rect", `4-${a}-${b}`);
-        $rect1.attr("data-rect", `3-${a}-${b}`);
-        $rect2.attr("data-rect", `6-${a}-${b}`);
-        $rect3.attr("data-rect", `5-${a}-${b}`);
+        $rect0.attr("data-rect", `expenses-${a}-${b}`);
+        $rect1.attr("data-rect", `income-${a}-${b}`);
+        $rect2.attr("data-rect", `loss-${a}-${b}`);
+        $rect3.attr("data-rect", `profit-${a}-${b}`);
 
         $rect0.css({
-            "background-color": pal[4],
-            "width": `${dataPx[a][4][b]}%`,
+            "background-color": dataInfo.expenses.colour,
+            "width": `${dataPx.expenses[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
         });
         $rect1.css({
-            "background-color": pal[3],
-            "width": `${dataPx[a][3][b]}%`,
+            "background-color": dataInfo.income.colour,
+            "width": `${dataPx.income[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect2.css({
-            "background-color": pal[6],
-            "width": `${dataPx[a][6][b]}%`,
+            "background-color": dataInfo.loss.colour,
+            "width": `${dataPx.loss[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][4][b]}%`,
+            "left": `${dataPx.expenses[a][b]}%`,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
-            "background-color": pal[5],
-            "width": `${dataPx[a][5][b]}%`,
+            "background-color": dataInfo.profit.colour,
+            "width": `${dataPx.profit[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][3][b]}%`,
+            "left": `${dataPx.income[a][b]}%`,
             "top": 0
         });
 
@@ -248,53 +303,53 @@ const drawChartBar = (chart, a, b, $dest) => {
         $rect4.addClass("chart-rect");
         $rect5.addClass("chart-rect");
 
-        $rect0.attr("data-rect", `7-${a}-${b}`);
-        $rect1.attr("data-rect", `8-${a}-${b}`);
-        $rect2.attr("data-rect", `9-${a}-${b}`);
-        $rect3.attr("data-rect", `10-${a}-${b}`);
-        $rect4.attr("data-rect", `11-${a}-${b}`);
-        $rect5.attr("data-rect", `12-${a}-${b}`);
+        $rect0.attr("data-rect", `housing-${a}-${b}`);
+        $rect1.attr("data-rect", `food-${a}-${b}`);
+        $rect2.attr("data-rect", `shopping-${a}-${b}`);
+        $rect3.attr("data-rect", `utilities-${a}-${b}`);
+        $rect4.attr("data-rect", `health-${a}-${b}`);
+        $rect5.attr("data-rect", `leisure-${a}-${b}`);
 
         $rect0.css({
-            "background-color": pal[7],
-            "width": `${dataPx[a][7][b]}%`,
+            "background-color": dataInfo.housing.colour,
+            "width": `${dataPx.housing[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
-            "background-color": pal[8],
-            "width": `${dataPx[a][8][b]}%`,
+            "background-color": dataInfo.food.colour,
+            "width": `${dataPx.food[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][7][b] + dataPx[a][10][b]}%`,
+            "left": `${dataPx.housing[a][b] + dataPx.utilities[a][b]}%`,
             "top": 0
         });
         $rect2.css({
-            "background-color": pal[9],
-            "width": `${dataPx[a][9][b]}%`,
+            "background-color": dataInfo.shopping.colour,
+            "width": `${dataPx.shopping[a][b]}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
-            "background-color": pal[10],
-            "width": `${dataPx[a][10][b]}%`,
+            "background-color": dataInfo.utilities.colour,
+            "width": `${dataPx.utilities[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][7][b]}%`,
+            "left": `${dataPx.housing[a][b]}%`,
             "top": 0
         });
         $rect4.css({
-            "background-color": pal[11],
-            "width": `${dataPx[a][11][b]}%`,
+            "background-color": dataInfo.health.colour,
+            "width": `${dataPx.health[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][7][b] + dataPx[a][10][b] + dataPx[a][8][b]}%`,
+            "left": `${dataPx.housing[a][b] + dataPx.utilities[a][b] + dataPx.food[a][b]}%`,
             "top": 0
         });
         $rect5.css({
-            "background-color": pal[12],
-            "width": `${dataPx[a][12][b]}%`,
+            "background-color": dataInfo.leisure.colour,
+            "width": `${dataPx.leisure[a][b]}%`,
             "height": `${barHeight}px`,
-            "left": `${dataPx[a][9][b]}%`,
+            "left": `${dataPx.shopping[a][b]}%`,
             "top": `${barHeight + intraPad}px`
         });
 
@@ -330,7 +385,7 @@ const drawChartBar = (chart, a, b, $dest) => {
 };
 
 const gridLines = (i, $dest) => {
-    para.gridlines[i].forEach((val, k) => {
+    config.gridlines[i].forEach((val, k) => {
         const $gridLine = $(document.createElement("div"))
         const $gridLabel = $(document.createElement("div"))
 
@@ -344,7 +399,7 @@ const gridLines = (i, $dest) => {
         if (k === 0) {
             $gridLine.addClass("grid-line-first");
             $gridLabel.css({
-                "left": `${-2 - $gridLabel.width() / 2}px`
+                "left": `${1 - $gridLabel.width() / 2}px`
             });
         } else {
             $gridLine.addClass("grid-line");
@@ -352,7 +407,7 @@ const gridLines = (i, $dest) => {
                 "left": `calc(${getWidth(val, i)}% - 1px)`
             });
             $gridLabel.css({
-                "left": `calc(${getWidth(val, i)}% + ${-1 - $gridLabel.width() / 2}px)`
+                "left": `calc(${getWidth(val, i)}% - ${$gridLabel.width() / 2}px)`
             });
         }
     });
@@ -513,8 +568,9 @@ const initTooltip = () => {
         ".chart-rect",
         "rect",
         (elem) => {
-            let rect = elem.dataset.rect.split("-");
-            rect = rect.map(x => Number(x));
+            const rect = elem.dataset.rect.split("-");
+            rect[1] = Number(rect[1]);
+            rect[2] = Number(rect[2]);
 
             let label1;
             if (rect[1] === 0) {
@@ -527,7 +583,14 @@ const initTooltip = () => {
             }
 
             const value = formatVal(data[rect[0]][rect[1]][rect[2]]);
-            const label2 = `${labels[rect[0]]}: ${value}`;
+            const label2 = `${dataInfo[rect[0]].label}: ${value}`;
+
+            let label3;
+            if (dataInfo[rect[0]].chart === 0) {
+                label3 = `Net assets: ${formatVal(data.netAssets[rect[1]][rect[2]])}`;
+            } else if (dataInfo[rect[0]].chart === 1) {
+                label3 = `Net income: ${formatVal(data.netIncome[rect[1]][rect[2]])}`;
+            }
 
             $(".tooltip").show();
             const $ttElem = $(".tooltip");
@@ -536,15 +599,19 @@ const initTooltip = () => {
             let $ttContent = $(document.createElement("div"));
             let $label1 = $(document.createElement("div"));
             let $label2 = $(document.createElement("div"));
+            let $label3 = $(document.createElement("div"));
 
             $label1.addClass("tt-1");
             $label2.addClass("tt-2");
+            $label3.addClass("tt-3");
 
             $label1.text(label1);
             $label2.text(label2);
+            $label3.text(label3);
 
             $ttContent.append($label1);
             $ttContent.append($label2);
+            $ttContent.append($label3);
 
             $ttElem.append($ttContent);
         },
@@ -563,10 +630,7 @@ const showTimeAxis = () => {
     }
 };
 
-
 (() => {
-    $(".title-date > span").text(`${info.endDate[0]}\xa0${monthNames[info.endDate[1] - 1]}\xa0${info.endDate[2]}`);
-
     updateLegend();
 	drawCharts();
     initTooltip();

@@ -8,97 +8,111 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Playfair+Display:ital@0;1&family=Roboto+Mono:wght@400;700&display=swa" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Playfair+Display:ital@0;1&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="main">
         <div class="head-grid">
             <div class="head-00">
-                <div class="title">My budget<span></span></div>
                 <div class="title-date"><span></span></div>
             </div>
             <div class="head-01">
-                <div class="head-label label-0">
+                <div class="head-label label-cash">
                     <div class="legend-icon"></div>
-                    Cash:
+                    <div>Cash:</div>
                 </div>
-                <div class="head-val val-0"></div>
-                <div class="head-label label-1">
+                <div class="head-val val-cash"></div>
+                <div class="head-label label-financial">
                     <div class="legend-icon"></div>
-                    Savings:
+                    <div>Financial&nbsp;assets:</div>
                 </div>
-                <div class="head-val val-1"></div>
-                <div class="head-label label-2">
+                <div class="head-val val-financial"></div>
+                <div class="head-label label-real">
                     <div class="legend-icon"></div>
-                    Debt:
+                    <div>Real&nbsp;assets:</div>
                 </div>
-                <div class="head-val val-2"></div>
+                <div class="head-val val-real"></div>
+                <div class="head-label label-debt">
+                    <div class="legend-icon"></div>
+                    <div>Debt:</div>
+                </div>
+                <div class="head-val val-debt"></div>
+                <div class="head-net-assets">
+                    <div class="label">Net&nbsp;assets:</div>
+                    <div class="val"></div>
+                </div>
             </div>
             <div class="chart-container head-02">
                 <div class="chart"></div>
             </div>
             <div class="head-11">
-                <div class="head-label label-4">
+                <div class="head-label label-expenses">
                     <div class="legend-icon"></div>
-                    Expenses:
+                    <div>Expenses:</div>
                 </div>
-                <div class="head-val val-4"></div>
-                <div class="head-label label-3">
+                <div class="head-val val-expenses"></div>
+                <div class="head-label label-income">
                     <div class="legend-icon"></div>
-                    Income:
+                    <div>Income:</div>
                 </div>
-                <div class="head-val val-3"></div>
-                <div class="head-label label-5">
+                <div class="head-val val-income"></div>
+                <div class="head-label label-profit">
                     <div class="legend-icon"></div>
-                    Profit:
+                    <div>Savings&nbsp;profit:</div>
                 </div>
-                <div class="head-val val-5"></div>
-                <div class="head-label label-6">
+                <div class="head-val val-profit"></div>
+                <div class="head-label label-loss">
                     <div class="legend-icon"></div>
-                    Loss:
+                    <div>Savings&nbsp;loss:</div>
                 </div>
-                <div class="head-val val-6"></div>
+                <div class="head-val val-loss"></div>
+                <div class="head-net-income">
+                    <div class="label">Net&nbsp;income:</div>
+                    <div class="val"></div>
+                </div>
             </div>
             <div class="chart-container head-12">
                 <div class="chart"></div>
             </div>
             <div class="head-21">
-                <div class="head-label label-7">
+                <div class="head-label label-housing">
                     <div class="legend-icon"></div>
-                    Housing:
+                    <div>Housing:</div>
                 </div>
-                <div class="head-val val-7"></div>
-                <div class="head-label label-8">
+                <div class="head-val val-housing"></div>
+                <div class="head-label label-food">
                     <div class="legend-icon"></div>
-                    Food:
+                    <div>Food:</div>
                 </div>
-                <div class="head-val val-8"></div>
-                <div class="head-label label-9">
+                <div class="head-val val-food"></div>
+                <div class="head-label label-shopping">
                     <div class="legend-icon"></div>
-                    Shopping:
+                    <div>Shopping:</div>
                 </div>
-                <div class="head-val val-9"></div>
-                <div class="head-label label-10">
+                <div class="head-val val-shopping"></div>
+                <div class="head-label label-utilities">
                     <div class="legend-icon"></div>
-                    Utilities:
+                    <div>Utilities:</div>
                 </div>
-                <div class="head-val val-10"></div>
-                <div class="head-label label-11">
+                <div class="head-val val-utilities"></div>
+                <div class="head-label label-health">
                     <div class="legend-icon"></div>
-                    Health:
+                    <div>Health:</div>
                 </div>
-                <div class="head-val val-11"></div>
-                <div class="head-label label-12">
+                <div class="head-val val-health"></div>
+                <div class="head-label label-leisure">
                     <div class="legend-icon"></div>
-                    Leisure:
+                    <div>Leisure:</div>
                 </div>
-                <div class="head-val val-12"></div>
+                <div class="head-val val-leisure"></div>
             </div>
             <div class="chart-container head-22">
                 <div class="chart"></div>
@@ -106,7 +120,6 @@
         </div>
 
         <div class="body-grid">
-            <div class="divider"></div>
             <div class="body-0 body-column"></div>
             <div class="body-1 body-column"></div>
             <div class="body-2 body-column"></div>
