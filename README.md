@@ -1,7 +1,7 @@
 # my-budget
 
 This is a simple tool for visualising household financial data.
-A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/).
+A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/dist/).
 After providing it with the necessary data,
 the program illustrates various variables over various time periods using bar charts.
 
