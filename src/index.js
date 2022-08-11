@@ -23,72 +23,72 @@ const intraPad = 1;
 const dataInfo = {
     "cash": {
         "label": "Cash",
-        "colour": "#dbd569",
+        "colour": "#cbcc64",
         "chart": 0
     },
     "financial": {
         "label": "Financial assets",
-        "colour": "#bfab58",
+        "colour": "#af9a40",
         "chart": 0
     },
     "real": {
         "label": "Real assets",
-        "colour": "#95724b",
+        "colour": "#765128",
         "chart": 0
     },
     "debt": {
         "label": "Debt",
-        "colour": "#564337",
+        "colour": "#c14c89",
         "chart": 0
     },
     "income": {
         "label": "Income",
-        "colour": "#83b371",
+        "colour": "#5da145",
         "chart": 1
     },
     "expenses": {
         "label": "Expenses",
-        "colour": "#c57368",
+        "colour": "#b85447",
         "chart": 1
     },
     "profit": {
         "label": "Savings profit",
-        "colour": "#597a4e",
+        "colour": "#366a24",
         "chart": 1
     },
     "loss": {
         "label": "Savings loss",
-        "colour": "#9b564c",
+        "colour": "#76332a",
         "chart": 1
     },
     "housing": {
         "label": "Housing",
-        "colour": "#99e7d7",
+        "colour": "#92ddd1",
         "chart": 2
     },
     "food": {
         "label": "Food",
-        "colour": "#5f88c1",
+        "colour": "#586abf",
         "chart": 2
     },
     "shopping": {
         "label": "Shopping",
-        "colour": "#d998c9",
+        "colour": "#bc98d9",
         "chart": 2
     },
     "utilities": {
         "label": "Utilities",
-        "colour": "#75c5d5",
+        "colour": "#68aecc",
         "chart": 2
     },
     "health": {
         "label": "Health",
-        "colour": "#344674",
+        "colour": "#261a3d",
         "chart": 2
     },
     "leisure": {
         "label": "Leisure",
-        "colour": "#916fa9",
+        "colour": "#994cb9",
         "chart": 2
     }
 }

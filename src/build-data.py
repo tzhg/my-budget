@@ -10,8 +10,8 @@ pd.options.mode.chained_assignment = None
 input_date_format = "%d/%m/%Y"
 
 # Directory of input data
-#data_dir = "data-simulated"
 data_dir = "data-simulated"
+#data_dir = "data"
 
 # Current directory
 dirname = os.path.dirname(os.path.abspath(__file__))

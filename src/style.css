@@ -212,9 +212,9 @@ html {
 .grid-line-first {
     position: absolute;
     top: 0;
-    border-left: 2px solid var(--black);
+    background-color: var(--black);
     height: 100%;
-    width: 5px;
+    width: 2px;
     pointer-events: none;
     z-index: 2;
 }
@@ -231,20 +231,20 @@ html {
     text-align: right;
 }
 
-.label-cash .legend-icon { background-color: #dbd569; }
-.label-financial .legend-icon { background-color: #bfab58; }
-.label-real .legend-icon { background-color: #95724b; }
-.label-debt .legend-icon { background-color: #564337; }
-.label-income .legend-icon { background-color: #83b371; }
-.label-expenses .legend-icon { background-color: #c57368; }
-.label-profit .legend-icon { background-color: #597a4e; }
-.label-loss .legend-icon { background-color: #9b564c; }
-.label-housing .legend-icon { background-color: #99e7d7; }
-.label-food .legend-icon { background-color: #5f88c1; }
-.label-shopping .legend-icon { background-color: #d998c9; }
-.label-utilities .legend-icon { background-color: #75c5d5; }
-.label-health .legend-icon { background-color: #344674; }
-.label-leisure .legend-icon { background-color: #916fa9; }
+.label-cash .legend-icon { background-color: #cbcc64; }
+.label-financial .legend-icon { background-color: #af9a40; }
+.label-real .legend-icon { background-color: #765128; }
+.label-debt .legend-icon { background-color: #c14c89; }
+.label-income .legend-icon { background-color: #5da145; }
+.label-expenses .legend-icon { background-color: #b85447; }
+.label-profit .legend-icon { background-color: #366a24; }
+.label-loss .legend-icon { background-color: #76332a; }
+.label-housing .legend-icon { background-color: #92ddd1; }
+.label-food .legend-icon { background-color: #586abf; }
+.label-shopping .legend-icon { background-color: #d498d9; }
+.label-utilities .legend-icon { background-color: #68aecc; }
+.label-health .legend-icon { background-color: #261a3d; }
+.label-leisure .legend-icon { background-color: #994cb9; }
 
 .tooltip {
     background-color: white;
