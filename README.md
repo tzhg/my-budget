@@ -53,7 +53,7 @@ which are included either in Income or Expenses.
 
 ### Recording savings
 
-*Savings* refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
+*Savings*, or *investment*, refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
 There is no clear divide between real assets and consumable goods (which are recorded as an expense).
 Expensive goods which retain their value can be considered real assets.
 
@@ -88,7 +88,7 @@ Expensive goods which retain their value can be considered real assets.
 
 ### Recording cash flows
 
-*Cash flow* refers to any movement of cash. It is divided into non-investment income and expenses, and investment (or savings) profit and loss.
+*Cash flow* refers to any movement of cash. It is divided into non-investment income and expenses, and investment profit and loss.
 Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, and interest.
 Capital gains and losses are calculated first in first out.
 
@@ -109,3 +109,8 @@ Capital gains and losses are calculated first in first out.
 * Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
   can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
   along with a regular cash flow.
+
+
+## To do
+
+* Data validation

@@ -367,13 +367,18 @@ const drawChartBar = (chart, a, b, $dest) => {
     $text.addClass("time-axis-label");
 
     let dateText;
+    let title;
     if (a === 0) {
         dateText = "MTD";
+        title = "Month to date";
     } else if (a === 1) {
         dateText = "12M\xa0avg";
+        title = "12-month\xa0average";
     } else if (a === 2) {
         dateText = `${monthNames[getDate(b + 1)[0]].slice(0, 3)}`;
     }
+
+    $text.prop("title", title);
 
     $text.text(dateText);
 
