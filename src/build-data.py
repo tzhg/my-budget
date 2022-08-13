@@ -269,9 +269,6 @@ loss_df = loss_df.reindex(range(no_months), fill_value=0)
 
 exp_df["total"] = exp_df.sum(axis=1)
 
-with open(os.path.join(dirname, f"./{data_dir}/viz-config.json"), "r") as file:
-    viz_config = json.load(file)
-
 info = {
     "startDate": [start_date.month, start_date.year],
     "endDate": [end_date.month, end_date.year]
@@ -314,7 +311,6 @@ data = {
     for (key, val) in monthlyData.items()}
 
 output = {
-    "config": viz_config,
     "info": info,
     "data": data}
 

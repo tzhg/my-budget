@@ -9,7 +9,6 @@ $(() => {
 
 const NS = "http://www.w3.org/2000/svg";
 
-const config = Data.config;
 const info = Data.info;
 const data = Data.data;
 
@@ -111,19 +110,60 @@ const formatVal = (value, style="default") => {
     return numberWithCommas(value);
 };
 
-const getWidth = (val, chart) => {
-    const max_val = [
-        config.gridlines[0][config.gridlines[0].length - 1],
-        config.gridlines[1][config.gridlines[1].length - 1],
-        config.gridlines[2][config.gridlines[2].length - 1]
-    ];
+/* Returns array of gridline values for maximum Y-axis value */
+const calcGridlines = (value) => {
+    let exp = 0;
+    let mant = value;
 
-    return 100 * val / max_val[chart];
+    while (mant > 10) {
+        mant /= 10;
+        exp += 1;
+    }
+
+    let round;
+    if (mant <= 1) {
+        round = [0, 0.2, 0.4, 0.6, 0.8, 1];
+    } else if (mant <= 1.5) {
+        round = [0, 0.5, 1, 1.5];
+    } else if (mant <= 2) {
+        round = [0, 0.5, 1, 1.5, 2];
+    } else if (mant <= 2.5) {
+        round = [0, 0.5, 1, 1.5, 2, 2.5];
+    } else if (mant <= 3) {
+        round = [0, 1, 2, 3];
+    } else if (mant <= 4) {
+        round = [0, 1, 2, 3, 4];
+    } else if (mant <= 5) {
+        round = [0, 1, 2, 3, 4, 5];
+    } else if (mant <= 6) {
+        round = [0, 2, 4, 6];
+    } else if (mant <= 8) {
+        round = [0, 2, 4, 6, 8];
+    } else {
+        round = [0, 2, 4, 6, 8, 10];
+    }
+
+    return round.map(x => x * 10 ** exp);
 };
+
+/* Returns maximum Y-axis value for each chart */
+const maxVal = (() => {
+    let maxY = [0, 0, 0];
+
+    for (let i = 0; i < m + 2; ++i) {
+        maxY[0] = Math.max(maxY[0], data.cash.flat()[i] + data.financial.flat()[i] + data.real.flat()[i]);
+        maxY[0] = Math.max(maxY[0], data.debt.flat()[i]);
+        maxY[1] = Math.max(maxY[1], data.income.flat()[i] + data.profit.flat()[i]);
+        maxY[1] = Math.max(maxY[1], data.expenses.flat()[i] + data.loss.flat()[i]);
+        maxY[2] = Math.max(maxY[2], data.housing.flat()[i] + data.utilities.flat()[i] + data.food.flat()[i] + data.health.flat()[i]);
+        maxY[2] = Math.max(maxY[2], data.shopping.flat()[i] + data.leisure.flat()[i]);
+    }
+    return maxY;
+})();
 
 const dataPx = Object.fromEntries(
     Object.entries(dataInfo).map(
-        ([key, info], j) => [key, data[key].map(arr2 => arr2.map(val => getWidth(val, info.chart)))]
+        ([key, info], j) => [key, data[key].map(arr2 => arr2.map(val => 100 * val / maxVal[info.chart]))]
     )
 );
 
@@ -390,7 +430,7 @@ const drawChartBar = (chart, a, b, $dest) => {
 };
 
 const gridLines = (i, $dest) => {
-    config.gridlines[i].forEach((val, k) => {
+    calcGridlines(maxVal[i]).forEach((val, k) => {
         const $gridLine = $(document.createElement("div"))
         const $gridLabel = $(document.createElement("div"))
 
@@ -409,10 +449,10 @@ const gridLines = (i, $dest) => {
         } else {
             $gridLine.addClass("grid-line");
             $gridLine.css({
-                "left": `calc(${getWidth(val, i)}% - 1px)`
+                "left": `calc(${100 * val / maxVal[i]}% - 1px)`
             });
             $gridLabel.css({
-                "left": `calc(${getWidth(val, i)}% - ${$gridLabel.width() / 2}px)`
+                "left": `calc(${100 * val / maxVal[i]}% - ${$gridLabel.width() / 2}px)`
             });
         }
     });
