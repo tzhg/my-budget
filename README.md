@@ -53,9 +53,13 @@ which are included either in Income or Expenses.
 
 ### Recording savings
 
-*Savings*, or *investment*, refers to non-cash assets, e.g. real estate, savings accounts, pensions, shares, bonds, foreign cash.
-There is no clear divide between real assets and consumable goods (which are recorded as an expense).
-Expensive goods which retain their value can be considered real assets.
+*Savings*, or *investment*, refers to non-cash assets and debt.
+Financial assets include savings accounts, pensions, shares, bonds, foreign cash, and given loans.
+Real assets can potentially include any durable good, and it may be difficult to decide if a good is an asset or an expense.
+As a general rule, I classify all goods as expenses (except for very expensive ones like property and vehicles).
+If a good is sold or refunded, I retroactively split it into an asset and an expense
+in such a way that the asset value is the maximum of the sale value and the original purchase value,
+and the expense value is the remainder.
 
 * `savings-input.csv` records the buying and selling of savings, and has columns **date**, **type**, **name**, **quantity**, and **value**.
 
@@ -103,13 +107,16 @@ Capital gains and losses are calculated first in first out.
 * Expenses for buying savings are not recorded immediately as cash flow, but are subtracted from income when they are sold.
   This is to prevent investments from dominating regular expenses.
 
-* Expenses are categorised into six categories plus "Other" (**category**).
+* Expenses are categorized into six categories plus "Other" (**category**).
   "Other" expenses are not shown on the breakdown of expenses chart.
 
 * Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
   can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
   along with a regular cash flow.
 
+* To avoid spurious income from the negation of previous expenses,
+durable goods that are later refunded or sold can be retroactively recorded as real assets,
+and expenses that are reimbursed (without the returning of a durable good) can be retroactively recorded as financial assets.
 
 ## To do
 

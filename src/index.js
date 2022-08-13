@@ -129,9 +129,9 @@ const dataPx = Object.fromEntries(
 
 /* Returns month and year n months before current month */
 const getDate = (n) => {
-    const month = info.startDate[1] - 1 + m - n;
+    const month = info.startDate[0] - 1 + m - n;
 
-    return [month % 12, info.startDate[2] + Math.floor(month / 12)];
+    return [month % 12, info.startDate[1] + Math.floor(month / 12)];
 };
 
 const monthNames = [
@@ -172,7 +172,7 @@ const getTimeLabel = (chart, n, style) => {
 
 const updateLegend = () => {
     /* Sets title */
-    $(".title-date > span").text(`${monthNames[info.endDate[1] - 1]}\xa0${info.endDate[2]}`);
+    $(".title-date > span").text(`${monthNames[info.endDate[0] - 1]}\xa0${info.endDate[1]}`);
 
     for (let [key, value] of Object.entries(data)) {
         if (key === "netAssets") {

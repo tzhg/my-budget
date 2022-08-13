@@ -43,14 +43,23 @@ prl_df["date"] = pd.to_datetime(prl_df["date"], format=input_date_format)
 for _, df in ass_df.items():
     df["date"] = pd.to_datetime(df["date"], format=input_date_format)
 
-start_date_dt = csh_df["date"].iat[0]
-start_date = [start_date_dt.day, start_date_dt.month, start_date_dt.year]
+start_date = csh_df["date"].iat[0]
+
+
+# Number of months between start and date d
+def num_months(d):
+    return (d.year - start_date.year) * 12 + d.month - start_date.month
+
 
 # Adds month column
-exp_df["month"] = (exp_df["date"].dt.year - start_date[2]) * 12 + exp_df["date"].dt.month - start_date[1]
-inc_df["month"] = (inc_df["date"].dt.year - start_date[2]) * 12 + inc_df["date"].dt.month - start_date[1]
-svg_df["month"] = (svg_df["date"].dt.year - start_date[2]) * 12 + svg_df["date"].dt.month - start_date[1]
-prl_df["month"] = (prl_df["date"].dt.year - start_date[2]) * 12 + prl_df["date"].dt.month - start_date[1]
+exp_df["month"] = num_months(exp_df["date"].dt)
+inc_df["month"] = num_months(inc_df["date"].dt)
+svg_df["month"] = num_months(svg_df["date"].dt)
+prl_df["month"] = num_months(prl_df["date"].dt)
+
+for _, df in ass_df.items():
+    df["month"] = num_months(df["date"].dt)
+
 
 # ============================================================================ #
 # Cash
@@ -81,7 +90,7 @@ exp2_df["value"] *= -1
 svg2B_df["value"] *= -1
 
 cfl_df = pd.concat([exp2_df, inc_df, svg2B_df, svg2S_df, prl2_df])
-cfl_df["month"] = (cfl_df["date"].dt.year - start_date[2]) * 12 + cfl_df["date"].dt.month - start_date[1]
+cfl_df["month"] = num_months(cfl_df["date"].dt)
 
 # Sorts by date
 cfl_df = cfl_df.sort_values(by=["date"])
@@ -90,10 +99,9 @@ cfl_df = cfl_df.reset_index()
 csh_df = csh_df.sort_values(by=["date"])
 csh_df = csh_df.reset_index()
 
-end_date_dt = max(cfl_df["date"].iat[-1], csh_df["date"].iat[-1])
-end_date = [end_date_dt.day, end_date_dt.month, end_date_dt.year]
+end_date = max(cfl_df["date"].iat[-1], csh_df["date"].iat[-1])
 
-no_months = (end_date[2] - start_date[2]) * 12 + end_date[1] - start_date[1] + 1
+no_months = num_months(end_date) + 1
 
 eo_list = []
 cash_list = []
@@ -152,8 +160,8 @@ exp_df = pd.concat(
     [exp_df, pd.DataFrame(exp_eo_list, columns=["date", "category", "value"])],
     ignore_index=True)
 
-exp_df["month"] = (exp_df["date"].dt.year - start_date[2]) * 12 + exp_df["date"].dt.month - start_date[1]
-inc_df["month"] = (inc_df["date"].dt.year - start_date[2]) * 12 + inc_df["date"].dt.month - start_date[1]
+exp_df["month"] = num_months(exp_df["date"].dt)
+inc_df["month"] = num_months(inc_df["date"].dt)
 
 # ============================================================================ #
 # Savings
@@ -178,7 +186,7 @@ for i, row in svg_df.iterrows():
         while row["month"] > month_idx:
             pf_value = [
                 [
-                    float(ass_df[n][ass_df[n]["date"] <= d].iloc[-1]["value"] * q),
+                    float(ass_df[n][ass_df[n]["month"] <= month_idx].iloc[-1]["value"] * q),
                     c]
                 if n in ass_df
                 else [float(v * q), c]
@@ -212,7 +220,7 @@ for i, row in svg_df.iterrows():
 # Adds final month
 while no_months > month_idx:
     pf_value = [
-        [float(ass_df[n][ass_df[n]["date"] <= d].iloc[-1]["value"] * q),
+        [float(ass_df[n][ass_df[n]["month"] <= month_idx].iloc[-1]["value"] * q),
             c]
         if n in ass_df
         else [float(v * q), c]
@@ -237,9 +245,9 @@ loss_df = pd.concat(
 loss_df["value"] *= -1
 
 if not prof_df.empty:
-    prof_df["month"] = (prof_df["date"].dt.year - start_date[2]) * 12 + prof_df["date"].dt.month - start_date[1]
+    prof_df["month"] = num_months(prof_df["date"].dt)
 if not loss_df.empty:
-    loss_df["month"] = (loss_df["date"].dt.year - start_date[2]) * 12 + loss_df["date"].dt.month - start_date[1]
+    loss_df["month"] = num_months(loss_df["date"].dt)
 
 # ============================================================================ #
 # Income and expenses
@@ -265,8 +273,8 @@ with open(os.path.join(dirname, f"./{data_dir}/viz-config.json"), "r") as file:
     viz_config = json.load(file)
 
 info = {
-    "startDate": start_date,
-    "endDate": end_date
+    "startDate": [start_date.month, start_date.year],
+    "endDate": [end_date.month, end_date.year]
 }
 
 income_list = inc_df["value"].to_list()
