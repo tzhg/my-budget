@@ -1,0 +1,46 @@
+{
+    "date": "01/01/2013",
+    "cash": [
+        {
+            "description": "Cash",
+            "value": 2800.0
+        },
+        {
+            "description": "Bank account",
+            "value": 4200.0
+        }
+    ],
+    "savings": [
+        {
+            "id": "a0",
+            "category": "Financial",
+            "quantity": 0,
+            "value": 1
+        },
+        {
+            "id": "a1",
+            "category": "Financial",
+            "quantity": 0,
+            "value": 1
+        },
+        {
+            "id": "a2",
+            "category": "Financial",
+            "quantity": 0,
+            "value": 1
+        },
+        {
+            "id": "r0",
+            "category": "Real",
+            "quantity": 1,
+            "value": 5000
+        }
+    ],
+    "debt": [
+        {
+            "id": "d0",
+            "quantity": 1,
+            "value": 20000
+        }
+    ]
+}

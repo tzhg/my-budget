@@ -1,0 +1,1549 @@
+[
+    {
+        "date": "05/01/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3196.8920000000003
+            },
+            {
+                "description": "Bank account",
+                "value": 4795.338
+            }
+        ]
+    },
+    {
+        "date": "19/01/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2985.500000000001
+            },
+            {
+                "description": "Bank account",
+                "value": 4478.250000000001
+            }
+        ]
+    },
+    {
+        "date": "02/02/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3055.220000000001
+            },
+            {
+                "description": "Bank account",
+                "value": 4582.830000000001
+            }
+        ]
+    },
+    {
+        "date": "13/02/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3134.196000000001
+            },
+            {
+                "description": "Bank account",
+                "value": 4701.294000000001
+            }
+        ]
+    },
+    {
+        "date": "21/02/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3104.844000000001
+            },
+            {
+                "description": "Bank account",
+                "value": 4657.2660000000005
+            }
+        ]
+    },
+    {
+        "date": "05/03/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3483.3160000000007
+            },
+            {
+                "description": "Bank account",
+                "value": 5224.974
+            }
+        ]
+    },
+    {
+        "date": "19/03/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3360.096
+            },
+            {
+                "description": "Bank account",
+                "value": 5040.144
+            }
+        ]
+    },
+    {
+        "date": "27/03/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3314.92
+            },
+            {
+                "description": "Bank account",
+                "value": 4972.379999999999
+            }
+        ]
+    },
+    {
+        "date": "14/04/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3503.328
+            },
+            {
+                "description": "Bank account",
+                "value": 5254.992
+            }
+        ]
+    },
+    {
+        "date": "12/05/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3844.368000000001
+            },
+            {
+                "description": "Bank account",
+                "value": 5766.5520000000015
+            }
+        ]
+    },
+    {
+        "date": "17/07/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2917.1360000000004
+            },
+            {
+                "description": "Bank account",
+                "value": 4375.704
+            }
+        ]
+    },
+    {
+        "date": "09/09/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2970.263999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4455.395999999999
+            }
+        ]
+    },
+    {
+        "date": "12/09/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2942.8839999999996
+            },
+            {
+                "description": "Bank account",
+                "value": 4414.325999999999
+            }
+        ]
+    },
+    {
+        "date": "15/02/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2633.211999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 3949.817999999998
+            }
+        ]
+    },
+    {
+        "date": "04/04/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2792.7599999999984
+            },
+            {
+                "description": "Bank account",
+                "value": 4189.139999999997
+            }
+        ]
+    },
+    {
+        "date": "26/04/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2653.2039999999984
+            },
+            {
+                "description": "Bank account",
+                "value": 3979.8059999999973
+            }
+        ]
+    },
+    {
+        "date": "02/05/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3051.851999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4577.777999999998
+            }
+        ]
+    },
+    {
+        "date": "16/06/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3146.075999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4719.113999999998
+            }
+        ]
+    },
+    {
+        "date": "12/07/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3031.779999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4547.669999999997
+            }
+        ]
+    },
+    {
+        "date": "04/08/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3492.419999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 5238.629999999998
+            }
+        ]
+    },
+    {
+        "date": "18/08/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3455.4999999999995
+            },
+            {
+                "description": "Bank account",
+                "value": 5183.249999999998
+            }
+        ]
+    },
+    {
+        "date": "29/08/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3362.9319999999993
+            },
+            {
+                "description": "Bank account",
+                "value": 5044.397999999999
+            }
+        ]
+    },
+    {
+        "date": "12/09/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3733.9039999999986
+            },
+            {
+                "description": "Bank account",
+                "value": 5600.855999999998
+            }
+        ]
+    },
+    {
+        "date": "01/10/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3481.039999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 5221.559999999998
+            }
+        ]
+    },
+    {
+        "date": "15/10/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3779.699999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 5669.549999999997
+            }
+        ]
+    },
+    {
+        "date": "25/11/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3497.1759999999995
+            },
+            {
+                "description": "Bank account",
+                "value": 5245.763999999999
+            }
+        ]
+    },
+    {
+        "date": "08/12/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3793.388
+            },
+            {
+                "description": "Bank account",
+                "value": 5690.081999999999
+            }
+        ]
+    },
+    {
+        "date": "09/12/2014",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3777.2079999999996
+            },
+            {
+                "description": "Bank account",
+                "value": 5665.811999999999
+            }
+        ]
+    },
+    {
+        "date": "12/02/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3821.947999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 5732.921999999999
+            }
+        ]
+    },
+    {
+        "date": "26/02/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3423.6239999999993
+            },
+            {
+                "description": "Bank account",
+                "value": 5135.435999999998
+            }
+        ]
+    },
+    {
+        "date": "01/04/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3008.9639999999986
+            },
+            {
+                "description": "Bank account",
+                "value": 4513.445999999998
+            }
+        ]
+    },
+    {
+        "date": "21/04/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3146.7439999999992
+            },
+            {
+                "description": "Bank account",
+                "value": 4720.115999999998
+            }
+        ]
+    },
+    {
+        "date": "26/05/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3554.3919999999994
+            },
+            {
+                "description": "Bank account",
+                "value": 5331.587999999998
+            }
+        ]
+    },
+    {
+        "date": "15/06/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3780.2559999999985
+            },
+            {
+                "description": "Bank account",
+                "value": 5670.383999999997
+            }
+        ]
+    },
+    {
+        "date": "26/08/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3205.7799999999984
+            },
+            {
+                "description": "Bank account",
+                "value": 4808.669999999996
+            }
+        ]
+    },
+    {
+        "date": "13/09/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3154.231999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4731.347999999998
+            }
+        ]
+    },
+    {
+        "date": "01/10/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2692.0919999999987
+            },
+            {
+                "description": "Bank account",
+                "value": 4038.137999999998
+            }
+        ]
+    },
+    {
+        "date": "14/10/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3029.5799999999986
+            },
+            {
+                "description": "Bank account",
+                "value": 4544.369999999997
+            }
+        ]
+    },
+    {
+        "date": "12/12/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3095.0919999999987
+            },
+            {
+                "description": "Bank account",
+                "value": 4642.637999999998
+            }
+        ]
+    },
+    {
+        "date": "15/12/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2977.195999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4465.793999999998
+            }
+        ]
+    },
+    {
+        "date": "28/12/2015",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2701.887999999999
+            },
+            {
+                "description": "Bank account",
+                "value": 4052.8319999999976
+            }
+        ]
+    },
+    {
+        "date": "16/01/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2738.9839999999986
+            },
+            {
+                "description": "Bank account",
+                "value": 4108.475999999997
+            }
+        ]
+    },
+    {
+        "date": "22/01/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2653.923999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 3980.885999999997
+            }
+        ]
+    },
+    {
+        "date": "06/02/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2917.647999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 4376.471999999996
+            }
+        ]
+    },
+    {
+        "date": "21/02/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2466.5759999999977
+            },
+            {
+                "description": "Bank account",
+                "value": 3699.8639999999964
+            }
+        ]
+    },
+    {
+        "date": "10/03/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2068.0239999999976
+            },
+            {
+                "description": "Bank account",
+                "value": 3102.0359999999964
+            }
+        ]
+    },
+    {
+        "date": "23/04/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1640.3879999999976
+            },
+            {
+                "description": "Bank account",
+                "value": 2460.5819999999962
+            }
+        ]
+    },
+    {
+        "date": "28/05/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1726.1479999999974
+            },
+            {
+                "description": "Bank account",
+                "value": 2589.221999999996
+            }
+        ]
+    },
+    {
+        "date": "21/07/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2054.871999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3082.307999999995
+            }
+        ]
+    },
+    {
+        "date": "31/07/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1980.8399999999965
+            },
+            {
+                "description": "Bank account",
+                "value": 2971.2599999999948
+            }
+        ]
+    },
+    {
+        "date": "03/10/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2497.975999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3746.9639999999945
+            }
+        ]
+    },
+    {
+        "date": "04/10/2016",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2451.0279999999966
+            },
+            {
+                "description": "Bank account",
+                "value": 3676.541999999995
+            }
+        ]
+    },
+    {
+        "date": "30/01/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1425.379999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 2138.069999999995
+            }
+        ]
+    },
+    {
+        "date": "15/02/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1870.1519999999964
+            },
+            {
+                "description": "Bank account",
+                "value": 2805.2279999999946
+            }
+        ]
+    },
+    {
+        "date": "27/02/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1682.1359999999966
+            },
+            {
+                "description": "Bank account",
+                "value": 2523.2039999999943
+            }
+        ]
+    },
+    {
+        "date": "11/03/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2036.5719999999965
+            },
+            {
+                "description": "Bank account",
+                "value": 3054.8579999999947
+            }
+        ]
+    },
+    {
+        "date": "20/03/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1989.7519999999965
+            },
+            {
+                "description": "Bank account",
+                "value": 2984.6279999999942
+            }
+        ]
+    },
+    {
+        "date": "13/04/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2270.531999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3405.7979999999948
+            }
+        ]
+    },
+    {
+        "date": "08/06/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2805.6039999999975
+            },
+            {
+                "description": "Bank account",
+                "value": 4208.405999999996
+            }
+        ]
+    },
+    {
+        "date": "11/06/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2805.6039999999975
+            },
+            {
+                "description": "Bank account",
+                "value": 4208.405999999996
+            }
+        ]
+    },
+    {
+        "date": "01/07/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2539.4039999999977
+            },
+            {
+                "description": "Bank account",
+                "value": 3809.105999999996
+            }
+        ]
+    },
+    {
+        "date": "28/08/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2661.307999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 3991.961999999997
+            }
+        ]
+    },
+    {
+        "date": "14/09/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2769.263999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 4153.895999999997
+            }
+        ]
+    },
+    {
+        "date": "19/09/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2707.747999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 4061.6219999999958
+            }
+        ]
+    },
+    {
+        "date": "30/09/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2669.0959999999977
+            },
+            {
+                "description": "Bank account",
+                "value": 4003.6439999999957
+            }
+        ]
+    },
+    {
+        "date": "15/12/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2219.591999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3329.3879999999954
+            }
+        ]
+    },
+    {
+        "date": "17/12/2017",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2219.591999999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3329.3879999999954
+            }
+        ]
+    },
+    {
+        "date": "12/02/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1369.2999999999972
+            },
+            {
+                "description": "Bank account",
+                "value": 2053.9499999999953
+            }
+        ]
+    },
+    {
+        "date": "30/05/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1514.971999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 2272.4579999999964
+            }
+        ]
+    },
+    {
+        "date": "29/06/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1367.3399999999983
+            },
+            {
+                "description": "Bank account",
+                "value": 2051.009999999997
+            }
+        ]
+    },
+    {
+        "date": "02/07/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1866.159999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 2799.239999999997
+            }
+        ]
+    },
+    {
+        "date": "03/07/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1866.159999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 2799.239999999997
+            }
+        ]
+    },
+    {
+        "date": "15/07/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1753.731999999998
+            },
+            {
+                "description": "Bank account",
+                "value": 2630.5979999999963
+            }
+        ]
+    },
+    {
+        "date": "13/08/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1818.5919999999974
+            },
+            {
+                "description": "Bank account",
+                "value": 2727.887999999996
+            }
+        ]
+    },
+    {
+        "date": "03/09/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1638.1679999999978
+            },
+            {
+                "description": "Bank account",
+                "value": 2457.2519999999963
+            }
+        ]
+    },
+    {
+        "date": "26/09/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1502.4131999999975
+            },
+            {
+                "description": "Bank account",
+                "value": 2253.619799999996
+            }
+        ]
+    },
+    {
+        "date": "08/10/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1832.8211999999978
+            },
+            {
+                "description": "Bank account",
+                "value": 2749.231799999997
+            }
+        ]
+    },
+    {
+        "date": "26/11/2018",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 1790.1017999999983
+            },
+            {
+                "description": "Bank account",
+                "value": 2685.152699999997
+            }
+        ]
+    },
+    {
+        "date": "16/02/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2652.424479999997
+            },
+            {
+                "description": "Bank account",
+                "value": 3978.636719999995
+            }
+        ]
+    },
+    {
+        "date": "02/04/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3332.686399999995
+            },
+            {
+                "description": "Bank account",
+                "value": 4999.029599999993
+            }
+        ]
+    },
+    {
+        "date": "22/04/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3209.8223999999955
+            },
+            {
+                "description": "Bank account",
+                "value": 4814.733599999992
+            }
+        ]
+    },
+    {
+        "date": "11/05/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3679.2423999999965
+            },
+            {
+                "description": "Bank account",
+                "value": 5518.863599999994
+            }
+        ]
+    },
+    {
+        "date": "16/05/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3552.581119999997
+            },
+            {
+                "description": "Bank account",
+                "value": 5328.871679999995
+            }
+        ]
+    },
+    {
+        "date": "09/07/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3673.924279999995
+            },
+            {
+                "description": "Bank account",
+                "value": 5510.886419999992
+            }
+        ]
+    },
+    {
+        "date": "17/07/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3481.0842799999955
+            },
+            {
+                "description": "Bank account",
+                "value": 5221.626419999993
+            }
+        ]
+    },
+    {
+        "date": "21/09/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3780.0719199999985
+            },
+            {
+                "description": "Bank account",
+                "value": 5670.107879999998
+            }
+        ]
+    },
+    {
+        "date": "26/09/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3574.711919999998
+            },
+            {
+                "description": "Bank account",
+                "value": 5362.067879999997
+            }
+        ]
+    },
+    {
+        "date": "05/10/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3943.522719999999
+            },
+            {
+                "description": "Bank account",
+                "value": 5915.284079999998
+            }
+        ]
+    },
+    {
+        "date": "01/11/2019",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3549.274719999997
+            },
+            {
+                "description": "Bank account",
+                "value": 5323.912079999995
+            }
+        ]
+    },
+    {
+        "date": "21/02/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 5113.082559999996
+            },
+            {
+                "description": "Bank account",
+                "value": 7669.623839999994
+            }
+        ]
+    },
+    {
+        "date": "10/04/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 5575.318599999994
+            },
+            {
+                "description": "Bank account",
+                "value": 8362.97789999999
+            }
+        ]
+    },
+    {
+        "date": "16/08/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 5247.569759999993
+            },
+            {
+                "description": "Bank account",
+                "value": 7871.354639999989
+            }
+        ]
+    },
+    {
+        "date": "05/10/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 5823.123839999993
+            },
+            {
+                "description": "Bank account",
+                "value": 8734.68575999999
+            }
+        ]
+    },
+    {
+        "date": "21/10/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 5909.589639999993
+            },
+            {
+                "description": "Bank account",
+                "value": 8864.384459999988
+            }
+        ]
+    },
+    {
+        "date": "14/11/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6230.573959999994
+            },
+            {
+                "description": "Bank account",
+                "value": 9345.86093999999
+            }
+        ]
+    },
+    {
+        "date": "15/11/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6230.573959999994
+            },
+            {
+                "description": "Bank account",
+                "value": 9345.86093999999
+            }
+        ]
+    },
+    {
+        "date": "01/12/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6107.2013999999945
+            },
+            {
+                "description": "Bank account",
+                "value": 9160.80209999999
+            }
+        ]
+    },
+    {
+        "date": "21/12/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6322.862119999994
+            },
+            {
+                "description": "Bank account",
+                "value": 9484.293179999991
+            }
+        ]
+    },
+    {
+        "date": "26/12/2020",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6159.494279999994
+            },
+            {
+                "description": "Bank account",
+                "value": 9239.241419999991
+            }
+        ]
+    },
+    {
+        "date": "29/01/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6025.882279999994
+            },
+            {
+                "description": "Bank account",
+                "value": 9038.823419999992
+            }
+        ]
+    },
+    {
+        "date": "07/03/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6693.364599999997
+            },
+            {
+                "description": "Bank account",
+                "value": 10040.046899999994
+            }
+        ]
+    },
+    {
+        "date": "11/04/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6172.766119999999
+            },
+            {
+                "description": "Bank account",
+                "value": 9259.149179999997
+            }
+        ]
+    },
+    {
+        "date": "13/04/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6110.114119999999
+            },
+            {
+                "description": "Bank account",
+                "value": 9165.171179999998
+            }
+        ]
+    },
+    {
+        "date": "16/04/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6108.634119999999
+            },
+            {
+                "description": "Bank account",
+                "value": 9162.951179999998
+            }
+        ]
+    },
+    {
+        "date": "09/05/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6426.462119999999
+            },
+            {
+                "description": "Bank account",
+                "value": 9639.693179999998
+            }
+        ]
+    },
+    {
+        "date": "08/07/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6668.857599999999
+            },
+            {
+                "description": "Bank account",
+                "value": 10003.286399999997
+            }
+        ]
+    },
+    {
+        "date": "10/07/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6668.857599999999
+            },
+            {
+                "description": "Bank account",
+                "value": 10003.286399999997
+            }
+        ]
+    },
+    {
+        "date": "14/09/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6520.380799999998
+            },
+            {
+                "description": "Bank account",
+                "value": 9780.571199999995
+            }
+        ]
+    },
+    {
+        "date": "21/11/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7020.305039999999
+            },
+            {
+                "description": "Bank account",
+                "value": 10530.457559999999
+            }
+        ]
+    },
+    {
+        "date": "21/12/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7281.497199999998
+            },
+            {
+                "description": "Bank account",
+                "value": 10922.245799999997
+            }
+        ]
+    },
+    {
+        "date": "24/12/2021",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7095.4339999999975
+            },
+            {
+                "description": "Bank account",
+                "value": 10643.150999999994
+            }
+        ]
+    },
+    {
+        "date": "23/01/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7205.453319999998
+            },
+            {
+                "description": "Bank account",
+                "value": 10808.179979999997
+            }
+        ]
+    },
+    {
+        "date": "17/03/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7207.5421199999955
+            },
+            {
+                "description": "Bank account",
+                "value": 10811.313179999994
+            }
+        ]
+    },
+    {
+        "date": "23/03/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6987.078119999996
+            },
+            {
+                "description": "Bank account",
+                "value": 10480.617179999994
+            }
+        ]
+    },
+    {
+        "date": "08/07/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 7183.338439999994
+            },
+            {
+                "description": "Bank account",
+                "value": 10775.00765999999
+            }
+        ]
+    },
+    {
+        "date": "30/07/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6513.230719999992
+            },
+            {
+                "description": "Bank account",
+                "value": 9769.846079999987
+            }
+        ]
+    },
+    {
+        "date": "11/08/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6959.134719999991
+            },
+            {
+                "description": "Bank account",
+                "value": 10438.702079999985
+            }
+        ]
+    },
+    {
+        "date": "11/12/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6607.763759999991
+            },
+            {
+                "description": "Bank account",
+                "value": 9911.645639999984
+            }
+        ]
+    },
+    {
+        "date": "16/12/2022",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 6583.13975999999
+            },
+            {
+                "description": "Bank account",
+                "value": 9874.709639999983
+            }
+        ]
+    }
+]

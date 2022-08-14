@@ -110,60 +110,69 @@ const formatVal = (value, style="default") => {
     return numberWithCommas(value);
 };
 
-/* Returns array of gridline values for maximum Y-axis value */
-const calcGridlines = (value) => {
-    let exp = 0;
-    let mant = value;
+const gridlines = (() => {
+    /* Returns array of gridline values for maximum Y-axis value */
+    const calcGridlines = (value) => {
+        let exp = 0;
+        let mant = value;
 
-    while (mant > 10) {
-        mant /= 10;
-        exp += 1;
-    }
+        const overshoot = 0.05;
 
-    let round;
-    if (mant <= 1) {
-        round = [0, 0.2, 0.4, 0.6, 0.8, 1];
-    } else if (mant <= 1.5) {
-        round = [0, 0.5, 1, 1.5];
-    } else if (mant <= 2) {
-        round = [0, 0.5, 1, 1.5, 2];
-    } else if (mant <= 2.5) {
-        round = [0, 0.5, 1, 1.5, 2, 2.5];
-    } else if (mant <= 3) {
-        round = [0, 1, 2, 3];
-    } else if (mant <= 4) {
-        round = [0, 1, 2, 3, 4];
-    } else if (mant <= 5) {
-        round = [0, 1, 2, 3, 4, 5];
-    } else if (mant <= 6) {
-        round = [0, 2, 4, 6];
-    } else if (mant <= 8) {
-        round = [0, 2, 4, 6, 8];
-    } else {
-        round = [0, 2, 4, 6, 8, 10];
-    }
+        /* Lets charts exceed edge of chart */
+        mant /= 1 + overshoot;
 
-    return round.map(x => x * 10 ** exp);
-};
+        while (mant > 10 * (1 + overshoot)) {
+            mant /= 10;
+            exp += 1;
+        }
 
-/* Returns maximum Y-axis value for each chart */
-const maxVal = (() => {
-    let maxY = [0, 0, 0];
+        let round;
+        if (mant <= 1) {
+            round = [0, 0.2, 0.4, 0.6, 0.8, 1];
+        } else if (mant <= 1.5) {
+            round = [0, 0.5, 1, 1.5];
+        } else if (mant <= 2) {
+            round = [0, 0.5, 1, 1.5, 2];
+        } else if (mant <= 2.5) {
+            round = [0, 0.5, 1, 1.5, 2, 2.5];
+        } else if (mant <= 3) {
+            round = [0, 1, 2, 3];
+        } else if (mant <= 4) {
+            round = [0, 1, 2, 3, 4];
+        } else if (mant <= 5) {
+            round = [0, 1, 2, 3, 4, 5];
+        } else if (mant <= 6) {
+            round = [0, 2, 4, 6];
+        } else if (mant <= 8) {
+            round = [0, 2, 4, 6, 8];
+        } else {
+            round = [0, 2, 4, 6, 8, 10];
+        }
 
-    for (let i = 0; i < m + 2; ++i) {
-        maxY[0] = Math.max(maxY[0], data.cash.flat()[i] + data.financial.flat()[i] + data.real.flat()[i]);
-        maxY[0] = Math.max(maxY[0], data.debt.flat()[i]);
-        maxY[1] = Math.max(maxY[1], data.income.flat()[i] + data.profit.flat()[i]);
-        maxY[1] = Math.max(maxY[1], data.expenses.flat()[i] + data.loss.flat()[i]);
-        maxY[2] = Math.max(maxY[2], data.housing.flat()[i] + data.utilities.flat()[i] + data.food.flat()[i] + data.health.flat()[i]);
-        maxY[2] = Math.max(maxY[2], data.shopping.flat()[i] + data.leisure.flat()[i]);
-    }
-    return maxY;
+        return round.map(x => x * 10 ** exp);
+    };
+
+    /* Returns maximum Y-axis value for each chart */
+    const maxVal = (() => {
+        let maxY = [0, 0, 0];
+
+        for (let i = 0; i < m + 2; ++i) {
+            maxY[0] = Math.max(maxY[0], data.cash.flat()[i] + data.financial.flat()[i] + data.real.flat()[i]);
+            maxY[0] = Math.max(maxY[0], data.debt.flat()[i]);
+            maxY[1] = Math.max(maxY[1], data.income.flat()[i] + data.profit.flat()[i]);
+            maxY[1] = Math.max(maxY[1], data.expenses.flat()[i] + data.loss.flat()[i]);
+            maxY[2] = Math.max(maxY[2], data.housing.flat()[i] + data.utilities.flat()[i] + data.food.flat()[i] + data.health.flat()[i]);
+            maxY[2] = Math.max(maxY[2], data.shopping.flat()[i] + data.leisure.flat()[i]);
+        }
+        return maxY;
+    })();
+
+    return maxVal.map((val) => calcGridlines(val));
 })();
 
 const dataPx = Object.fromEntries(
     Object.entries(dataInfo).map(
-        ([key, info], j) => [key, data[key].map(arr2 => arr2.map(val => 100 * val / maxVal[info.chart]))]
+        ([key, info], j) => [key, data[key].map(arr2 => arr2.map(val => 100 * val / gridlines[info.chart][gridlines[info.chart].length - 1]))]
     )
 );
 
@@ -246,14 +255,14 @@ const drawChartBar = (chart, a, b, $dest) => {
 
         $rect0.css({
             "background-color": dataInfo.cash.colour,
-            "width": `${dataPx.cash[a][b]}%`,
+            "width": `${dataPx.cash[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
             "background-color": dataInfo.financial.colour,
-            "width": `${dataPx.financial[a][b]}%`,
+            "width": `${dataPx.financial[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx.cash[a][b]}%`,
             "top": 0
@@ -296,14 +305,14 @@ const drawChartBar = (chart, a, b, $dest) => {
 
         $rect0.css({
             "background-color": dataInfo.expenses.colour,
-            "width": `${dataPx.expenses[a][b]}%`,
+            "width": `${dataPx.expenses[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
         });
         $rect1.css({
             "background-color": dataInfo.income.colour,
-            "width": `${dataPx.income[a][b]}%`,
+            "width": `${dataPx.income[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
@@ -352,28 +361,28 @@ const drawChartBar = (chart, a, b, $dest) => {
 
         $rect0.css({
             "background-color": dataInfo.housing.colour,
-            "width": `${dataPx.housing[a][b]}%`,
+            "width": `${dataPx.housing[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": 0
         });
         $rect1.css({
             "background-color": dataInfo.food.colour,
-            "width": `${dataPx.food[a][b]}%`,
+            "width": `${dataPx.food[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx.housing[a][b] + dataPx.utilities[a][b]}%`,
             "top": 0
         });
         $rect2.css({
             "background-color": dataInfo.shopping.colour,
-            "width": `${dataPx.shopping[a][b]}%`,
+            "width": `${dataPx.shopping[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": 0,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
             "background-color": dataInfo.utilities.colour,
-            "width": `${dataPx.utilities[a][b]}%`,
+            "width": `${dataPx.utilities[a][b] + 0.01}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx.housing[a][b]}%`,
             "top": 0
@@ -430,7 +439,7 @@ const drawChartBar = (chart, a, b, $dest) => {
 };
 
 const gridLines = (i, $dest) => {
-    calcGridlines(maxVal[i]).forEach((val, k) => {
+    gridlines[i].forEach((val, k) => {
         const $gridLine = $(document.createElement("div"))
         const $gridLabel = $(document.createElement("div"))
 
@@ -449,10 +458,10 @@ const gridLines = (i, $dest) => {
         } else {
             $gridLine.addClass("grid-line");
             $gridLine.css({
-                "left": `calc(${100 * val / maxVal[i]}% - 1px)`
+                "left": `calc(${100 * val / gridlines[i][gridlines[i].length - 1]}% - 1px)`
             });
             $gridLabel.css({
-                "left": `calc(${100 * val / maxVal[i]}% - ${$gridLabel.width() / 2}px)`
+                "left": `calc(${100 * val / gridlines[i][gridlines[i].length - 1]}% - ${$gridLabel.width() / 2}px)`
             });
         }
     });
