@@ -1,123 +1,198 @@
 # my-budget
 
-This is a simple tool for visualising household financial data.
+This is a simple tool for visualizing household financial data.
 A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/dist/).
-After providing it with the necessary data,
-the program illustrates various variables over various time periods using bar charts.
 
-Data variables:
-- Assets (cash, financial, and real) and liabilities.
-- Cash flow (income, expenses, and investment profit/loss).
-- Breakdown of expenses.
-
-Time periods:
-- Current month ("MTD").
-- Average of last 12 months ("12M avg").
-- All previous months.
+The visualization shows assets and liabilities, with breakdown of assets into cash, financial, and real;
+income and expenses, of which are asset-related; and the breakdown of expenses into various categories.
+It provides charts for the current month ("MTD"), the average of the last 12 months ("12M avg"), and all previous months.
 
 I designed this tool for my own purposes,
 to help me record, evaluate, and plan my expenses and investment decisions.
 However, I hope that it may be helpful or inspiring to others.
 
-## How to use
+To use, input your data, process it with the script `src/build-data.py`,
+and use [webpack](https://webpack.js.org/) to build a static website in the `dist` directory.
+The input files are located in the `data` directory (in this repository named `data-simulated`).
 
-1. Create directory and add your data (see `src/data-simulated` for an example).
-2. Change `data-dir` variable in `src/build-data.py` to point to your data directory.
-2. Run `src/build-data.py` to build `src/data.json`.
-3. Run `npm run build` to build static website in `dist` directory.
+```
+my-budget
+├── src
+│   ├── data
+│   │   ├── asset-values (optional)
+│   │   │   └── <id>.csv
+│   │   ├── init-assets.json
+│   │   ├── cash-flow.csv
+│   │   └── cash-snapshots.json (optional)
+```
+
+### Recording initial assets
+
+`data/init-assets.json`
+```json
+{
+    "date": "01/01/2013",
+    "cash": [
+        {
+            "description": "Cash",
+            "value": 2800.0
+        },
+        {
+            "description": "Bank account",
+            "value": 4200.0
+        }
+    ],
+    "savings": [
+        {
+            "id": "a0",
+            "category": "Financial",
+            "quantity": 1,
+            "value": 1
+        },
+        {
+            "id": "r0",
+            "category": "Real",
+            "quantity": 1,
+            "value": 5000
+        }
+    ],
+    "debt": [
+        {
+            "id": "d0",
+            "quantity": 1,
+            "value": 20000
+        }
+    ]
+}
+```
+
+Records initial data.
+* `date`: Initial date.
+* `cash`: Array of initial cash sources ("cash" refers to physical cash and demand deposit accounts denominated in the local currency).
+  * `description`: Description of cash source.
+  * `value`: Cash value of cash source.
+* `savings`: Array of initial savings (see below).
+* `debt`: Array of initial debt (see below).
+
+### Recording transactions
+
+`data/cash-flow.csv`
+| id  | date       | type            | category  | quantity | value    | reference |
+|-----|------------|-----------------|-----------|----------|----------|-----------|
+| 0   | 01/01/2013 | Income          |           | 1        | 3500.00  |           |
+| 1   | 01/01/2013 | Expenses        | Housing   | 1        | 1700.00  |           |
+| 2   | 01/01/2013 | Expenses        | Utilities | 1        | 300.00   |           |
+| 3   | 01/01/2013 | Debt selling    |           | 0.01     | 20000.00 | d0        |
+| 4   | 01/01/2013 | Asset expenses  |           | 1        | 198.00   | d0        |
+
+Records transactions.
+* `id`: Unique ID of transaction.
+  * It is convenient to supply IDs incrementally, starting with initial data.
+  * These IDs are used to refer to a transaction or asset.
+* `date`: Date of transaction.
+* `type`: Type of transaction (see below).
+* `category`: Category of transaction within its type (see below).
+  * May be blank.
+* `quantity`: Quantity bought or sold.
+  * Usually this is set to 1.
+    Using other values can be useful when selling a portion of an owned asset.
+* `value`: Cash value of transaction.
+  * Always positive.
+* `reference`: ID of another transaction.
+  * May be blank.
+
+### Recording cash reserves (optional)
+
+`data/cash-snapshots.json`
+```json
+[
+    {
+        "date": "09/03/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 3063.528
+            },
+            {
+                "description": "Bank account",
+                "value": 4595.292
+            }
+        ]
+    },
+    {
+        "date": "29/06/2013",
+        "cash": [
+            {
+                "description": "Cash",
+                "value": 2839.03528
+            },
+            {
+                "description": "Bank account",
+                "value": 4258.55292
+            }
+        ]
+    }
+]
+```
+Records the amount of cash held at specific times.
+
+The program calculates any discrepancies with calculated cash, which are then shown in Income or Expenses as errors/omissions.
+The snapshot must take place at the beginning of the given day, before any changes in the amount of cash take place.
+
+### Recording asset appreciation/depreciation (optional)
+
+`data/asset-values/<id>.csv`
+| date       | value              |
+|------------|--------------------|
+| 01/01/2013 | 2.01               |
+| 02/01/2013 | 3.04               |
+| 03/01/2013 | 4.01               |
+| 04/01/2013 | 5.0                |
+| 05/01/2013 | 6.07               |
+| 06/01/2013 | 7.04               |
+| 07/01/2013 | 8.08               |
+| 08/01/2013 | 9.09               |
+| 09/01/2013 | 10.06              |
+
+Records the price of the asset with ID `<id>` over time.
+* `date`: Any date.
+* `value`: Value of asset at given date.
+
+### Transaction types
+
+#### Income and expenses
+
+ * The types **Income** and **Expenses** record transactions not related to savings or debt.
+ * Expenses are categorized as **Housing**, **Utilities**, **Food**, **Health**, **Shopping**, **Leisure**, or none.
+   Expenses without a category are not shown in the breakdown of expenses chart.
+ * Transactions involving assets instead of cash, such as receiving savings as a gift, or buying goods with debt,
+   can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
+   along with a regular cash transactions.
+
+#### Savings and debt
+
+ * The types **Savings buying**, **Savings selling**, **Debt buying**, and **Debt selling**
+   record the buying and selling of savings and debt
+   ("buying debt" refers to borrowing money, and "selling debt" refers to repaying a loan).
+ * Savings are categorized as **Financial** or **Real**.
+   Financial assets include savings accounts, pensions, shares, foreign cash, and given loans.
+   Real assets can include potentially any durable good, but for practical purposes may be limited to expensive items like real estate and vehicles,
+   as well as sold goods (see **Goods selling**).
+ * The first time an asset is bought or sold, `category` is required and `reference` is not.
+ * For subsequent transactions, `category` is not required and `reference` must refer to the ID of the first transaction.
+ * The types **Asset income** and **Asset expenses** record income and expenses related to savings and debt (i.e. "asset-related"),
+   for instance dividends and interest (paid and received).
+   This excludes income and expenses from buying or selling assets,
+   but includes capital gains and losses, which are calculated automatically first in first out.
+
+#### Expense cancellation
+
+ * The type **Goods selling** records the selling or refunding a previously bought item with ID given by `reference`.
+   The sold portion of the expense is converted to a real asset retroactively, which is sold when the item is sold.
+ * The type **Reimbursement** records the reimbursement a previous expense with ID given by `reference`.
+   The reimbursed portion of the expense is converted to a financial asset retroactively, which is sold when the expense is reimbursed.
 
 ### Dependencies
 
 * **Python libraries**: Pandas, NumPy.
 * **npm modules**: webpack, webpack-cli, css-loader, style-loader.
-
-## Details
-
-### Recording cash
-
-*Cash* refers to physical cash and demand deposit accounts denominated in the local currency.
-Cash snapshots are records of the amount of cash held at a specific time.
-For each snapshot the program calculates any discrepancies and records them as errors/omissions,
-which are included either in Income or Expenses.
-
-* `cash-input.csv` records cash snapshots, and has columns **date** and **cash**.
-
-* **date** is the date of the snapshot.
-  It is assumed to take place at the beginning of the day, before any changes in the amount of cash.
-
-* **cash** is the amount of cash, and can be provided as a single number,
-  or broken into sources (e.g. different bank accounts) for convenience.
-
-* It is necessary to take a snapshot on the first day to record the initial amount of cash.
-  No further snapshots are required, as future cash is calculated automatically using cash flow data.
-
-### Recording savings
-
-*Savings*, or *investment*, refers to non-cash assets and debt.
-Financial assets include savings accounts, pensions, shares, bonds, foreign cash, and given loans.
-Real assets can potentially include any durable good, and it may be difficult to decide if a good is an asset or an expense.
-As a general rule, I classify all goods as expenses (except for very expensive ones like property and vehicles).
-If a good is sold or refunded, I retroactively split it into an asset and an expense
-in such a way that the asset value is the maximum of the sale value and the original purchase value,
-and the expense value is the remainder.
-
-* `savings-input.csv` records the buying and selling of savings, and has columns **date**, **type**, **name**, **quantity**, and **value**.
-
-* `assets/<name>.csv` records the price of the savings with id `<name>` over time, and has columns **date** and **value**.
-
-* `savings-info.csv` records information about savings, and has columns **name**, **category**, and **description**.
-
-* **date** refers to the date of transaction.
-  The total amount bought or sold in the local currency is split into
-  the number of units (**quantity**) and the value per unit (**value**).
-  This split is fairly arbitrary.
-  For fungible goods, the quantity could be the number of units bought or sold,
-  and the value a price index (e.g. share price).
-  For non-fungible goods, the quantity could be set to 1, and the value the total value.
-
-* **type** signifies if the savings are bought ("B"), sold ("S"), or initial savings on the day of the first cash snapshot ("I").
-
-* **name** is a unique identifier for the asset.
-
-* Debt is treated as an asset with negative value.
-  This implies that getting a loan is recorded as buying an asset,
-  and paying off the principal is recorded as selling it.
-
-* The files `assets/<name>.csv` are optional, and allow the unit price (**value**) to change over time,
-  taking into account capital appreciation or depreciation.
-
-* Each asset is given a category (**category**), either `financial`, `real`, or `debt`.
-
-* The given asset descriptions (**descriptions**) are for personal reference.
-
-### Recording cash flows
-
-*Cash flow* refers to any movement of cash. It is divided into non-investment income and expenses, and investment profit and loss.
-Investment profit and loss refer to cash flows relating to savings, e.g. capital gains and losses, dividends, and interest.
-Capital gains and losses are calculated first in first out.
-
-* `expenses-input.csv` records non-investment expenses, and has columns **date**, **category**, **value**.
-
-* `income-input.csv` records non-investment income, and has columns **date**, **value**.
-
-* `profit-loss-input.csv` records investment profit and loss, and has columns **date**, **name**, **value**.
-
-* **date** refers to the date of transaction, and **value** to the amount lost or gained, in the local currency.
-
-* Expenses for buying savings are not recorded immediately as cash flow, but are subtracted from income when they are sold.
-  This is to prevent investments from dominating regular expenses.
-
-* Expenses are categorized into six categories plus "Other" (**category**).
-  "Other" expenses are not shown on the breakdown of expenses chart.
-
-* Asset flows not involving cash, such as receiving savings as a gift, or buying goods with debt,
-  can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
-  along with a regular cash flow.
-
-* To avoid spurious income from the negation of previous expenses,
-durable goods that are later refunded or sold can be retroactively recorded as real assets,
-and expenses that are reimbursed (without the returning of a durable good) can be retroactively recorded as financial assets.
-
-## To do
-
-* Data validation
