@@ -3,8 +3,8 @@
 This is a simple tool for visualizing household financial data.
 A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/dist/).
 
-The visualization shows assets and liabilities, with breakdown of assets into cash, financial, and real;
-income and expenses, of which are asset-related; and the breakdown of expenses into various categories.
+The visualization shows cash, savings (both financial assets and real assets), and debt;
+income and expenses, including savings- and debt-related income and expenses; and the breakdown of expenses into various categories.
 It provides charts for the current month ("MTD"), the average of the last 12 months ("12M avg"), and all previous months.
 
 I designed this tool for my own purposes,
@@ -26,7 +26,28 @@ my-budget
 │   │   └── cash-snapshots.json (optional)
 ```
 
-### Recording initial assets
+### Terminology
+
+For conciseness and consistency I have had to use certain terms in a less than typical way.
+
+* **Cash**:
+  * Physical cash and demand deposit accounts denominated in the local currency.
+* **Savings**:
+  * An item which stores value, excluding cash and durable goods.
+* **Debt**:
+  * An item whose value represents an obligation to pay.
+* **Price index**:
+    A number which records the relative value of savings or debt at a specific point in time.
+* **Transaction**:
+  * A change in cash.
+* **Income**:
+  * A positive change in cash. Excludes income related to savings or debt, unless specified.
+* **Expenses**:
+  * A negative change in cash. Excludes expenses related to savings or debt, unless specified.
+* **Durable good**:
+  * An item which may store value, but is considered an expense rather than savings.
+
+### Recording initial cash, savings, and debt
 
 `data/init-assets.json`
 ```json
@@ -46,33 +67,38 @@ my-budget
         {
             "id": "a0",
             "category": "Financial",
-            "quantity": 1,
-            "value": 1
+            "value": 1,
+            "asset_value": 1
         },
         {
             "id": "r0",
             "category": "Real",
-            "quantity": 1,
-            "value": 5000
+            "value": 1,
+            "asset_value": 5000
         }
     ],
     "debt": [
         {
             "id": "d0",
-            "quantity": 1,
-            "value": 20000
+            "value": 1,
+            "asset_value": 20000
         }
     ]
 }
 ```
 
-Records initial data.
-* `date`: Initial date.
-* `cash`: Array of initial cash sources ("cash" refers to physical cash and demand deposit accounts denominated in the local currency).
-  * `description`: Description of cash source.
-  * `value`: Cash value of cash source.
-* `savings`: Array of initial savings (see below).
-* `debt`: Array of initial debt (see below).
+* **date**: ***string***
+  * Initial date in DD/MM/YYYY format.
+* **cash** (optional): ***array of objects***
+  * List of initial cash sources.
+  * **description** (optional): ***string***
+    * Description of cash source.
+  * **value**: ***scalar***
+    * Cash value of cash source.
+* **savings** (optional): ***array of objects***
+  * List of initial savings (see below).
+* **debt** (optional): ***array of objects***
+  * List of initial debt (see below).
 
 ### Recording transactions
 
@@ -85,21 +111,74 @@ Records initial data.
 | 3   | 01/01/2013 | Debt selling    |           | 0.01     | 20000.00 | d0        |
 | 4   | 01/01/2013 | Asset expenses  |           | 1        | 198.00   | d0        |
 
-Records transactions.
-* `id`: Unique ID of transaction.
-  * It is convenient to supply IDs incrementally, starting with initial data.
-  * These IDs are used to refer to a transaction or asset.
-* `date`: Date of transaction.
-* `type`: Type of transaction (see below).
-* `category`: Category of transaction within its type (see below).
-  * May be blank.
-* `quantity`: Quantity bought or sold.
-  * Usually this is set to 1.
-    Using other values can be useful when selling a portion of an owned asset.
-* `value`: Cash value of transaction.
-  * Always positive.
-* `reference`: ID of another transaction.
-  * May be blank.
+* **id**: ***string***
+  * Unique ID of transaction.
+* **date**: ***string***
+  * Date of transaction in DD/MM/YYYY format.
+* **type**: ***string***
+  * Type of transaction.
+  * `Savings buying`: Records buying savings.
+  * `Savings selling`: Records selling savings.
+  * `Debt buying`: Records acquiring debt.
+  * `Debt selling`: Records repaying debt.
+  * `Income`: Records income.
+  * `Expenses`: Records expenses.
+  * `Savings/debt income`: Records income related to savings or debt, for instance dividends and interest received.
+  * `Savings/debt expenses`: Records expenses related to savings or debt, for instance interest paid.
+  * `Goods selling`: Records durable goods selling or refunding.
+  * `Reimbursement`: Records expense reimbursement.
+* **category** (optional): ***string***
+  * Category of transaction.
+  * Categories of expenses (can be left blank):
+    * `Housing`: Housing.
+    * `Utilities` Utilities and transport.
+    * `Food`: Food and household supplies.
+    * `Health`: Health and beauty.
+    * `Shopping`: Durable goods.
+    * `Leisure`: Leisure and hobbies.
+  * Categories of savings (only required the first time savings are acquired):
+    * `Financial`: Financial assets. Includes savings accounts, pensions, shares, foreign cash, and given loans.
+    * `Real`: Real assets.
+* **value**: ***scalar***
+  * Cash value of transaction, strictly positive.
+* **price_index** (optional): ***scalar***
+  * Price index at given date, strictly positive.
+    Only required when buying or selling savings, debt, or sold durable goods.
+* **reference** (optional): ***string***
+  * ID of some previous transaction.
+    Only required when buying or selling existing debt or savings, selling durable goods, or reimbursing expenses.
+
+#### Note 1: Non-cash transactions
+
+Transactions involving savings or debt instead of cash,
+such as receiving savings as a gift, or buying goods with debt,
+can be recorded by converting (i.e. buying/selling) the savings or debt to cash
+along with a regular cash transactions.
+
+#### Note 2: Real assets vs durable goods
+
+Real assets and durable goods are theoretically equivalent,
+but transactions must belong to one or the other.
+Personally, I limit real assets to expensive items like real estate and vehicles,
+and convert sold durable goods to real assets using the `Goods selling` type.
+
+#### Note 3: Expense cancellation
+
+The program provides two ways of cancelling expenses,
+which avoids unnecessary fluctuations in income and expenses.
+When selling or refunding a durable good,
+the sold portion of the expense is converted to a real asset retroactively,
+which is sold when the item is sold.
+When reimbursing an expense,
+the reimbursed portion of the expense is converted to a financial asset retroactively,
+which is sold when the expense is reimbursed.
+
+#### Note 4: Savings/debt income and expenses
+
+Savings/debt income and expenses theoretically includes the income and expenses from
+buying and selling savings and debt.
+However to prevent these transactions from dominating regular income and expenses,
+they are replaced by the resulting capital gains and losses, which are calculated automatically first in first out
 
 ### Recording cash reserves (optional)
 
@@ -135,13 +214,12 @@ Records transactions.
 ]
 ```
 Records the amount of cash held at specific times.
-
 The program calculates any discrepancies with calculated cash, which are then shown in Income or Expenses as errors/omissions.
 The snapshot must take place at the beginning of the given day, before any changes in the amount of cash take place.
 
-### Recording asset appreciation/depreciation (optional)
+### Recording appreciation/depreciation of savings or debt (optional)
 
-`data/asset-values/<id>.csv`
+`data/asset-values/<id>.csv`, where `<id>` is the ID of savings or debt
 | date       | value              |
 |------------|--------------------|
 | 01/01/2013 | 2.01               |
@@ -154,43 +232,10 @@ The snapshot must take place at the beginning of the given day, before any chang
 | 08/01/2013 | 9.09               |
 | 09/01/2013 | 10.06              |
 
-Records the price of the asset with ID `<id>` over time.
-* `date`: Any date.
-* `value`: Value of asset at given date.
-
-### Transaction types
-
-#### Income and expenses
-
- * The types **Income** and **Expenses** record transactions not related to savings or debt.
- * Expenses are categorized as **Housing**, **Utilities**, **Food**, **Health**, **Shopping**, **Leisure**, or none.
-   Expenses without a category are not shown in the breakdown of expenses chart.
- * Transactions involving assets instead of cash, such as receiving savings as a gift, or buying goods with debt,
-   can be recorded by converting (i.e. buying/selling) the non-cash asset to cash
-   along with a regular cash transactions.
-
-#### Savings and debt
-
- * The types **Savings buying**, **Savings selling**, **Debt buying**, and **Debt selling**
-   record the buying and selling of savings and debt
-   ("buying debt" refers to borrowing money, and "selling debt" refers to repaying a loan).
- * Savings are categorized as **Financial** or **Real**.
-   Financial assets include savings accounts, pensions, shares, foreign cash, and given loans.
-   Real assets can include potentially any durable good, but for practical purposes may be limited to expensive items like real estate and vehicles,
-   as well as sold goods (see **Goods selling**).
- * The first time an asset is bought or sold, `category` is required and `reference` is not.
- * For subsequent transactions, `category` is not required and `reference` must refer to the ID of the first transaction.
- * The types **Asset income** and **Asset expenses** record income and expenses related to savings and debt (i.e. "asset-related"),
-   for instance dividends and interest (paid and received).
-   This excludes income and expenses from buying or selling assets,
-   but includes capital gains and losses, which are calculated automatically first in first out.
-
-#### Expense cancellation
-
- * The type **Goods selling** records the selling or refunding a previously bought item with ID given by `reference`.
-   The sold portion of the expense is converted to a real asset retroactively, which is sold when the item is sold.
- * The type **Reimbursement** records the reimbursement a previous expense with ID given by `reference`.
-   The reimbursed portion of the expense is converted to a financial asset retroactively, which is sold when the expense is reimbursed.
+* **date**: *string*
+  * Any date.
+* **price_index**: ***scalar***
+  * Price index at given date, strictly positive.
 
 ### Dependencies
 
