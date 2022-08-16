@@ -269,11 +269,11 @@ html {
 
 @media (min-width: 0px) {
     .head-grid {
-        padding-top: 30px;
+        padding-top: 25px;
     }
 
     .head-grid {
-        grid-template-columns: 55px auto 25px;
+        grid-template-columns: 60px auto 30px;
         grid-template-rows: auto;
         grid-template-areas:
             "h00 h00 h00"
@@ -286,7 +286,7 @@ html {
     }
 
     .body-grid {
-        grid-template-columns: 55px auto 25px;
+        grid-template-columns: 60px auto 30px;
         grid-template-rows: auto;
         grid-template-areas:
             ". d0 ."
