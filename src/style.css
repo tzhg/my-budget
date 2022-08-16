@@ -64,8 +64,8 @@ html {
 .label-debt { grid-area: label-debt; }
 .label-income { grid-area: label-income; }
 .label-expenses { grid-area: label-expenses; }
-.label-profit { grid-area: label-profit; }
-.label-loss { grid-area: label-loss; }
+.label-sdincome { grid-area: label-sdincome; }
+.label-sdexpenses { grid-area: label-sdexpenses; }
 .label-housing { grid-area: label-housing; }
 .label-food { grid-area: label-food; }
 .label-shopping { grid-area: label-shopping; }
@@ -79,8 +79,8 @@ html {
 .val-debt { grid-area: val-debt; }
 .val-income { grid-area: val-income; }
 .val-expenses { grid-area: val-expenses; }
-.val-profit { grid-area: val-profit; }
-.val-loss { grid-area: val-loss; }
+.val-sdincome { grid-area: val-sdincome; }
+.val-sdexpenses { grid-area: val-sdexpenses; }
 .val-housing { grid-area: val-housing; }
 .val-food { grid-area: val-food; }
 .val-shopping { grid-area: val-shopping; }
@@ -107,8 +107,8 @@ html {
     grid-template-columns: auto max-content 1fr auto max-content;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-areas:
-        "label-income   val-income   . label-profit val-profit"
-        "label-expenses val-expenses . label-loss   val-loss"
+        "label-income   val-income   . label-sdincome val-sdincome"
+        "label-expenses val-expenses . label-sdexpenses   val-sdexpenses"
         "net-income net-income net-income net-income net-income";
     row-gap: 2px;
 }
@@ -237,8 +237,8 @@ html {
 .label-debt .legend-icon { background-color: #c14c89; }
 .label-income .legend-icon { background-color: #5da145; }
 .label-expenses .legend-icon { background-color: #b85447; }
-.label-profit .legend-icon { background-color: #366a24; }
-.label-loss .legend-icon { background-color: #76332a; }
+.label-sdincome .legend-icon { background-color: #366a24; }
+.label-sdexpenses .legend-icon { background-color: #76332a; }
 .label-housing .legend-icon { background-color: #92ddd1; }
 .label-food .legend-icon { background-color: #586abf; }
 .label-shopping .legend-icon { background-color: #d498d9; }

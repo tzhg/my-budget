@@ -1,20 +1,16 @@
 {
   "name": "my-budget",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A simple tool for visualising household financial data.",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode=development",
-    "start": "webpack serve --open --mode=development"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tzhg/my-budget.git"
   },
-  "keywords": [],
   "author": "Tony Zheng",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/tzhg/my-budget/issues"
   },

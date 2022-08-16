@@ -50,13 +50,13 @@ const dataInfo = {
         "colour": "#b85447",
         "chart": 1
     },
-    "profit": {
-        "label": "Savings profit",
+    "sdincome": {
+        "label": "Savings/debt income",
         "colour": "#366a24",
         "chart": 1
     },
-    "loss": {
-        "label": "Savings loss",
+    "sdexpenses": {
+        "label": "Savings/debt expenses",
         "colour": "#76332a",
         "chart": 1
     },
@@ -116,7 +116,7 @@ const gridlines = (() => {
         let exp = 0;
         let mant = value;
 
-        const overshoot = 0.05;
+        const overshoot = 0.1;
 
         /* Lets charts exceed edge of chart */
         mant /= 1 + overshoot;
@@ -159,8 +159,8 @@ const gridlines = (() => {
         for (let i = 0; i < m + 2; ++i) {
             maxY[0] = Math.max(maxY[0], data.cash.flat()[i] + data.financial.flat()[i] + data.real.flat()[i]);
             maxY[0] = Math.max(maxY[0], data.debt.flat()[i]);
-            maxY[1] = Math.max(maxY[1], data.income.flat()[i] + data.profit.flat()[i]);
-            maxY[1] = Math.max(maxY[1], data.expenses.flat()[i] + data.loss.flat()[i]);
+            maxY[1] = Math.max(maxY[1], data.income.flat()[i] + data.sdincome.flat()[i]);
+            maxY[1] = Math.max(maxY[1], data.expenses.flat()[i] + data.sdexpenses.flat()[i]);
             maxY[2] = Math.max(maxY[2], data.housing.flat()[i] + data.utilities.flat()[i] + data.food.flat()[i] + data.health.flat()[i]);
             maxY[2] = Math.max(maxY[2], data.shopping.flat()[i] + data.leisure.flat()[i]);
         }
@@ -300,8 +300,8 @@ const drawChartBar = (chart, a, b, $dest) => {
 
         $rect0.attr("data-rect", `expenses-${a}-${b}`);
         $rect1.attr("data-rect", `income-${a}-${b}`);
-        $rect2.attr("data-rect", `loss-${a}-${b}`);
-        $rect3.attr("data-rect", `profit-${a}-${b}`);
+        $rect2.attr("data-rect", `sdexpenses-${a}-${b}`);
+        $rect3.attr("data-rect", `sdincome-${a}-${b}`);
 
         $rect0.css({
             "background-color": dataInfo.expenses.colour,
@@ -318,15 +318,15 @@ const drawChartBar = (chart, a, b, $dest) => {
             "top": 0
         });
         $rect2.css({
-            "background-color": dataInfo.loss.colour,
-            "width": `${dataPx.loss[a][b]}%`,
+            "background-color": dataInfo.sdexpenses.colour,
+            "width": `${dataPx.sdexpenses[a][b]}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx.expenses[a][b]}%`,
             "top": `${barHeight + intraPad}px`
         });
         $rect3.css({
-            "background-color": dataInfo.profit.colour,
-            "width": `${dataPx.profit[a][b]}%`,
+            "background-color": dataInfo.sdincome.colour,
+            "width": `${dataPx.sdincome[a][b]}%`,
             "height": `${barHeight}px`,
             "left": `${dataPx.income[a][b]}%`,
             "top": 0

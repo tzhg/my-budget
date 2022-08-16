@@ -4,6 +4,7 @@ import os, json
 from datetime import datetime
 import pandas as pd
 import numpy as np
+from numbers import Number
 
 pd.options.mode.chained_assignment = None
 pd.set_option("display.max_rows", None)
@@ -22,6 +23,8 @@ types = {
     "expenses": {
         "name": "Expenses",
         "categories": {
+            "default": {
+                "name": "Default"},
             "housing": {
                 "name": "Housing"},
             "food": {
@@ -33,86 +36,67 @@ types = {
             "health": {
                 "name": "Health"},
             "leisure": {
-                "name": "Leisure"},
-            "other": {
-                "name": "Other"}},
-        "factor": -1,
-        "reference": False},
-    "expenses_neg": {
-        "name": "Expense negation",
+                "name": "Leisure"}}},
+    "sale": {
+        "name": "Goods selling",
         "categories": {
-            "financial": {
-                "name": "Sale"},
-            "real": {
-                "name": "Reimbursement"}},
-        "factor": 1,
-        "reference": True},
+            "default": {
+                "name": "Default"}}},
+    "reimbursement": {
+        "name": "Reimbursement",
+        "categories": {
+            "default": {
+                "name": "Default"}}},
     "income": {
         "name": "Income",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": 1,
-        "reference": False},
+                "name": "Default"}}},
     "savings_buy": {
         "name": "Savings buying",
         "base": "savings",
         "categories": {
+            "default": {
+                "name": "Default"},
             "financial": {
                 "name": "Financial"},
             "real": {
-                "name": "Real"}},
-        "factor": -1,
-        "reference": False},
+                "name": "Real"}}},
     "savings_sell": {
         "name": "Savings selling",
         "base": "savings",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": 1,
-        "reference": True},
+                "name": "Default"}}},
     "debt_buy": {
         "name": "Debt buying",
         "base": "debt",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": 1,
-        "reference": False},
+                "name": "Default"}}},
     "debt_sell": {
         "name": "Debt selling",
         "base": "debt",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": -1,
-        "reference": True},
-    "asset_income": {
-        "name": "Asset income",
+                "name": "Default"}}},
+    "sd_income": {
+        "name": "Savings/debt income",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": 1,
-        "reference": True},
-    "asset_expenses": {
-        "name": "Asset expenses",
+                "name": "Default"}}},
+    "sd_expenses": {
+        "name": "Savings/debt expenses",
         "categories": {
             "default": {
-                "name": ""}},
-        "factor": -1,
-        "reference": True}}
+                "name": "Default"}}}}
 
 monthly_data = {}
 
 
-# ============================================================================ #
-# Input data
-
-
 # Number of months between start date and datetime object d
 def num_months(d):
-    return (d.year - start_date.year) * 12 + d.month - start_date.month
+    return (d.year - init_date.year) * 12 + d.month - init_date.month
 
 
 # Calculates total cash from multiple sources
@@ -120,81 +104,319 @@ def total_cash(cash_array):
     return sum([obj["value"] for obj in cash_array])
 
 
-# Loads initial assets data
+def validate_value(x, a, b):
+    if not isinstance(x, Number):
+        print(x, isinstance(x, Number))
+        raise ValueError(f"{a}: {b} ({x}) not a valid number")
+        return False
+    if x < 0:
+        raise ValueError(f"{a}: {b} negative")
+        return False
+    return True
+
+# ============================================================================ #
+# Loads initial cash, savings, and debt data
 
 with open(os.path.join(dirname, f"./{data_dir}/init-assets.json"), "r") as file:
     init_assets = json.load(file)
 
-start_date = datetime.strptime(init_assets["date"], input_date_format)
+if not isinstance(init_assets, dict):
+    raise ValueError("init-assets.json: JSON not a valid object")
+
+if "date" not in init_assets:
+    raise ValueError("init-assets.json: 'date' not valid key in JSON object")
+else:
+    try:
+        init_date = datetime.strptime(init_assets["date"], input_date_format)
+    except ValueError:
+        raise ValueError(f"init-assets.json: Object.date ({init_assets['date']}) not valid date")
+
+if "cash" in init_assets:
+    if not isinstance(init_assets["cash"], list):
+        raise ValueError("init-assets.json: Object.cash not valid array")
+    else:
+        for i, asset in enumerate(init_assets["cash"]):
+            if "value" not in asset:
+                raise ValueError(f"init-assets.json: 'value' not valid key in Object.cash[{i}]")
+            else:
+                validate_value(asset["value"], "init-assets.json", f"Object.cash[{i}].value")
+    init_cash = total_cash(init_assets["cash"])
+else:
+    init_cash = 0
+
+if "savings" in init_assets:
+    if not isinstance(init_assets["savings"], list):
+        raise ValueError("init-assets.json: Object.savings not valid array")
+    else:
+        for i, asset in enumerate(init_assets["savings"]):
+            if "category" not in asset:
+                raise ValueError(f"init-assets.json: 'category' not valid key in Object.savings[{i}]")
+            elif asset["category"] not in [obj["name"] for _, obj in types["savings_buy"]["categories"].items()]:
+                raise ValueError(f"init-assets.json: Object.savings[{i}].category ({asset['category']}) not valid category")
+
+            for l in ["value",  "price_index"]:
+                if l not in asset:
+                    raise ValueError(f"init-assets.json: '{l}' not valid key in Object.savings[{i}]")
+                else:
+                    validate_value(asset[l], "init-assets.json", f"Object.savings[{i}].{l}")
+
+    init_savings = init_assets["savings"].copy()
+else:
+    init_savings = []
+
+if "debt" in init_assets:
+    if not isinstance(init_assets["debt"], list):
+        raise ValueError("init-assets.json: Object.debt not valid array")
+    else:
+        for i, asset in enumerate(init_assets["debt"]):
+            for l in ["value",  "price_index"]:
+                if l not in asset:
+                    raise ValueError(f"init-assets.json: '{l}' not valid key in Object.debt[{i}]")
+                else:
+                    validate_value(asset[l], "init-assets.json", f"Object.debt[{i}].{l}")
+    init_debt = init_assets["debt"].copy()
+else:
+    init_debt = []
 
 # Replaces type and category names with standard form
 for asset in init_assets["savings"]:
     for cat, obj in types["savings_buy"]["categories"].items():
         asset["category"] = asset["category"].replace(obj["name"], cat)
 
+# ============================================================================ #
 # Loads cash snapshot data
 
-with open(os.path.join(dirname, f"./{data_dir}/cash-snapshots.json"), "r") as file:
-    cash_snapshots = json.load(file)
+snapshot_flag = False
 
-for i in range(len(cash_snapshots)):
-    cash_snapshots[i]["date"] = datetime.strptime(cash_snapshots[i]["date"], input_date_format)
-    cash_snapshots[i]["cash"] = total_cash(cash_snapshots[i]["cash"])
+try:
+    with open(os.path.join(dirname, f"./{data_dir}/cash-snapshots.json"), "r") as file:
+        cash_snapshots = json.load(file)
+except FileNotFoundError:
+    pass
+else:
+    snapshot_flag = True
 
-cash_snapshots = sorted(cash_snapshots, key=lambda d: d["date"])
+if snapshot_flag:
+    for i, snapshot in enumerate(cash_snapshots):
+        if "date" not in snapshot:
+            raise ValueError("cash-snapshots.json: 'date' not valid key in JSON object")
+        else:
+            try:
+                snapshot["date"] = datetime.strptime(snapshot["date"], input_date_format)
+            except ValueError:
+                raise ValueError(f"cash-snapshots.json: Object[{i}].date ({snapshot['date']}) not valid date")
+            else:
+                if snapshot["date"] < init_date:
+                    raise ValueError(f"cash-snapshots.json: Object[{i}].date ({snapshot['date']}) is before initial date ({init_date})")
 
+        if "cash" in init_assets:
+            if not isinstance(snapshot["cash"], list):
+                raise ValueError(f"cash-snapshots.json: Object[{i}].cash not valid array")
+            else:
+                for j, asset in enumerate(snapshot["cash"]):
+                    if "value" not in asset:
+                        raise ValueError(f"cash-snapshots.json: 'value' not valid key in Object[{i}].cash[{j}]")
+                    else:
+                        validate_value(asset["value"], "cash-snapshots.json", f"Object[{i}].cash[{j}].value")
+            snapshot["cash"] = total_cash(snapshot["cash"])
+        else:
+            snapshot["cash"] = 0
+
+    cash_snapshots = sorted(cash_snapshots, key=lambda d: d["date"])
+
+# ============================================================================ #
 # Loads cash flow data
 
-cash_flow_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/cash-flow.csv"))
-cash_flow_df["date"] = pd.to_datetime(cash_flow_df["date"], format=input_date_format)
+cash_flow_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/transactions.csv"))
 
-cash_flow_df = cash_flow_df.sort_values(by=["date"])
-cash_flow_df = cash_flow_df.set_index("id")
+if not "id" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: 'id' not valid column")
+else:
+    cash_flow_df["id"] = cash_flow_df["id"].astype("string")
+    id_cf = cash_flow_df["id"].tolist()
+    id_inits = [asset["id"] for asset in init_assets["savings"]]
+    id_initd = [asset["id"] for asset in init_assets["debt"]]
+    id_list = id_cf + id_inits + id_initd
 
-cash_flow_df["category"].fillna("default", inplace=True)
+    # Finds duplicate IDs
+    seen = set()
+    dupes = [x for x in id_list if x in seen or seen.add(x)]
+
+    if len(dupes) > 0:
+        raise ValueError(f"init-assets.json, transactions.csv: IDs ({dupes}) not unique")
+
+    cash_flow_df = cash_flow_df.set_index("id")
+if not "date" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: 'date' not valid column")
+else:
+    cash_flow_df["date"] = cash_flow_df["date"].astype("string")
+    try:
+        cash_flow_df["date"] = pd.to_datetime(cash_flow_df["date"], format=input_date_format)
+    except ValueError:
+        raise ValueError(f"transactions.csv: column 'date' does not contain valid dates")
+    else:
+        cash_flow_df = cash_flow_df.sort_values(by=["date"])
+        cash_flow_df["month"] = num_months(cash_flow_df["date"].dt)
+        if cash_flow_df["date"].iat[0] < init_date:
+            raise ValueError(f"cash-snapshots.json: Object[{i}].date ({snapshot['date']}) is before initial date ({init_date})")
+if not "type" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: column 'type' not valid column")
+else:
+    cash_flow_df["type"] = cash_flow_df["type"].astype("string")
+if not "category" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: 'category' not valid column")
+else:
+    cash_flow_df["category"] = cash_flow_df["category"].astype("string")
+if not "value" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: column 'value' not valid column")
+else:
+    cash_flow_df["value"] = cash_flow_df["value"].astype("float64")
+if not "price_index" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: column 'price_index' not valid column")
+else:
+    cash_flow_df["price_index"] = cash_flow_df["price_index"].astype("float64")
+if not "reference" in cash_flow_df.columns:
+    raise ValueError(f"transactions.csv: column 'reference' not valid column")
+else:
+    cash_flow_df["reference"] = cash_flow_df["reference"].astype(pd.Int64Dtype()).astype("string")
+
+cash_flow_df["category"].fillna("Default", inplace=True)
+
+for i, row in cash_flow_df.iterrows():
+    type = None
+    for key, obj in types.items():
+        if row["type"] == obj["name"]:
+            type = key
+    if type == None:
+        raise ValueError(f"transactions.csv: ({i}, 'type') does not contain valid type")
+    if row["category"] not in [obj["name"] for _, obj in types[type]["categories"].items()]:
+        raise ValueError(f"transactions.csv: ({i}, 'category') does not contain valid categories")
+    validate_value(row["value"], "transactions.csv", f"({i}, 'value')")
+
+if snapshot_flag:
+    end_date = max(cash_snapshots[-1]["date"], cash_flow_df["date"].iat[-1])
+else:
+    end_date = cash_flow_df["date"].iat[-1]
+no_months = num_months(end_date) + 1
 
 # Replaces type and category names with standard form
 for type, obj in types.items():
     cash_flow_df["type"].replace(to_replace={obj["name"]: type}, inplace=True)
     cash_flow_df["category"].replace(to_replace={obj2["name"]: cat for cat, obj2 in obj["categories"].items()}, inplace=True)
 
-# Ensures every type and category are present
-null_rows = [[
-        [start_date, type, cat, 0, 0]
-        for cat, obj2 in obj["categories"].items()]
-    for type, obj in types.items()]
-null_df = pd.DataFrame(
-    [x for y in null_rows for x in y],
-    columns=["date", "type", "category", "quantity", "value"])
-cash_flow_df = pd.concat([cash_flow_df, null_df], ignore_index=True)
+# Validates price index and reference
+for i, row in cash_flow_df.iterrows():
+    if pd.isna(row["price_index"]):
+        if row["type"] == "savings_buy" or row["type"] == "savings_sell" or row["type"] == "debt_buy" or row["type"] == "debt_sell" or row["type"] == "sale":
+            raise ValueError(f"transactions.csv: ({i}, 'price_index') missing")
+    else:
+        validate_value(row["price_index"], "transactions.csv", f"({i}, 'price_index')")
+        if row["type"] == "income" or row["type"] == "reimbursement":
+            raise ValueError(f"transactions.csv: ({i}, 'price_index') not blank")
+        if (row["type"] == "savings_buy" or row["type"] == "debt_buy") and row["price_index"] == 0:
+            raise ValueError(f"transactions.csv: ({i}, 'price_index') zero")
 
-cash_flow_df["month"] = num_months(cash_flow_df["date"].dt)
-cash_flow_df["total_value"] = cash_flow_df["quantity"] * cash_flow_df["value"]
-end_date = max(cash_snapshots[-1]["date"], cash_flow_df["date"].iat[-1])
-no_months = num_months(end_date) + 1
-
-# Validation...
-#cash_flow_df["type"].isin(some_list_of_values)
-
-# Loads asset value data
-
-asset_values_df = {}
-for file in os.listdir(os.path.join(dirname, f"./{data_dir}/asset-values")):
-    id = os.path.splitext(os.fsdecode(file))[0]
-    df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/asset-values/{id}.csv"))
-
-    df["date"] = pd.to_datetime(df["date"], format=input_date_format)
-    df["month"] = num_months(df["date"].dt)
-
-    asset_values_df[id] = df
-
+    if pd.isna(row["reference"]):
+        if row["type"] == "savings_sell" or row["type"] == "debt_sell":
+            raise ValueError(f"transactions.csv: ({i}, 'reference') missing")
+    else:
+        if row["type"] == "income":
+            raise ValueError(f"transactions.csv: ({i}, 'reference') not blank")
+        valid_ref = False
+        for asset in init_assets["savings"]:
+            if asset["id"] == row["reference"]:
+                valid_ref = True
+                ref_obj = {
+                    "type": "savings",
+                    "category": asset["category"],
+                    "price_index": asset["price_index"]}
+                break
+        if not valid_ref:
+            for asset in init_assets["debt"]:
+                if asset["id"] == row["reference"]:
+                    valid_ref = True
+                    ref_obj = {
+                        "type": "debt",
+                        "price_index": asset["price_index"]}
+                    break
+        if not valid_ref:
+            for id in cash_flow_df.index:
+                if id == row["reference"]:
+                    valid_ref = True
+                    ref_obj = {
+                        "type": cash_flow_df.at[id, "type"],
+                        "category": cash_flow_df.at[id, "category"],
+                        "price_index": cash_flow_df.at[id, "price_index"]}
+                    break
+        if valid_ref:
+            if row["type"] == "savings_buy" or row["type"] == "savings_sell":
+                if row["category"] != "default":
+                    raise ValueError(f"transactions.csv: ({i}, 'category') not blank")
+                if ref_obj["type"] != "savings_buy" and ref_obj["type"] != "savings_sell" and ref_obj["type"] != "savings":
+                    raise ValueError(f"transactions.csv: (reference of {i}, 'type') does not contain correct type)")
+                elif ref_obj["category"] == "default":
+                    raise ValueError(f"transactions.csv: (reference of {i}, 'category') missing")
+            elif row["type"] == "debt_buy" or row["type"] == "debt_sell":
+                if ref_obj["type"] != "debt_buy" and ref_obj["type"] != "debt_sell" and ref_obj["type"] != "debt":
+                    raise ValueError(f"transactions.csv: (reference of {i}, 'type') does not contain correct type)")
+            elif row["type"] == "sale" or row["type"] == "reimbursement":
+                if ref_obj["type"] != "expenses":
+                    raise ValueError(f"transactions.csv: (reference of {i}, 'type') does not contain correct type)")
+                if row["type"] == "sale" and pd.isna(ref_obj["price_index"]):
+                    raise ValueError(f"transactions.csv: (reference of {i}, 'price_index') missing)")
+        else:
+            raise ValueError(f"transactions.csv: ({i}, 'reference') does not contain valid reference")
 
 # ============================================================================ #
-# Assets
+# Loads price data
+
+prices_df = {}
+
+try:
+    prices_dir = os.listdir(os.path.join(dirname, f"./{data_dir}/prices"))
+except FileNotFoundError:
+    pass
+else:
+    for file in prices_dir:
+        id = os.path.splitext(os.fsdecode(file))[0]
+        av_df = pd.read_csv(os.path.join(dirname, f"./{data_dir}/prices/{id}.csv"))
+
+        if not "date" in av_df.columns:
+            raise ValueError(f"prices/{id}.csv: 'date' not valid column")
+        else:
+            av_df["date"] = av_df["date"].astype("string")
+            try:
+                av_df["date"] = pd.to_datetime(av_df["date"], format=input_date_format)
+            except ValueError:
+                raise ValueError(f"prices/{id}.csv: column 'date' does not contain valid dates")
+            else:
+                av_df = av_df.sort_values(by=["date"])
+                av_df["month"] = num_months(av_df["date"].dt)
+
+
+        if not "price_index" in av_df.columns:
+            raise ValueError(f"prices/{id}.csv: column 'price_index' not valid column")
+        else:
+            av_df["price_index"] = av_df["price_index"].astype("float64")
+            for i, row in av_df.iterrows():
+                validate_value(row["price_index"], f"prices/{id}.csv", f"({i}, 'price_index')")
+        prices_df[id] = av_df
+
+# ============================================================================ #
+# Cash, savings, and debt
+
+
+def add_price(id, date, price):
+    new_value_df = pd.DataFrame(
+        [[date, price]],
+        columns=["date", "price_index"])
+    prices_df[id] = pd.concat([prices_df[id], new_value_df])
+    prices_df[id] = prices_df[id].sort_values(by=["date"])
 
 
 eo_list = []
 cg_list = []
+ec_list = []
 
 monthly_data["cash"] = []
 monthly_data["financial"] = []
@@ -204,148 +426,50 @@ monthly_data["debt"] = []
 snap_idx = 0
 month_idx = 0
 
-cash_counter = total_cash(init_assets["cash"])
+# Tracks cash, savings, and debt over time
 portfolio = {
-    "savings": init_assets["savings"],
-    "debt": init_assets["debt"]}
+    "cash": init_cash,
+    "savings": init_savings,
+    "debt": init_debt}
+
+# We treat debt like savings with negative price and value
+for asset in portfolio["debt"]:
+    asset["value"] *= -1
+    asset["price_index"] *= -1
+
+# Adds initial prices to prices_df
+for asset in portfolio["savings"] + portfolio["debt"]:
+    if asset["id"] in prices_df:
+        add_price(asset["id"], init_date, asset["price_index"])
 
 
-# Adds initial assets to cash flow list to ensure they can be referenced
+def finish_month():
+    global monthly_data, portfolio, month_idx
 
-savings_init_df = pd.DataFrame(
-    [
-        [obj["id"], start_date, "savings_buy", obj["category"], 0, 0, 0, 0]
-        for obj in init_assets["savings"]],
-    columns=["id", "date", "type", "category", "quantity", "value", "month", "total_value"])
-savings_init_df = savings_init_df.set_index("id")
-cash_flow_df = pd.concat([cash_flow_df, savings_init_df])
-
-debt_init_df = pd.DataFrame(
-    [
-        [obj["id"], start_date, "debt_buy", 0, 0, 0, 0]
-        for obj in init_assets["debt"]],
-    columns=["id", "date", "type", "quantity", "value", "month", "total_value"])
-debt_init_df = debt_init_df.set_index("id")
-cash_flow_df = pd.concat([cash_flow_df, debt_init_df])
-
-for i, row in cash_flow_df.iterrows():
-    # Finishes snapshot
-    if snap_idx < len(cash_snapshots):
-        snapshot = cash_snapshots[snap_idx]
-        if row["date"] >= snapshot["date"]:
-            # Calculates errors/omissions
-            eo = snapshot["cash"] - cash_counter
-
-            eo_list.append([snapshot["date"], eo])
-
-            if abs(eo) >= 0.005:
-                date_str = datetime.strftime(snapshot["date"], input_date_format)
-                print(f"{date_str} cash snapshot: {eo:.2f}")
-
-            # Prepares next snapshot
-            cash_counter = snapshot["cash"]
-            snap_idx += 1
-
-    # Finishes month
-    if row["month"] > month_idx:
-        while row["month"] > month_idx:
-            monthly_data["cash"].append(cash_counter)
-
-            financial_count = 0
-            real_count = 0
-            debt_count = 0
-
-            for obj in portfolio["savings"]:
-                if obj["id"] in asset_values_df:
-                    curr_value = asset_values_df[obj["id"]][asset_values_df[obj["id"]]["month"] <= month_idx].iloc[-1]["value"]
-                else:
-                    curr_value = obj["value"]
-                curr_tvalue = float(curr_value) * obj["quantity"]
-
-                if obj["category"] == "financial":
-                    financial_count += curr_tvalue
-                elif obj["category"] == "real":
-                    real_count += curr_tvalue
-
-            for obj in portfolio["debt"]:
-                if obj["id"] in asset_values_df:
-                    curr_value = asset_values_df[obj["id"]][asset_values_df[obj["id"]]["month"] <= month_idx].iloc[-1]["value"]
-                else:
-                    curr_value = obj["value"]
-                curr_tvalue = float(curr_value) * obj["quantity"]
-
-                debt_count += curr_tvalue
-
-            monthly_data["financial"].append(financial_count)
-            monthly_data["real"].append(real_count)
-            monthly_data["debt"].append(debt_count)
-
-            month_idx += 1
-
-    row["total_value"] *= types[row["type"]]["factor"]
-    row["value"] *= types[row["type"]]["factor"]
-
-    # Updates cash
-    cash_counter += row["total_value"]
-
-    if row["type"] == "savings_buy" or row["type"] == "debt_buy":
-        if not pd.isnull(row["reference"]):
-            id = row["reference"]
-            cat = cash_flow_df.at[row["reference"], "category"]
-        else:
-            id = i
-            cat = row["category"]
-        portfolio[types[row["type"]]["base"]].append({
-            "id": id,
-            "category": cat,
-            "quantity": row["quantity"],
-            "value": row["value"]})
-    elif row["type"] == "savings_sell" or row["type"] == "debt_sell":
-        q_to_sell = row["quantity"]
-        # Insert validation here
-        for asset in portfolio[types[row["type"]]["base"]]:
-            if asset["id"] == row["reference"]:
-                min_quant = min(asset["quantity"], q_to_sell)
-
-                asset["quantity"] -= min_quant
-                q_to_sell -= min_quant
-
-                buy_value = asset["value"] * min_quant
-                sell_value = row["value"] * min_quant
-
-                cg_list.append([row["date"], row["reference"], sell_value - buy_value])
-
-                if q_to_sell == 0:
-                    break
-
-# Adds final month
-while no_months > month_idx:
-    monthly_data["cash"].append(cash_counter)
+    monthly_data["cash"].append(portfolio["cash"])
 
     financial_count = 0
     real_count = 0
     debt_count = 0
 
     for obj in portfolio["savings"]:
-        if obj["id"] in asset_values_df:
-            curr_value = asset_values_df[obj["id"]][asset_values_df[obj["id"]]["month"] <= month_idx].iloc[-1]["value"]
+        if obj["id"] in prices_df:
+            new_value = prices_df[obj["id"]][prices_df[obj["id"]]["month"] <= month_idx].iloc[-1]["price_index"]
+            curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
         else:
             curr_value = obj["value"]
-        curr_tvalue = float(curr_value) * obj["quantity"]
 
-        if obj["category"] == "financial":
-            financial_count += curr_tvalue
-        elif obj["category"] == "real":
-            real_count += curr_tvalue
+        if obj["category"] == "real":
+            real_count += curr_value
 
     for obj in portfolio["debt"]:
-        if obj["id"] in asset_values_df:
-            curr_value = asset_values_df[obj["id"]][asset_values_df[obj["id"]]["month"] <= month_idx].iloc[-1]["value"]
+        if obj["id"] in prices_df:
+            new_value = prices_df[obj["id"]][prices_df[obj["id"]]["month"] <= month_idx].iloc[-1]["price_index"]
+            curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
         else:
             curr_value = obj["value"]
-        curr_tvalue = float(curr_value) * obj["quantity"]
 
-        debt_count += curr_tvalue
+        debt_count -= curr_value
 
     monthly_data["financial"].append(financial_count)
     monthly_data["real"].append(real_count)
@@ -353,85 +477,252 @@ while no_months > month_idx:
 
     month_idx += 1
 
-# Finishes snapshot on final day
-if snap_idx < len(cash_snapshots):
-    snapshot = cash_snapshots[snap_idx]
-    eo = snapshot["cash"] - cash_counter
 
-    eo_list.append([snapshot["date"], eo])
+def finish_snapshot():
+    global cash_snapshots, portfolio, snap_idx
+
+    # Calculates errors/omissions
+    eo = cash_snapshots[snap_idx]["cash"] - portfolio["cash"]
 
     if abs(eo) >= 0.005:
-        date_str = datetime.strftime(snapshot["date"], input_date_format)
+        date_str = datetime.strftime(cash_snapshots[snap_idx]["date"], input_date_format)
         print(f"{date_str} cash snapshot: {eo:.2f}")
 
-# Dataframe of errors/omissions
-eo_df = pd.DataFrame(
-    [
-        [x[0], "income", "default", 1, x[1]]
-        if x[1] > 0
-        else
-        [x[0], "expenses", "other", 1, -x[1]]
-        for x in eo_list],
-    columns=["date", "type", "category", "quantity", "value"])
+        eo_list.append([cash_snapshots[snap_idx]["date"], eo])
 
-eo_df["month"] = num_months(eo_df["date"].dt)
-eo_df["total_value"] = eo_df["quantity"] * eo_df["value"]
+    # Prepares next snapshot
+    portfolio["cash"] = cash_snapshots[snap_idx]["cash"]
+    snap_idx += 1
 
-# Adds errors/omissions to cash flow dataframe
-cash_flow_df = pd.concat([cash_flow_df, eo_df], ignore_index=True)
+# Durable goods sales and reimbursements
+exp_canc_df = cash_flow_df[cash_flow_df["type"].isin(["sale", "reimbursement"])]
+for i, row in exp_canc_df.iterrows():
+    id = row["reference"]
+    if row["type"] == "sale":
+        price_b = cash_flow_df.at[id, "price_index"]
+        price_s = row["price_index"]
+        cat = "real"
+    elif row["type"] == "reimbursement":
+        price_b = 1
+        price_s = 1
+        cat = "financial"
 
-# Dataframe of capital gains/losses
-cg_df = pd.DataFrame(
-    [
-        [x[0], "asset_income", "default", 1, x[2], x[1]]
-        if x[2] > 0
-        else
-        [x[0], "asset_expenses", "default", 1, -x[2], x[1]]
-        for i, x in enumerate(cg_list)],
-    columns=["date", "type", "category", "quantity", "value", "reference"])
+    if row["value"] == 0:
+        sav_buy_value = 0
+    else:
+        sav_buy_value = row["value"] * price_b / price_s
 
-cg_df["month"] = num_months(cg_df["date"].dt)
-cg_df["total_value"] = cg_df["quantity"] * cg_df["value"]
+    cash_flow_df.at[id, "value"] -= sav_buy_value
 
-# Adds capital gains/losses to cash flow dataframe
-cash_flow_df = pd.concat([cash_flow_df, cg_df], ignore_index=True)
+    cash_flow_df.drop(i, inplace=True)
 
+    ec_list.append([i + "B", cash_flow_df.at[id, "date"], "savings_buy", cat, sav_buy_value, price_b, None])
+    ec_list.append([i + "S", row["date"], "savings_sell", None, row["value"], price_s, i + "B"])
+
+if len(ec_list) > 0:
+    exp_canc_assets_df = pd.DataFrame(
+        ec_list,
+        columns=["id", "date", "type", "category", "value", "price_index", "reference"])
+    exp_canc_assets_df = exp_canc_assets_df.set_index("id")
+    exp_canc_assets_df["month"] = num_months(exp_canc_assets_df["date"].dt)
+
+    cash_flow_df = pd.concat([cash_flow_df, exp_canc_assets_df])
+
+    cash_flow_df = cash_flow_df.sort_values(by=["date"])
+
+for i, row in cash_flow_df.iterrows():
+    # Debt as negative savings
+    if row["type"] == "debt_buy" or row["type"] == "debt_sell":
+        row["value"] *= -1
+        row["price_index"] *= -1
+
+    # Negative transactions
+    if row["type"] == "expenses" or row["type"] == "sd_expenses" or row["type"] == "savings_buy" or row["type"] == "debt_buy":
+        row["value"] *= -1
+
+    while snapshot_flag and snap_idx < len(cash_snapshots) and row["date"] >= cash_snapshots[snap_idx]["date"]:
+        # Finishes snapshot
+        finish_snapshot()
+
+    while row["month"] > month_idx:
+        # Finishes month
+        finish_month()
+
+    if row["value"] == 0:
+        continue
+
+    # Updates cash
+    portfolio["cash"] += row["value"]
+
+    if row["type"] == "savings_buy" or row["type"] == "debt_buy":
+        base = types[row["type"]]["base"]
+
+        if not pd.isnull(row["reference"]):
+            # If savings/debt already seen
+            id = row["reference"]
+            for asset in init_assets[base]:
+                # Searches for ID in initial savings/debt
+                if asset["id"] == id:
+                    cat = asset["category"]
+                    break
+            if id in cash_flow_df.index:
+                # Searches for ID in transactions
+                cat = cash_flow_df.at[id, "category"]
+        else:
+            # If savings/debt unseen
+            id = i
+            cat = row["category"]
+
+        portfolio[types[row["type"]]["base"]].append({
+            "id": id,
+            "category": cat,
+            "value": -row["value"],
+            "price_index": row["price_index"]})
+
+        if id in prices_df:
+            add_price(id, row["date"], row["price_index"])
+    elif row["type"] == "savings_sell" or row["type"] == "debt_sell":
+        base = types[row["type"]]["base"]
+
+        # Remaining value to sell
+        remaining = row["value"]
+
+        for asset in portfolio[base]:
+            if asset["id"] == row["reference"]:
+                price_change = row["price_index"] / asset["price_index"]
+
+                sell_value = asset["value"] * price_change
+                sell_value = max(sell_value, -abs(remaining))
+                sell_value = min(sell_value, abs(remaining))
+
+                asset["value"] -= sell_value / price_change
+                remaining -= sell_value
+
+                # Rounded to the nearest cent when fractional quantities are sold
+                net_gain = round(sell_value * (1 - 1 / price_change), 2)
+
+                if net_gain != 0:
+                    cg_list.append([row["date"], row["reference"], net_gain])
+
+                if remaining == 0:
+                    break
+
+        # Removes unowned savings/debt
+        for asset in portfolio[base]:
+            if asset["value"] == 0:
+                portfolio[base].remove(asset)
+
+        if asset["id"] in prices_df:
+            add_price(asset["id"], row["date"], row["price_index"])
+
+while no_months > month_idx:
+    # Adds final months
+    finish_month()
+
+while snapshot_flag and snap_idx < len(cash_snapshots):
+    # Adds final snapshots
+    finish_snapshot()
+
+if snapshot_flag and len(eo_list) > 0:
+    # DataFrame of errors/omissions
+    eo_df = pd.DataFrame(
+        [
+            [x[0], "income", "default", x[1]]
+            if x[1] > 0
+            else
+            [x[0], "expenses", "defaut", -x[1]]
+            for x in eo_list],
+        columns=["date", "type", "category", "value"])
+
+    eo_df["month"] = num_months(eo_df["date"].dt)
+
+    # Adds errors/omissions to cash flow DataFrame
+    cash_flow_df = pd.concat([cash_flow_df, eo_df], ignore_index=True)
+
+if len(cg_list) > 0:
+    # DataFrame of capital gains/losses
+    cg_df = pd.DataFrame(
+        [
+            [x[0], "sd_income", "default", x[2], x[1]]
+            if x[2] > 0
+            else
+            [x[0], "sd_expenses", "default", -x[2], x[1]]
+            for x in cg_list],
+        columns=["date", "type", "category", "value", "reference"])
+
+    cg_df["month"] = num_months(cg_df["date"].dt)
+
+    # Adds capital gains/losses to cash flow DataFrame
+    cash_flow_df = pd.concat([cash_flow_df, cg_df], ignore_index=True)
+
+    cash_flow_df = cash_flow_df.sort_values(by=["date"])
+
+savings_obj = {
+    "savings": {},
+    "debt": {}
+}
+
+for l in ["savings", "debt"]:
+    for obj in portfolio[l]:
+        if obj["id"] in prices_df:
+            new_value = prices_df[obj["id"]].iloc[-1]["price_index"]
+            curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
+        else:
+            curr_value = obj["value"]
+
+        if obj["id"] in savings_obj:
+            savings_obj[l][obj["id"]] += curr_value
+        else:
+            savings_obj[l][obj["id"]] = curr_value
+
+
+print(f"Current cash: {portfolio['cash']:.2f}")
+print(f"Current savings: {savings_obj['savings']}")
+print(f"Current debt: {savings_obj['debt']}")
 
 # ============================================================================ #
 # Income and expenses
 
+cash_flow_df.drop(["price_index", "reference"], axis=1, inplace=True)
+
+# Ensures every type and category are present
+null_rows = [[
+        [init_date, type, cat, 0, 0]
+        for cat, obj2 in obj["categories"].items()]
+    for type, obj in types.items()]
+null_df = pd.DataFrame(
+    [x for y in null_rows for x in y],
+    columns=["date", "type", "category", "month", "value"])
+cash_flow_df = pd.concat([cash_flow_df, null_df])
 
 # Aggregates entries by month and category
-
 cash_flow_df = cash_flow_df.groupby(["month", "type", "category"]).sum()
 
 # Reshapes df to show categories as columns
 cash_flow_df = cash_flow_df.unstack(["type", "category"], fill_value=0)
 
-monthly_data["income"] = cash_flow_df.loc[:, ("total_value", "income", "default")].to_list()
-monthly_data["expenses"] = cash_flow_df.loc[:, ("total_value", "expenses", slice(None))].sum(axis=1).to_list()
-monthly_data["profit"] = cash_flow_df.loc[:, ("total_value", "asset_income", "default")].to_list()
-monthly_data["loss"] = cash_flow_df.loc[:, ("total_value", "asset_expenses", "default")].to_list()
+monthly_data["income"] = cash_flow_df.loc[:, ("value", "income", "default")].to_list()
+monthly_data["expenses"] = cash_flow_df.loc[:, ("value", "expenses", slice(None))].sum(axis=1).to_list()
+monthly_data["sdincome"] = cash_flow_df.loc[:, ("value", "sd_income", "default")].to_list()
+monthly_data["sdexpenses"] = cash_flow_df.loc[:, ("value", "sd_expenses", "default")].to_list()
 
 monthly_data["netAssets"] = [
     monthly_data["cash"][i] + monthly_data["financial"][i] + monthly_data["real"][i] - monthly_data["debt"][i]
     for i in range(no_months)];
 
 monthly_data["netIncome"] = [
-    monthly_data["income"][i] + monthly_data["profit"][i] - monthly_data["expenses"][i] - monthly_data["loss"][i]
+    monthly_data["income"][i] + monthly_data["sdincome"][i] - monthly_data["expenses"][i] - monthly_data["sdexpenses"][i]
     for i in range(no_months)];
 
-monthly_data["housing"] = cash_flow_df.loc[:, ("total_value", "expenses", "housing")].to_list()
-monthly_data["food"] = cash_flow_df.loc[:, ("total_value", "expenses", "food")].to_list()
-monthly_data["shopping"] = cash_flow_df.loc[:, ("total_value", "expenses", "shopping")].to_list()
-monthly_data["utilities"] = cash_flow_df.loc[:, ("total_value", "expenses", "utilities")].to_list()
-monthly_data["health"] = cash_flow_df.loc[:, ("total_value", "expenses", "health")].to_list()
-monthly_data["leisure"] = cash_flow_df.loc[:, ("total_value", "expenses", "leisure")].to_list()
-
+monthly_data["housing"] = cash_flow_df.loc[:, ("value", "expenses", "housing")].to_list()
+monthly_data["food"] = cash_flow_df.loc[:, ("value", "expenses", "food")].to_list()
+monthly_data["shopping"] = cash_flow_df.loc[:, ("value", "expenses", "shopping")].to_list()
+monthly_data["utilities"] = cash_flow_df.loc[:, ("value", "expenses", "utilities")].to_list()
+monthly_data["health"] = cash_flow_df.loc[:, ("value", "expenses", "health")].to_list()
+monthly_data["leisure"] = cash_flow_df.loc[:, ("value", "expenses", "leisure")].to_list()
 
 # ============================================================================ #
 # Output
-
 
 # [Current month, yearly average, historical months] for each variable
 data = {
@@ -439,7 +730,7 @@ data = {
     for (key, val) in monthly_data.items()}
 
 info = {
-    "startDate": [start_date.month, start_date.year],
+    "startDate": [init_date.month, init_date.year],
     "endDate": [end_date.month, end_date.year]
 }
 
