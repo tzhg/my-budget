@@ -38,8 +38,6 @@ However, I hope that it may be helpful or inspiring to others.
 
 ## Terminology
 
-For conciseness and consistency I have had to use certain terms in a less than typical way.
-
 * **Cash**:
   * Physical cash and demand deposit accounts denominated in a particular currency.
 * **Savings**:
