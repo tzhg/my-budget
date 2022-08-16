@@ -255,7 +255,7 @@ which are calculated automatically first in first out.
   * **value**: ***scalar***
     * Cash value of cash source at start of given date.
 
-### `prices`
+### `prices/<id>.csv`
 
 | date       | value              |
 |------------|--------------------|
