@@ -179,7 +179,7 @@ else:
     init_debt = []
 
 # Replaces type and category names with standard form
-for asset in init_assets["savings"]:
+for asset in init_savings:
     for cat, obj in types["savings_buy"]["categories"].items():
         asset["category"] = asset["category"].replace(obj["name"], cat)
 
@@ -234,8 +234,8 @@ if not "id" in cash_flow_df.columns:
 else:
     cash_flow_df["id"] = cash_flow_df["id"].astype("string")
     id_cf = cash_flow_df["id"].tolist()
-    id_inits = [asset["id"] for asset in init_assets["savings"]]
-    id_initd = [asset["id"] for asset in init_assets["debt"]]
+    id_inits = [asset["id"] for asset in init_savings]
+    id_initd = [asset["id"] for asset in init_debt]
     id_list = id_cf + id_inits + id_initd
 
     # Finds duplicate IDs
@@ -319,11 +319,13 @@ for i, row in cash_flow_df.iterrows():
     if pd.isna(row["reference"]):
         if row["type"] == "savings_sell" or row["type"] == "debt_sell":
             raise ValueError(f"transactions.csv: ({i}, 'reference') missing")
+        if (row["type"] == "savings_buy" or row["type"] == "savings_sell") and row["category"] == "default":
+            raise ValueError(f"transactions.csv: ({i}, 'category') missing")
     else:
         if row["type"] == "income":
             raise ValueError(f"transactions.csv: ({i}, 'reference') not blank")
         valid_ref = False
-        for asset in init_assets["savings"]:
+        for asset in init_savings:
             if asset["id"] == row["reference"]:
                 valid_ref = True
                 ref_obj = {
@@ -332,7 +334,7 @@ for i, row in cash_flow_df.iterrows():
                     "price_index": asset["price_index"]}
                 break
         if not valid_ref:
-            for asset in init_assets["debt"]:
+            for asset in init_debt:
                 if asset["id"] == row["reference"]:
                     valid_ref = True
                     ref_obj = {
@@ -407,9 +409,14 @@ else:
 
 
 def add_price(id, date, price):
+    for date2 in prices_df[id]["date"]:
+        if date == date2:
+            return
+
     new_value_df = pd.DataFrame(
-        [[date, price]],
-        columns=["date", "price_index"])
+        [[date, price, num_months(date)]],
+        columns=["date", "price_index", "month"])
+
     prices_df[id] = pd.concat([prices_df[id], new_value_df])
     prices_df[id] = prices_df[id].sort_values(by=["date"])
 
@@ -459,7 +466,9 @@ def finish_month():
         else:
             curr_value = obj["value"]
 
-        if obj["category"] == "real":
+        if obj["category"] == "financial":
+            financial_count += curr_value
+        elif obj["category"] == "real":
             real_count += curr_value
 
     for obj in portfolio["debt"]:
@@ -560,11 +569,12 @@ for i, row in cash_flow_df.iterrows():
         if not pd.isnull(row["reference"]):
             # If savings/debt already seen
             id = row["reference"]
-            for asset in init_assets[base]:
-                # Searches for ID in initial savings/debt
-                if asset["id"] == id:
-                    cat = asset["category"]
-                    break
+            if base in init_assets:
+                for asset in init_assets[base]:
+                    # Searches for ID in initial savings/debt
+                    if asset["id"] == id:
+                        cat = asset["category"]
+                        break
             if id in cash_flow_df.index:
                 # Searches for ID in transactions
                 cat = cash_flow_df.at[id, "category"]
@@ -664,13 +674,14 @@ savings_obj = {
 
 for l in ["savings", "debt"]:
     for obj in portfolio[l]:
+
         if obj["id"] in prices_df:
             new_value = prices_df[obj["id"]].iloc[-1]["price_index"]
             curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
         else:
             curr_value = obj["value"]
 
-        if obj["id"] in savings_obj:
+        if obj["id"] in savings_obj[l]:
             savings_obj[l][obj["id"]] += curr_value
         else:
             savings_obj[l][obj["id"]] = curr_value
