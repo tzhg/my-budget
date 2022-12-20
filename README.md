@@ -1,35 +1,78 @@
 # my-budget
 
-This is a program for visualizing household financial data.
+This is a program for recording and visualizing household financial data.
 A demo, using simulated data, is available [here](https://tzhg.github.io/my-budget/dist/).
 
-The visualization includes charts for assets (cash, financial assets, and real assets) and liabilities,
-income and expenses (including savings- and debt-related), and a breakdown of expenses.
-The charts show data for the current month ("MTD"), the average of the last 12 months ("12M avg"),
-and all previous months.
+The web visualization plots data for assets and liabilities, income and expenses, and breakdown of expenses,
+over the current month ("MTD"), the average of the last 12 months ("12M avg"), and all previous months.
 
-The input files are located in the `data` directory (in this repository named `data-simulated`).
+The program is able to deal with many complex situations, including
+ * Profits or losses from selling assets
+ * Appreciation or depreciation of assets
+ * Debt and interest payments
+ * Refunds, and reimbursements
+ * Foreign currencies and gift vouchers
+ * Loans and gifts
+
+I designed this tool for my own purposes,
+to help me track my money, evaluate my spending and investments, and budget for the future.
+However, I hope that it may be helpful or inspiring to others.
+
+## How to use
+
+```
+my-budget
+├── src
+│   ├── data
+│   │   ├── prices (optional)
+│   │   │   └── <id>.csv
+│   │   ├── init-assets.json
+│   │   ├── transactions.csv
+│   │   └── cash-snapshots.json (optional)
+│   └── build-data.py
+├── dist
+│   └── index.html
+```
+
+The script `src/build-data.py` takes the input data from directory `src/data`
+and generates the data needed to make the visualization.
+The visualization is created as a static website in the `dist` directory
+and needs to be built using the [webpack](https://webpack.js.org/) command "npx webpack".
+
+The input files are located in the `src/data` directory (in this repository named `src/data-simulated`).
 Initial cash, savings, and debt are recorded in `init-assets.json`.
 The main input file, recording all transactions, is the CSV file `transactions.csv`.
 I keep this data in a separate spreadsheet, and export to CSV when needed.
-
 There is an optional file `cash-snapshots.json` which is used to record
-cash reserves at a specific time ("cash snapshots").
-The program calculates any discrepancies with calculated cash,
-which are then included as income or expenses.
-
-There is an optional directory `prices` containing files named `<id>.csv`,
+cash snapshots on a specific day.
+The script takes into account any discrepancies between the snapshots and calculated cash
+to ensure the data is accurate.
+There is also an optional directory `prices` containing files with names of the form `<id>.csv`,
 where `<id>` is refers to some savings or debt.
 These files record price changes over time,
-allowing for appreciation or depreciation in the visualization.
+allowing for appreciation or depreciation.
 
-The visualization is created in a static website in the `dist` directory.
-The input data must first be processed using the script `src/build-data.py`,
-and then the website can be built with [webpack](https://webpack.js.org/).
+The script also outputs some useful information:
 
-I designed this tool for my own purposes,
-to help me record, evaluate, and plan my expenses and investment decisions.
-However, I hope that it may be helpful or inspiring to others.
+```
+Cash snapshots
+--------------
+08/09/2022: 10738.17 (surplus of 6.81)
+09/09/2022: 10738.17
+23/10/2022: 10510.84 (deficit of -5.36)
+11/11/2022: 11562.41 (surplus of 1.69)
+17/11/2022: 11562.41
+
+Assets as of 31/12/2022
+-----------------------
+Cash: 9444.01
+Savings:
+  0: 5527.64
+  4: 5000.00
+  2: 799.47
+  1: 745.73
+Debt: None
+```
 
 ## Dependencies
 
@@ -63,17 +106,6 @@ However, I hope that it may be helpful or inspiring to others.
     which are partially or fully sold or refunded.
 
 ## Input files
-
-```
-my-budget
-├── src
-│   ├── data
-│   │   ├── prices (optional)
-│   │   │   └── <id>.csv
-│   │   ├── init-assets.json
-│   │   ├── transactions.csv
-│   │   └── cash-snapshots.json (optional)
-```
 
 ### `data/init-assets.json`
 
@@ -151,6 +183,7 @@ my-budget
   * Unique ID of transaction.
 * **date**: ***string***
   * Date of transaction in DD/MM/YYYY format.
+    The dates are required to be in ascending order to reduce errors. 
 * **type**: ***string***
   * Type of transaction.
   * `Savings buying`: Records buying savings.
@@ -180,10 +213,12 @@ my-budget
 
 #### Note 1: Non-cash transactions
 
-Transactions involving savings or debt instead of cash,
-such as receiving savings as a gift, or buying goods with debt,
-can be recorded by converting (i.e. buying/selling) the savings or debt to cash
-along with a regular cash transactions.
+There are many situations where cash is not involved in a transaction.
+Examples include purchasing with foreign currency, receiving gift vouchers as a gift,
+or buying goods with debt.
+These situations can be recorded by splitting the non-cash transaction into two cash transactions.
+For instance, to record an expense paid for with foreign currency,
+first sell the foreign currency for cash, second use this cash to buy the expense.
 
 #### Note 2: Real assets and durable goods
 
