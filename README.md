@@ -24,14 +24,14 @@ However, I hope that it may be helpful or inspiring to others.
 my-budget
 ├── src
 │   ├── data
-│   │   ├── prices (optional)
+│   │   ├── prices
 │   │   │   └── <id>.csv
 │   │   ├── init-assets.json
 │   │   ├── transactions.csv
-│   │   └── cash-snapshots.json (optional)
+│   │   └── cash-snapshots.json
 │   └── build-data.py
-├── dist
-│   └── index.html
+└── dist
+    └── index.html
 ```
 
 The script `src/build-data.py` takes the input data from directory `src/data`
