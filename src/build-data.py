@@ -18,6 +18,14 @@ data_dir = "data-simulated"
 # Current directory
 dirname = os.path.dirname(os.path.abspath(__file__))
 
+class colours:
+    default = "\033[0m"
+    red = "\033[91m"
+    green = "\033[92m"
+    yellow = "\033[93m"
+    blue = "\033[94m"
+    purple = "\033[95m"
+
 # Information about type values in cash flow data
 types = {
     "expenses": {
@@ -106,7 +114,6 @@ def total_cash(cash_array):
 
 def validate_value(x, a, b):
     if not isinstance(x, Number):
-        print(x, isinstance(x, Number))
         raise ValueError(f"{a}: {b} ({x}) not a valid number")
         return False
     if x < 0:
@@ -255,7 +262,8 @@ else:
     except ValueError:
         raise ValueError(f"transactions.csv: column 'date' does not contain valid dates")
     else:
-        cash_flow_df = cash_flow_df.sort_values(by=["date"])
+        if cash_flow_df["date"].tolist() != cash_flow_df["date"].sort_values().tolist():
+            raise ValueError(f"transactions.csv: dates not in ascending order")
         cash_flow_df["month"] = num_months(cash_flow_df["date"].dt)
         if cash_flow_df["date"].iat[0] < init_date:
             raise ValueError(f"cash-snapshots.json: Object[{i}].date ({snapshot['date']}) is before initial date ({init_date})")
@@ -439,7 +447,7 @@ portfolio = {
     "savings": init_savings,
     "debt": init_debt}
 
-# We treat debt like savings with negative price and value
+# Debt is treated like savings with negative price and value
 for asset in portfolio["debt"]:
     asset["value"] *= -1
     asset["price_index"] *= -1
@@ -492,16 +500,27 @@ def finish_snapshot():
 
     # Calculates errors/omissions
     eo = cash_snapshots[snap_idx]["cash"] - portfolio["cash"]
-
-    if abs(eo) >= 0.005:
-        date_str = datetime.strftime(cash_snapshots[snap_idx]["date"], input_date_format)
-        print(f"{date_str} cash snapshot: {eo:.2f}")
-
-        eo_list.append([cash_snapshots[snap_idx]["date"], eo])
+    eo_list.append(eo)
 
     # Prepares next snapshot
     portfolio["cash"] = cash_snapshots[snap_idx]["cash"]
     snap_idx += 1
+
+
+def snapshot_output(i):
+    global cash_snapshots
+
+    date_str = datetime.strftime(cash_snapshots[i]["date"], input_date_format)
+
+    if eo_list[i] >= 0.005:
+        eo_output = f" ({colours.green}surplus{colours.default} of {colours.yellow}{eo_list[i]:.2f}{colours.default})"
+    elif eo_list[i] <= -0.005:
+        eo_output = f" ({colours.red}deficit{colours.default} of {colours.yellow}{eo_list[i]:.2f}{colours.default})"
+    else:
+        eo_output = ""
+    
+    print(f"{date_str}: {colours.yellow}{cash_snapshots[i]['cash']:.2f}{colours.default}{eo_output}")
+
 
 # Durable goods sales and reimbursements
 exp_canc_df = cash_flow_df[cash_flow_df["type"].isin(["sale", "reimbursement"])]
@@ -601,15 +620,19 @@ for i, row in cash_flow_df.iterrows():
             if asset["id"] == row["reference"]:
                 price_change = row["price_index"] / asset["price_index"]
 
+                # Value at sale of the quantity sold
                 sell_value = asset["value"] * price_change
                 sell_value = max(sell_value, -abs(remaining))
                 sell_value = min(sell_value, abs(remaining))
 
-                asset["value"] -= sell_value / price_change
+                # Value at purchase of the quantity sold
+                # This may not always be a whole number of cents if the quantity is fractional
+                purchase_value = round(sell_value / price_change, 2)
+
+                asset["value"] -= purchase_value
                 remaining -= sell_value
 
-                # Rounded to the nearest cent when fractional quantities are sold
-                net_gain = round(sell_value * (1 - 1 / price_change), 2)
+                net_gain = sell_value - purchase_value
 
                 if net_gain != 0:
                     cg_list.append([row["date"], row["reference"], net_gain])
@@ -617,13 +640,13 @@ for i, row in cash_flow_df.iterrows():
                 if remaining == 0:
                     break
 
+                if asset["id"] in prices_df:
+                    add_price(asset["id"], row["date"], row["price_index"])
+
         # Removes unowned savings/debt
         for asset in portfolio[base]:
             if asset["value"] == 0:
                 portfolio[base].remove(asset)
-
-        if asset["id"] in prices_df:
-            add_price(asset["id"], row["date"], row["price_index"])
 
 while no_months > month_idx:
     # Adds final months
@@ -637,11 +660,10 @@ if snapshot_flag and len(eo_list) > 0:
     # DataFrame of errors/omissions
     eo_df = pd.DataFrame(
         [
-            [x[0], "income", "default", x[1]]
-            if x[1] > 0
+            [cash_snapshots[i]["date"], "income", "default", val] if val > 0
             else
-            [x[0], "expenses", "defaut", -x[1]]
-            for x in eo_list],
+            [cash_snapshots[i]["date"], "expenses", "defaut", -val]
+            for i, val in enumerate(eo_list)],
         columns=["date", "type", "category", "value"])
 
     eo_df["month"] = num_months(eo_df["date"].dt)
@@ -667,30 +689,51 @@ if len(cg_list) > 0:
 
     cash_flow_df = cash_flow_df.sort_values(by=["date"])
 
-savings_obj = {
-    "savings": {},
-    "debt": {}
-}
+def portfolio_output():
+    savings_obj = {
+        "savings": {},
+        "debt": {}
+    }
 
-for l in ["savings", "debt"]:
-    for obj in portfolio[l]:
+    for l in ["savings", "debt"]:
+        for obj in portfolio[l]:
+            if obj["id"] in prices_df:
+                new_value = prices_df[obj["id"]].iloc[-1]["price_index"]
+                curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
+            else:
+                curr_value = obj["value"]
 
-        if obj["id"] in prices_df:
-            new_value = prices_df[obj["id"]].iloc[-1]["price_index"]
-            curr_value = round(obj["value"] * new_value / obj["price_index"], 2)
-        else:
-            curr_value = obj["value"]
+            if obj["id"] in savings_obj[l]:
+                savings_obj[l][obj["id"]] += curr_value
+            else:
+                savings_obj[l][obj["id"]] = curr_value
+        savings_obj[l]
 
-        if obj["id"] in savings_obj[l]:
-            savings_obj[l][obj["id"]] += curr_value
-        else:
-            savings_obj[l][obj["id"]] = curr_value
-
-
-print(f"Current cash: {portfolio['cash']:.2f}")
-print(f"Current savings: {savings_obj['savings']}")
-print(f"Current debt: {savings_obj['debt']}")
-
+    if portfolio["cash"] > 0:
+        print(f"Cash: {colours.yellow}{portfolio['cash']:.2f}{colours.default}")
+    else:
+        print(f"Cash: None")
+    if len(savings_obj["savings"]) > 0:
+        print(f"Savings:")
+        asset_list = sorted(
+            savings_obj["savings"].items(),
+            key=lambda x: x[1],
+            reverse=True)
+        for (key, val) in asset_list:
+            print(f"  {key}: {colours.blue}{val:.2f}{colours.default}")
+    else:
+        print("  Savings: None")
+    if len(savings_obj["debt"]) > 0:
+        print(f"Debt:")
+        asset_list = sorted(
+            savings_obj["debt"].items(),
+            key=lambda x: x[1],
+            reverse=True)
+        for (key, val) in asset_list:
+            print(f"  {key}: {colours.purple}{val:.2f}{colours.default}")
+    else:
+        print("Debt: None")
+    
 # ============================================================================ #
 # Income and expenses
 
@@ -735,6 +778,20 @@ monthly_data["leisure"] = cash_flow_df.loc[:, ("value", "expenses", "leisure")].
 # ============================================================================ #
 # Output
 
+title_1 = "Cash snapshots"
+title_2 = f"Assets as of {datetime.strftime(end_date, input_date_format)}"
+
+print(f"\n{title_1}\n{'-' * len(title_1)}")
+
+# Prints last 5 cash snapshots
+for i in range(5):
+    snapshot_output(len(eo_list) - 5 + i)
+    
+print(f"\n{title_2}\n{'-' * len(title_2)}")
+
+# Prints portfolio
+portfolio_output()
+
 # [Current month, yearly average, historical months] for each variable
 data = {
     key: [[val[-1]], [np.mean(val[-13:-1])], val[-2::-1]]
@@ -749,8 +806,10 @@ output = {
     "info": info,
     "data": data}
 
-# Data as a JSON string
-data_json = json.dumps(output, indent=4)
+
+
+# Data as a JSON string (loads to convert floats to strings)
+data_json = json.dumps(json.loads(json.dumps(output), parse_float=lambda x: round(float(x), 2)), indent=4)
 
 # Saves data_json in current directory
 with open(os.path.join(dirname, "./data.json"), "w") as file:
